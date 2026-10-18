@@ -1,0 +1,14 @@
+# Graph construction parameters.
+# STATUS: PENDING PROFESSOR REVIEW (Questions PDF, Q10). These are reasoned defaults, not agreed values.
+# Changing a value here and re-running src/graphs/build_graph_data.py rebuilds the graph.
+status: pending_professor_review
+geographic:
+  k: 5              # nearest campuses per campus
+  max_km: 100       # never link campuses further apart
+  tau_km: 20        # weight = exp(-km / tau)
+academic:
+  k: 10             # most similar campuses per campus
+  min_shared: 4     # jointly observed profile features needed for a distance
+  # profile features, always from year t-1; the predicted target's family is removed per target set
+  features: [sat_total, act_composite, sat_act_above_criterion, sat_act_participation,
+             attendance_rate, dropout_9_12, chronic_absenteeism]
