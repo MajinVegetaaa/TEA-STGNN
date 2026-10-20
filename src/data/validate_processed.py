@@ -120,6 +120,44 @@ def main() -> int:
                       m[m.year == 2022].set_index("campus_id").pct_econ_disadv
                       .reindex(m[m.year == 2023].campus_id).fillna(-9).to_numpy()))
 
+    # Academic Risk Index: independent recomputation, range, direction, no future data
+    import yaml
+    sys.path.insert(0, str(ROOT / "src" / "data"))
+    import risk_index as RI
+    cfg = yaml.safe_load((ROOT / "configs/risk_index.yaml").read_text())
+    w = {k: float(v) for k, v in cfg["weights"].items()}
+    ri = m.risk_index.dropna()
+    check("risk_index within [0, 100]", ri.between(0, 100).all(), f"n={len(ri)}")
+    check("risk_index empty wherever weight coverage < threshold",
+          m.loc[m.risk_index_coverage < cfg["min_weight_coverage"], "risk_index"].isna().all())
+    rho = m[["risk_index", "dropout_9_12", "retention_rate", "act_composite"]].corr("spearman")["risk_index"]
+    check("risk_index rises with dropout and retention, falls with ACT",
+          rho.dropout_9_12 > 0 and rho.retention_rate > 0 and rho.act_composite < 0,
+          f"rho dropout {rho.dropout_9_12:.2f}, retention {rho.retention_rate:.2f}, ACT {rho.act_composite:.2f}")
+    # recompute 40 rows by hand: percentile within year, direction, prior-year decline, re-weighting
+    comp = pd.read_csv(P / "risk_index_components.csv", dtype={"campus_id": str})
+    bad = 0
+    for _, r in m.dropna(subset=["risk_index"]).sample(40, random_state=3).iterrows():
+        yr = m[m.year == r.year]
+        c = {}
+        for v in ("dropout_9_12", "retention_rate"):
+            c[v] = (yr[v] < r[v]).sum() / yr[v].notna().sum() + ((yr[v] == r[v]).sum() + 1) / 2 / yr[v].notna().sum() if pd.notna(r[v]) else np.nan
+        for v in ("sat_erw", "sat_math", "act_english", "act_math", "sat_act_above_criterion", "sat_act_participation"):
+            c[v] = 1 - ((yr[v] < r[v]).sum() + ((yr[v] == r[v]).sum() + 1) / 2) / yr[v].notna().sum() if pd.notna(r[v]) else np.nan
+        c["decline"] = comp.set_index(["campus_id", "year"]).at[(r.campus_id, r.year), "risk_c_decline"]
+        num = sum(w[k] * c[k] for k in w if pd.notna(c[k]))
+        den = sum(w[k] for k in w if pd.notna(c[k]))
+        bad += not np.isclose(100 * num / den, r.risk_index, atol=1e-6)
+    check("risk_index matches hand recomputation (40 rows)", bad == 0, f"{40 - bad}/40")
+    # no future data: scrambling 2023 values must leave 2019-2022 indices unchanged
+    scr = m.copy()
+    for v in list(w)[:-1]:
+        scr.loc[scr.year == 2023, v] = np.random.default_rng(0).permutation(scr.loc[scr.year == 2023, v].to_numpy())
+    again = RI.compute(scr, [2019, 2020, 2021, 2022, 2023])
+    early = m.year < 2023
+    check("risk_index for 2019-2022 unaffected by 2023 values",
+          np.allclose(again.loc[early, "risk_index"].fillna(-1), m.loc[early, "risk_index"].fillna(-1)))
+
     # temporal features: no future information
     w = m.pivot(index="campus_id", columns="year", values="act_composite")
     t = tf.set_index(["campus_id", "year"])

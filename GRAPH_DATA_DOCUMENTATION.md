@@ -2,7 +2,7 @@
 
 ```bash
 python3 src/data/build_master.py        # data/processed/  (see DATA_PIPELINE.md)
-python3 src/data/validate_processed.py  # 59 independent checks on data/processed/
+python3 src/data/validate_processed.py  # 64 independent checks on data/processed/
 python3 src/graphs/build_graph_data.py  # data/graph/  (~5 s)
 python3 src/graphs/validate_graph.py    # data/graph/graph_quality_report.csv (84 pass / 0 fail)
 ```
@@ -107,6 +107,9 @@ set:
 | `excl_attendance` | `attendance_rate`, `chronic_absenteeism` (both from absence days) | `attendance_rate`, `chronic_absenteeism` |
 | `excl_dropout` | `dropout_9_12` | `dropout_9_12` |
 | `excl_retention` | `retention_rate` (not in the profile, so the full profile is used) | `retention_rate` |
+
+`risk_index` has no academic edge set: its components cover every academic indicator, so a profile without them
+would be too thin. For that target, use the demographic, geographic, district and region edges.
 
 Without this, the academic layer would amount to a nearest-neighbour lookup on the target's own history.
 That is the KNN approach the brief found does not beat persistence.

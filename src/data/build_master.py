@@ -8,6 +8,7 @@ Reads only the raw TEA files under data/raw/tea/ (pro/, TAPR/, retention/; never
   data/processed/data_dictionary.csv
   data/processed/data_quality_report.csv
 
+Also writes data/processed/risk_index_components.csv.
 Run from the repo root:  python3 src/data/build_master.py
 See DATA_PIPELINE.md for every rule applied here.
 """
@@ -18,6 +19,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+import risk_index
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data" / "raw" / "tea" / "pro"
@@ -89,7 +92,7 @@ INDICATORS = {
 }
 TARGETS = ["sat_total", "sat_erw", "sat_math", "act_composite", "act_english", "act_math",
            "sat_act_above_criterion", "sat_act_participation", "dropout_9_12", "attendance_rate",
-           "chronic_absenteeism", "retention_rate"]
+           "chronic_absenteeism", "retention_rate", "risk_index"]
 DEMOG_NAMES = [v[0] for v in DEMOGRAPHICS.values()]
 VALID_RANGE = {"sat_total": (400, 1600), "sat_erw": (200, 800), "sat_math": (200, 800),
                "act_composite": (1, 36), "act_english": (1, 36), "act_math": (1, 36), "act_science": (1, 36)}
@@ -490,6 +493,19 @@ def main() -> None:
     for v in DEMOG_NAMES[1:] + ["retention_rate"]:
         log(f"out-of-range values: {v} [0,100]", int((~m[v].between(0, 100) & m[v].notna()).sum()), "master")
     log("retention numerator > denominator", int((m.retention_count > m.retention_denominator).sum()), "master")
+    # ---------------- Academic Risk Index (corrected Eq. 1; within-year percentiles over the cohort)
+    ri = risk_index.compute(m, YEARS)
+    m[["risk_index", "risk_index_coverage"]] = ri[["risk_index", "risk_index_coverage"]]
+    m[["campus_id", "year"]].join(ri).to_csv(OUT / "risk_index_components.csv", index=False)
+    for y in YEARS:
+        log("risk_index computed", f"{int(m.loc[m.year == y, 'risk_index'].notna().sum())}/{int((m.year == y).sum())}", str(y),
+            "no retention or decline term in 2019" if y == 2019 else "")
+    rho = m[["risk_index", "dropout_9_12", "retention_rate", "act_composite", "sat_total"]].corr("spearman")["risk_index"]
+    log("risk_index direction: Spearman with dropout (expect > 0)", round(rho.dropout_9_12, 3), "risk")
+    log("risk_index direction: Spearman with retention (expect > 0)", round(rho.retention_rate, 3), "risk")
+    log("risk_index direction: Spearman with ACT composite (expect < 0)", round(rho.act_composite, 3), "risk")
+    log("risk_index direction: Spearman with SAT total (expect < 0)", round(rho.sat_total, 3), "risk")
+    log("risk_index weights status", risk_index.CFG["status"], "risk", "configs/risk_index.yaml")
     m["covid_affected_year"] = m.year.isin([2020, 2021]).astype(int)
     m["has_graduates_reported"] = (m.sat_act_participation.notna() | (m.sat_act_participation_supp > 0)).astype(int)
 
@@ -509,7 +525,8 @@ def main() -> None:
 
     supp_cols = [c for c in m.columns if c.endswith("_supp")]
     order = (["campus_id", "year", "district_id", "esc_region", "covid_affected_year", "has_graduates_reported"]
-             + [i[0] for i in INDICATORS.values()] + ["retention_rate", "retention_count", "retention_denominator"]
+             + [i[0] for i in INDICATORS.values()] + ["retention_rate", "retention_count", "retention_denominator",
+                                                      "risk_index", "risk_index_coverage"]
              + DEMOG_NAMES + supp_cols + ["source_ccad", "source_cdrop", "source_demographics", "source_retention"])
     m = m[order].sort_values(["campus_id", "year"]).reset_index(drop=True)
 
@@ -541,6 +558,7 @@ def main() -> None:
         log(f"suppressed -2 count {v}", int((m[f"{v}_supp"] == 2).sum()), "master")
     for v in DEMOG_NAMES + ["retention_rate"]:
         log(f"missing % {v}", round(100 * m[v].isna().mean(), 2), "master")
+    log("missing % risk_index", round(100 * m.risk_index.isna().mean(), 2), "master")
     log("suppressed -1/-3 count retention_rate", int((m.retention_rate_supp > 0).sum()), "master")
     ind_cols = [i[0] for i in INDICATORS.values()]
     log("overall missing % (indicator cells)", round(100 * m[ind_cols].isna().to_numpy().mean(), 2), "master")
@@ -596,6 +614,8 @@ def write_dictionary(m: pd.DataFrame, meta: pd.DataFrame, tf: pd.DataFrame) -> N
              ("master_school_year", "retention_count", "Students retained (numerator)", "CAMP_ALLN", "students"),
              ("master_school_year", "retention_denominator", "Students enrolled who returned or graduated (denominator)", "CAMP_ALLD", "students"),
              ("master_school_year", "retention_rate_supp", "Suppression of retention_rate: 0 none, 1 raw -1, 3 raw -3 (cross-masked)", "CAMP_ALLR", "code")]
+    rows += [("master_school_year", "risk_index", "Academic Risk Index 0-100 (higher = riskier); corrected Eq. 1, see src/data/risk_index.py; target", "derived; weights configs/risk_index.yaml", "index"),
+             ("master_school_year", "risk_index_coverage", "Share of total weight carried by the components available for this row (index left empty below 0.5)", "derived", "share")]
     for code, (name, desc, unit) in DEMOGRAPHICS.items():
         rows.append(("master_school_year", name, f"{desc}; fall membership snapshot of the school year (same-year observation)", f"TAPR campus Profile: {code}", unit))
     rows += [("master_school_year", "source_demographics", "Raw TAPR profile file for this row", "", "path"),

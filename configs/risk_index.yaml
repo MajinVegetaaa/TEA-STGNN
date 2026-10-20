@@ -1,0 +1,16 @@
+# Academic Risk Index (corrected version of last year's Eq. 1). See DATA_PIPELINE.md.
+# STATUS: PENDING PROFESSOR REVIEW. Weights are last year's code defaults
+# (phase2code_ST_LLM_WGHTS_NODROP.py, WEIGHTS) with "location" removed; they are NOT re-tuned.
+status: pending_professor_review
+weights:
+  sat_erw: 0.11
+  sat_math: 0.11
+  act_english: 0.11
+  act_math: 0.11
+  sat_act_above_criterion: 0.11   # stands in for last year's TSI term (TSI rate not in our files)
+  sat_act_participation: 0.10
+  dropout_9_12: 0.11
+  retention_rate: 0.11
+  decline: 0.07
+# a campus-year gets an index only if its available components carry at least this share of total weight
+min_weight_coverage: 0.5

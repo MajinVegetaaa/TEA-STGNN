@@ -50,9 +50,44 @@ downloaded, and 2023-24 (year 2024) falls outside the panel. Rows used: `GRADE =
 as `_supp = 3`. Counts are written with thousands separators ("1,040") and are parsed as numbers. One `<0.1`
 rate per file is kept as missing.
 
-**Academic Risk Index: not computed.** Last year's Eq. 1 gives only qualitative weights (low, medium, high),
-no numbers. Its "location" term is undefined, and it needs a TSI rate that our files don't carry separately.
-Inventing weights would not reproduce it, so the exact weights are a question for the professor.
+### Academic Risk Index (corrected version of last year's Eq. 1)
+
+`src/data/risk_index.py` produces `risk_index`, scored 0–100 with higher meaning riskier. It follows last year's
+code (`phase2code_ST_LLM_WGHTS_NODROP.py`) where that code is sound, and fixes five problems found in it:
+
+| Last year's code | Problem | Corrected version |
+|---|---|---|
+| `risk = 1 − percentile` for every component | Higher dropout and retention gave *lower* risk | `percentile` for dropout and retention; `1 − percentile` for scores, participation and college-ready |
+| Missing values filled with 0 | A school with no ACT data got "no ACT risk" | Weights re-normalised over the available components; the index is left empty below 50% weight coverage |
+| 300 random weight vectors, the best by correlation with dropout and retention | Circular: those are components of the index itself | Fixed weights: the old code's defaults, in `configs/risk_index.yaml` (pending review) |
+| 3-year rolling mean including the current year | Decline was measured partly against itself | Drop below the mean of up to 3 **prior** years (scores as within-year percentiles), worst across 5 scores |
+| "Location" = percentile of a campus-type code | Categories have no order | Dropped |
+
+**Components and weights:**
+
+| Component | Weight |
+|---|---|
+| SAT ERW, SAT Math, ACT English, ACT Math | 0.11 each |
+| College-ready % (stands in for TSI, which is not in our files) | 0.11 |
+| Participation | 0.10 |
+| Dropout 9–12 | 0.11 |
+| Retention | 0.11 |
+| Decline | 0.07 |
+
+All components are within-year percentile ranks over the cohort.
+
+**Results:**
+- **Coverage:** 7,630 school-years get an index (91–95% per year). 2019 has no retention or decline term.
+- **Direction:** Spearman +0.53 with dropout, +0.51 with retention, −0.84 with ACT composite.
+- **Old vs corrected, on the same data with the old directions and missing = 0:**
+  - correlation with dropout: 0.01 under the old formula, 0.53 corrected
+  - the 50 highest-dropout schools in 2023 sit at the 53rd risk percentile under the old formula and the
+    92nd corrected
+- **Checks:** `validate_processed.py` hand-recomputes 40 rows and confirms that scrambling 2023 values leaves
+  2019–2022 indices unchanged.
+- **Component columns** are in `data/processed/risk_index_components.csv`.
+
+The index summarises year *t*'s outcomes, so it is a target for year *t*; its `_lag1` is a valid input.
 
 ## Step 1 — Target cohort
 
@@ -144,9 +179,10 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 
 | File | Content |
 |---|---|
-| `master_school_year.csv` | 8,202 rows × 53 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
+| `master_school_year.csv` | 8,202 rows × 55 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
+| `risk_index_components.csv` | 8,202 rows: the 9 risk components (0–1, higher = riskier) and weight coverage |
 | `school_metadata.csv` | 1,653 campuses: names, district, county, ESC region, charter/magnet/virtual flags, grade range, enrollment (Oct 2025), NCES ID, lat/lon, locale, CBSA |
-| `temporal_features.csv` | 8,202 rows × 122 features (8 per target × 12 targets incl. retention; lag1 and change for each of 13 demographic columns) |
+| `temporal_features.csv` | 8,202 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
 | `subgroup_school_year.csv` | long table: campus, year, group, indicator, value, suppression, raw column, source file |
 | `data_dictionary.csv` | every column with description, raw source code and unit |
 | `data_quality_report.csv` | every check and count printed by the script |
