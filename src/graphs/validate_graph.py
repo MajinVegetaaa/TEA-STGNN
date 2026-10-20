@@ -58,7 +58,7 @@ def main() -> int:
         "enrollment_oct2025" not in nodes.columns)
     cat = pd.read_csv(G / "node_feature_catalog.csv")
     same_year = set(master.columns) - {"campus_id", "year", "district_id", "esc_region", "covid_affected_year",
-                                       "source_ccad", "source_cdrop"}
+                                       "source_ccad", "source_cdrop", "source_demographics", "source_retention"}
     lab = cat.set_index("column").role
     ok_lab = all(lab[c].startswith("same-year observation") for c in same_year if c in lab)
     rec("every year-t observed column is labelled not-an-input", f"{len(same_year)} columns", ok_lab)
@@ -68,7 +68,7 @@ def main() -> int:
     # consistency with processed data
     mm = nodes.set_index(["campus_id", "year"])
     ma = master.set_index(["campus_id", "year"]).reindex(mm.index)
-    vals = [c for c in master.columns if c not in ("campus_id", "year", "source_ccad", "source_cdrop")]
+    vals = [c for c in master.columns if c not in ("campus_id", "year", "source_ccad", "source_cdrop", "source_demographics", "source_retention")]
     same = all(ma[c].equals(mm[c]) or np.allclose(ma[c].astype(float), mm[c].astype(float), equal_nan=True)
                if ma[c].dtype != object else ma[c].fillna("").equals(mm[c].fillna("")) for c in vals)
     rec("node indicator values identical to master_school_year", same, same)
@@ -156,7 +156,7 @@ def main() -> int:
     own = all(r.target in r.excluded_features.split() or B.ACAD_EDGE_SETS[r.edge_set] == r.excluded_features.split()
               for r in sets.itertuples())
     no_overlap = all(not set(r.excluded_features.split()) & set(str(r.profile_features).split()) for r in sets.itertuples())
-    fam = {"sat_erw": "sat_total", "sat_math": "sat_total", "act_english": "act_composite", "act_math": "act_composite",
+    fam = {"sat_erw": "sat_total", "sat_math": "sat_total", "act_english": "act_composite", "act_math": "act_composite", "retention_rate": "retention_rate",
            "chronic_absenteeism": "chronic_absenteeism"}
     self_excl = all((fam.get(r.target, r.target) in r.excluded_features.split()) for r in sets.itertuples())
     rec("every target's academic edge set excludes the target (or the total it is part of)", self_excl,
@@ -198,6 +198,35 @@ def main() -> int:
     rec("prediction-time target excluded from academic similarity", bool(leak_ok and self_excl), leak_ok and self_excl,
         "academic", "year-t values never used (shuffle test) and the predicted family is dropped from each set")
 
+    # ------------------------------------------------------------------ demographic: recompute + leakage
+    e = E["demographic"]
+    rec("demographic edges in 2019 (no prior year)", int((e.year == 2019).sum()), (e.year == 2019).sum() == 0, "demographic")
+    samp = e.iloc[rng.choice(len(e), 400, replace=False)]
+    bad = 0
+    for _, r in samp.iterrows():
+        prev = master[master.year == r.year - 1].set_index("campus_id")[B.DEMO_FEATURES].copy()
+        prev["enrollment"] = np.log(1 + prev["enrollment"])
+        z = (prev - prev.mean()) / prev.std(ddof=0)
+        x, yv = z.loc[r.src_campus_id].to_numpy(float), z.loc[r.dst_campus_id].to_numpy(float)
+        sh = ~np.isnan(x) & ~np.isnan(yv)
+        d = np.sqrt(np.mean((x[sh] - yv[sh]) ** 2))
+        bad += (sh.sum() < B.DEMO_MIN_SHARED) or not np.isclose(d, r.distance, rtol=1e-6, atol=1e-8)
+    rec("demographic distance matches loop recomputation (400 sampled edges)", f"{400 - bad}/400", bad == 0, "demographic")
+    w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance) ** 2)), g.weight, atol=1e-5)
+               for _, g in e.groupby("year"))
+    rec("demographic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per year", w_ok, w_ok, "demographic")
+    leak_ok = True
+    for y in [2020, 2021, 2022, 2023]:
+        scr = master.copy()
+        mask = scr.year == y
+        for f in B.DEMO_FEATURES:
+            scr.loc[mask, f] = rng.permutation(scr.loc[mask, f].to_numpy())
+        rebuilt, _ = B.demographic_edges(scr, nodes[nodes.year == y], y)
+        orig = e[e.year == y]
+        leak_ok &= rebuilt[["src_campus_id", "dst_campus_id"]].reset_index(drop=True).equals(
+            orig[["src_campus_id", "dst_campus_id"]].reset_index(drop=True))
+    rec("leakage test: scrambling year-t demographics leaves year-t demographic edges unchanged", leak_ok, leak_ok, "demographic")
+
     # ------------------------------------------------------------------ temporal
     e = E["temporal"]
     ok = (e.src_campus_id == e.dst_campus_id).all() and (e.dst_year - e.src_year == 1).all() and (e.directed == 1).all()
@@ -209,7 +238,7 @@ def main() -> int:
     rec("campuses with a gap year (no edge bridges the gap)", int(gaps.sum()), None, "temporal")
 
     # ------------------------------------------------------------------ isolated nodes
-    spatial = ["district", "geographic", "academic", "region"]
+    spatial = ["district", "geographic", "academic", "region", "demographic"]
     for y, ny in nodes.groupby("year"):
         ids = set(ny.campus_id)
         for t in spatial:

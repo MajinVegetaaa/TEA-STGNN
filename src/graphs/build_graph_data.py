@@ -30,6 +30,9 @@ ACAD_K = int(CFG["academic"]["k"])
 ACAD_MIN_SHARED = int(CFG["academic"]["min_shared"])
 # Academic profile, always taken from year t-1 for the year-t graph (never from year t)
 ACAD_FEATURES = list(CFG["academic"]["features"])
+DEMO_K = int(CFG["demographic"]["k"])
+DEMO_MIN_SHARED = int(CFG["demographic"]["min_shared"])
+DEMO_FEATURES = list(CFG["demographic"]["features"])
 
 # One academic edge set per target family: the predicted variable, and anything it is arithmetically
 # part of or derived from the same raw counts, is left out of the similarity profile. Otherwise the
@@ -41,13 +44,14 @@ ACAD_EDGE_SETS = {
     "excl_participation": ["sat_act_participation"],
     "excl_attendance":    ["attendance_rate", "chronic_absenteeism"],    # both come from absence days
     "excl_dropout":       ["dropout_9_12"],
+    "excl_retention":     ["retention_rate"],    # retention is not in the profile; full profile used
 }
 TARGET_EDGE_SET = {
     "sat_total": "excl_sat", "sat_erw": "excl_sat", "sat_math": "excl_sat",
     "act_composite": "excl_act", "act_english": "excl_act", "act_math": "excl_act",
     "sat_act_above_criterion": "excl_criterion", "sat_act_participation": "excl_participation",
     "attendance_rate": "excl_attendance", "chronic_absenteeism": "excl_attendance",
-    "dropout_9_12": "excl_dropout",
+    "dropout_9_12": "excl_dropout", "retention_rate": "excl_retention",
 }
 
 EDGE_COLS = ["src_campus_id", "dst_campus_id", "src_year", "dst_year", "year", "edge_type", "weight",
@@ -137,14 +141,14 @@ def academic_profile(master: pd.DataFrame, year: int, campus_ids: np.ndarray,
     return (X - mu) / sd, feats
 
 
-def academic_distances(Z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """RMS z-difference over jointly observed features; inf where fewer than ACAD_MIN_SHARED are shared."""
+def academic_distances(Z: np.ndarray, min_shared: int = ACAD_MIN_SHARED) -> tuple[np.ndarray, np.ndarray]:
+    """RMS z-difference over jointly observed features; inf where fewer than min_shared are shared."""
     # exact pairwise differences (the a^2 + b^2 - 2ab shortcut loses precision for near-identical rows)
     diff = Z[:, None, :] - Z[None, :, :]                  # NaN wherever either school lacks the feature
     shared = (~np.isnan(diff)).sum(axis=2)
     with np.errstate(invalid="ignore", divide="ignore"):
         d = np.sqrt(np.nansum(diff ** 2, axis=2) / shared)
-    d[shared < ACAD_MIN_SHARED] = np.inf
+    d[shared < min_shared] = np.inf
     np.fill_diagonal(d, np.inf)
     return d, shared
 
@@ -173,6 +177,34 @@ def academic_edges(master: pd.DataFrame, nodes_y: pd.DataFrame, year: int,
     return e, {"features": feats, "sigma": sigma, "eligible": int(eligible.sum())}
 
 
+def demographic_profile(master: pd.DataFrame, year: int, campus_ids: np.ndarray) -> pd.DataFrame:
+    """z-scored student-composition profile from year-1 TAPR membership; scaler statistics from year-1 only."""
+    prev = master[master.year == year - 1].set_index("campus_id")[DEMO_FEATURES].copy()
+    prev["enrollment"] = np.log1p(prev["enrollment"])            # school size on a log scale
+    X = prev.reindex(campus_ids)
+    return (X - prev.mean()) / prev.std(ddof=0)
+
+
+def demographic_edges(master: pd.DataFrame, nodes_y: pd.DataFrame, year: int) -> tuple[pd.DataFrame, dict]:
+    ids = np.sort(nodes_y.campus_id.to_numpy())
+    if year - 1 not in master.year.values:
+        return pd.DataFrame(columns=EDGE_COLS), {"sigma": np.nan, "eligible": 0}
+    d, _ = academic_distances(demographic_profile(master, year, ids).to_numpy(), DEMO_MIN_SHARED)
+    eligible = np.isfinite(d).any(axis=1)
+    nn = np.argsort(d, axis=1, kind="stable")[:, :DEMO_K]
+    rows = np.repeat(np.arange(len(ids)), DEMO_K)
+    cols = nn.ravel()
+    dk = d[rows, cols]
+    keep = np.isfinite(dk)
+    e = undirected(ids[rows[keep]], ids[cols[keep]], distance=dk[keep])
+    sigma = float(np.median(e.distance))
+    e["weight"] = np.exp(-(e.distance ** 2) / (2 * sigma ** 2))
+    e = finish(e, year, "demographic", 0,
+               f"{DEMO_K}-NN on z-scored year-{year-1} student composition ({len(DEMO_FEATURES)} features, "
+               f"log enrollment); RMS distance over >= {DEMO_MIN_SHARED} shared; weight exp(-d^2/(2*{sigma:.3f}^2))")
+    return e, {"sigma": sigma, "eligible": int(eligible.sum())}
+
+
 def temporal_edges(nodes: pd.DataFrame) -> pd.DataFrame:
     k = nodes[["campus_id", "year"]]
     nxt = k.assign(year=k.year + 1)
@@ -195,12 +227,15 @@ def build() -> dict:
     meta_cols = ["campus_id"] + [c for c in STATIC_META if c not in ("district_id", "esc_region")]
     nodes = (master.merge(tf, on=["campus_id", "year"], how="left", validate="one_to_one")
                    .merge(meta[meta_cols], on="campus_id", how="left", validate="many_to_one"))
-    nodes = nodes.drop(columns=["source_ccad", "source_cdrop"]).sort_values(["year", "campus_id"])
+    nodes = nodes.drop(columns=["source_ccad", "source_cdrop", "source_demographics", "source_retention"]) \
+                 .sort_values(["year", "campus_id"])
     nodes.insert(2, "node_index", nodes.groupby("year").cumcount())     # 0..n-1 within each yearly snapshot
     nodes.to_csv(OUT / "nodes.csv", index=False)
 
     # feature catalogue: static vs annual
-    annual = set(master.columns) - {"campus_id", "year", "district_id", "esc_region", "source_ccad", "source_cdrop"}
+    annual = set(master.columns) - {"campus_id", "year", "district_id", "esc_region", "source_ccad", "source_cdrop",
+                                    "source_demographics", "source_retention"}
+    demog = {v for v in master.columns if v.startswith("pct_")} | {"enrollment", "mobility_rate"}
     cat = []
     for c in nodes.columns:
         if c in ("campus_id", "year", "node_index"):
@@ -209,6 +244,9 @@ def build() -> dict:
             kind, role = "annual (derived from years < t)", "input feature (temporal)"
         elif c == "covid_affected_year":
             kind, role = "annual (known in advance)", "input feature"
+        elif c in demog:
+            kind = "annual (fall membership snapshot of year t)"
+            role = "same-year observation: not an input for year t (use its _lag1)"
         elif c in annual:
             # observed from year-t outcome files: a target (or target mask), never an input for year t
             kind = "annual (observed in year t)"
@@ -220,13 +258,16 @@ def build() -> dict:
     pd.DataFrame(cat).to_csv(OUT / "node_feature_catalog.csv", index=False)
 
     # ---------------- edges
-    out = {k: [] for k in ["district", "geographic", "academic", "region"]}
+    out = {k: [] for k in ["district", "geographic", "academic", "region", "demographic"]}
     acad_info = {}
     for y in YEARS:
         ny = nodes[nodes.year == y]
         out["district"].append(district_edges(ny, y))
         out["region"].append(region_edges(ny, y))
         out["geographic"].append(geographic_edges(ny, y))
+        e, info = demographic_edges(master, ny, y)
+        out["demographic"].append(e)
+        acad_info[(y, "demographic")] = info
         for es in ACAD_EDGE_SETS:
             e, info = academic_edges(master, ny, y, es)
             out["academic"].append(e)
@@ -234,7 +275,6 @@ def build() -> dict:
     edges = {k: pd.concat([e for e in v if len(e)], ignore_index=True) for k, v in out.items()}
     edges["temporal"] = temporal_edges(nodes)
     # unavailable: header-only files (no fabricated edges)
-    edges["demographic"] = pd.DataFrame(columns=EDGE_COLS)
     edges["transition"] = pd.DataFrame(columns=EDGE_COLS)
     for k, df in edges.items():
         df.to_csv(OUT / f"edges_{k}.csv", index=False, float_format="%.9g")
@@ -250,5 +290,5 @@ if __name__ == "__main__":
         print(k, len(df))
     print(f"graph parameters status: {PARAM_STATUS}")
     for (y, es), i in r["acad_info"].items():
-        if i["features"]:
-            print(y, es, len(i["features"]), "features, sigma", round(i["sigma"], 3), "eligible", i["eligible"])
+        if i.get("features") or es == "demographic" and i["eligible"]:
+            print(y, es, len(i.get("features", DEMO_FEATURES)), "features, sigma", round(i["sigma"], 3), "eligible", i["eligible"])

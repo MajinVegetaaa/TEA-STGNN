@@ -14,3 +14,6 @@ Format: date — decision — who decided.
 - 2026-10-15 — Graph parameters kept as defaults in configs/graph.yaml, flagged pending professor review — user
 - 2026-10-15 — Academic edges built per target family (predicted target excluded from similarity profile; 6 edge sets) — user, on recommendation
 - 2026-10-15 — PPT check: retention (slide 2 "Grade-Level Retention") and demographics (slide 2 "Student Data", slides 3/5/7) ARE listed in the PPT but not in Dataset.zip → still to download — verified from PPT
+- 2026-10-20 — Added TAPR campus Profile (demographics, file Y → year Y) and Grade-Level Retention (file (Y−1)(Y) → year Y; AG rows) — data pipeline, verified by campus-list match
+- 2026-10-20 — Demographic edges built from year t−1 composition (10-NN, ≥6 shared, log enrollment); parameters pending professor review — data pipeline
+- 2026-10-20 — Academic Risk Index not computed: Eq. 1 weights are qualitative only; ask professor for numeric weights — data pipeline

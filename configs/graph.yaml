@@ -12,3 +12,10 @@ academic:
   # profile features, always from year t-1; the predicted target's family is removed per target set
   features: [sat_total, act_composite, sat_act_above_criterion, sat_act_participation,
              attendance_rate, dropout_9_12, chronic_absenteeism]
+demographic:
+  k: 10             # most similar campuses per campus
+  min_shared: 6     # jointly observed profile features needed for a distance
+  # composition profile, always from year t-1 (TAPR membership); enrollment enters as log(1 + count)
+  features: [pct_econ_disadv, pct_english_learner, pct_special_ed, pct_at_risk, pct_african_american,
+             pct_hispanic, pct_white, pct_asian, pct_american_indian, pct_pacific_islander,
+             pct_two_or_more, enrollment]

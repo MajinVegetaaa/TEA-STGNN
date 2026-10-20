@@ -5,7 +5,7 @@ stages. Details are in `DATA_PIPELINE.md` (processed data) and `GRAPH_DATA_DOCUM
 The data decisions are logged in `DECISIONS.md`.
 
 ## 1. Data sources and years
-All inputs come from `Dataset.zip`, unpacked unchanged to `data/raw/tea/pro/`. Nothing was downloaded.
+Inputs: `Dataset.zip` (unpacked unchanged to `data/raw/tea/pro/`) plus the TAPR profile and Grade-Level Retention files the team downloaded into `data/raw/tea/TAPR/` and `data/raw/tea/retention/`.
 
 | Source | Years | Content |
 |---|---|---|
@@ -13,6 +13,8 @@ All inputs come from `Dataset.zip`, unpacked unchanged to `data/raw/tea/pro/`. N
 | TEA campus attendance & dropout (CDROP_ATT) | 2019–2023 | attendance, chronic absenteeism (2020+), dropout |
 | TEA Directory (`Directory.csv`) | Oct 2025 snapshot | district, ESC region, charter, AEA, grades, NCES ID |
 | NCES Public School Locations | 2024–25 | latitude/longitude, locale |
+| TAPR campus Profile (student membership) | 2019–2023 | enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility |
+| Grade-Level Retention | 2020–2023 (2019 not downloaded) | all-grades retention rate |
 
 **Years covered: 2019–2023 only.** `year` is the school-year end or graduating class (2019 = 2018–19). The
 "2024 …" files in the `2023/` folder hold 2023 data; this was verified from the column codes and against the
@@ -33,7 +35,7 @@ Excluded campuses that reported graduates:
 - 80 campuses missing from the 2025 Directory
 
 ## 3. Master dataset
-`data/processed/master_school_year.csv` has **8,202 rows** (one per campus-year) and **34 columns**.
+`data/processed/master_school_year.csv` has **8,202 rows** (one per campus-year) and **53 columns**.
 Per year: 1,623 · 1,633 · 1,643 · 1,652 · 1,651.
 
 All targets below are All-Students values for year t. Non-missing counts by year (2019 → 2023):
@@ -47,9 +49,12 @@ All targets below are All-Students values for year t. Non-missing counts by year
 | `dropout_9_12` | 1,589 → 1,645 |
 | `attendance_rate` | 1,609 → 1,646 |
 | `chronic_absenteeism` | 2020–2023 only, ~1,620–1,648 |
+| `retention_rate` | 2020–2023 only: 1,623 / 1,633 / 1,640 / 1,649 |
 
-Not available: retention, the Academic Risk Index (needs retention and other indicators), STAAR and
-graduation rate.
+Student composition (enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility) is available for 99.3–100% of school-years. It is a fall snapshot of year t, so use its `_lag1` as a model input.
+
+Not available: the Academic Risk Index (last year's Eq. 1 gives no numeric weights and leaves its location and
+TSI terms undefined, so it can't be reproduced without the professor's weights), STAAR and graduation rate.
 
 ## 4. Cleaning and suppression decisions
 - **IDs:** campus IDs are 9-digit text with leading zeros kept (raw formats `1902001`, `'001902001` and
@@ -93,13 +98,13 @@ input gives NaN; there is no carry-forward.
 |---|---|---|
 | District | built | clique of same-`district_id` campuses per year, weight 1 |
 | Geographic | built | 5 nearest within 100 km (haversine), weight exp(−km/20); virtual campuses excluded |
-| Academic | built 2020–2023 | 6 per-target sets: 10-NN on the z-scored year t−1 profile without the predicted target's family, needs ≥4 shared features, weight exp(−d²/2σ²) |
-| Demographic | **not built** | needs yearly campus composition (TAPR student information) |
+| Academic | built 2020–2023 | 7 per-target sets: 10-NN on the z-scored year t−1 profile without the predicted target's family, needs ≥4 shared features, weight exp(−d²/2σ²) |
+| Demographic | built 2020–2023 | 10-NN on the z-scored year t−1 TAPR composition (11 shares + log enrollment), needs ≥6 shared features, weight exp(−d²/2σ²) |
 | Transition | **not built** | needs elementary/middle nodes and a feeder-pattern map |
 | ESC region | built | clique of same-region campuses per year, weight 1 (~95k edges/year) |
 | Temporal | built | same campus t−1 → t, consecutive years only |
 
-**Target exclusion.** The academic edges come in 6 per-target sets (`edge_set` column; mapping in
+**Target exclusion.** The academic edges come in 7 per-target sets (`edge_set` column; mapping in
 `data/graph/academic_edge_sets.csv`). Each set leaves the predicted variable's family out of the similarity
 profile, and no set uses any year-t value. When training a model for target T, load only the rows where
 `edge_set` equals T's set.
@@ -116,11 +121,8 @@ profile, and no set uses any year-t value. When training a model for target T, l
 2. **Survivorship:** the cohort is defined by the 2025 Directory, so 80 closed or renumbered campuses are
    excluded.
 3. **Static metadata from 2025:** district, region, grade range and coordinates are applied to every year.
-4. **Demographic and retention data are listed in the PPT but not in `Dataset.zip`.** Slide 2 lists
-   "Grade-Level Retention" and "Student Data (demographics)"; slides 3, 5, 7 and 13 use them as features,
-   demographic edges and the retention target. Until they are downloaded (TEA Grade-Level Retention, and TAPR
-   student information for 2019–2023), demographic edges, the retention target and the Risk Index are
-   blocked.
+4. **Retention for 2019 is missing** (the 2018-19 file was not downloaded). The **Academic Risk Index is not
+   computed**, because its published weights are qualitative only.
 5. **Possible definition change:** the "above criterion" average falls from 31.6% to 25.0% over 2019–2023.
    Check TEA's glossary before using it as a target.
 6. **Undocumented code:** the meaning of `-2` is not documented (33 cells).
@@ -134,18 +136,18 @@ profile, and no set uses any year-t value. When training a model for target T, l
 
 | Path | Rows × cols | Key | Content |
 |---|---|---|---|
-| `data/processed/master_school_year.csv` | 8,202 × 34 | campus_id, year | indicators, `_supp` flags, district/region, source files |
+| `data/processed/master_school_year.csv` | 8,202 × 53 | campus_id, year | indicators, `_supp` flags, district/region, source files |
 | `data/processed/school_metadata.csv` | 1,653 × 31 | campus_id | Directory + NCES static metadata |
-| `data/processed/temporal_features.csv` | 8,202 × 90 | campus_id, year | lag/MA/trend features |
+| `data/processed/temporal_features.csv` | 8,202 × 124 | campus_id, year | lag/MA/trend features |
 | `data/processed/subgroup_school_year.csv` | long | campus_id, year, group, indicator | subgroup outcomes |
 | `data/processed/data_dictionary.csv` | — | file, column | descriptions, raw codes, units |
 | `data/processed/data_quality_report.csv` | — | — | build-time checks and counts |
 | `data/processed/processed_validation.csv` | 54 | — | independent re-validation results |
-| `data/graph/nodes.csv` | 8,202 × 139 | campus_id, year (`node_index` per year) | node table |
-| `data/graph/node_feature_catalog.csv` | 139 | column | static / annual / target role |
+| `data/graph/nodes.csv` | 8,202 × 190 | campus_id, year (`node_index` per year) | node table |
+| `data/graph/node_feature_catalog.csv` | 190 | column | static / annual / target role |
 | `data/graph/edges_<type>.csv` | see §6 | — | `src_campus_id, dst_campus_id, src_year, dst_year, year, edge_type, weight, directed, distance, method` |
 | `data/graph/graph_quality_report.csv` | 196 | — | graph checks |
-| `data/graph/academic_edge_sets.csv` | 11 | target | which academic edge set to use per target |
+| `data/graph/academic_edge_sets.csv` | 12 | target | which academic edge set to use per target |
 
 ## 9. Loading
 
@@ -184,21 +186,21 @@ python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 | Deliverable | Status | Evidence |
 |---|---|---|
 | Raw files preserved | ✅ pass | `Dataset.zip` and the extracted `pro/` are unchanged; the earlier audit files were not overwritten |
-| master_school_year.csv | ✅ pass | 54/54 independent checks (`processed_validation.csv`) |
+| master_school_year.csv | ✅ pass | 59/59 independent checks, incl. demographic and retention cells re-read from raw (`processed_validation.csv`) |
 | school_metadata.csv | ✅ pass | IDs unique, 100% coordinates, inside Texas |
 | temporal_features.csv | ✅ pass | lag equality and no-future tests |
 | data_quality_report.csv, DATA_PIPELINE.md | ✅ pass | present and consistent with the re-validation |
 | nodes.csv | ✅ pass | identical to the processed data; no duplicates |
 | District, geographic, region, temporal edges | ✅ pass | exact counts, recomputed distances, no duplicates or invalid IDs |
 | Academic edges | ✅ pass (2020–2023) | 6 per-target sets; 600/600 recomputed; target excluded per set; shuffle test passes. None for 2019 (no history) |
-| Demographic edges | ❌ incomplete | data listed in the PPT (slide 2, Student Data) but not downloaded |
+| Demographic edges | ✅ pass (2020–2023) | 400/400 recomputed; shuffle test passes; none for 2019 (no 2018 profile) |
 | Transition edges | ❌ incomplete | out of scope with the current data (no elementary/middle nodes or feeder map) |
-| graph_quality_report.csv, GRAPH_DATA_DOCUMENTATION.md | ✅ pass | 72 pass / 0 fail |
-| Retention target, Academic Risk Index | ❌ incomplete | retention data is listed in the PPT (slide 2) but not downloaded |
+| graph_quality_report.csv, GRAPH_DATA_DOCUMENTATION.md | ✅ pass | 84 pass / 0 fail |
+| Retention target | ✅ pass (2020–2023) | 2019 missing: 2018-19 file not downloaded |
+| Academic Risk Index | ❌ incomplete | needs the professor's numeric weights (Eq. 1) |
 | split.yaml updated to 2019–2023 | ✅ done | train 2019–21 / val 2022 / test 2023 |
 | Graph parameters confirmed by professor | ⚠️ flagged | `configs/graph.yaml` status pending_professor_review |
 
-**Verdict:** the 2019–2023 school × year dataset and 5 of the 7 edge types pass validation and can be used
-for baselines and for building graph models. The data is **not complete** for the full planned design. Demographic edges,
-the retention target and the Risk Index need the PPT-listed retention and demographic downloads. Transition
-edges need feeder data the PPT doesn't list.
+**Verdict:** the 2019–2023 school × year dataset, the retention target and 6 of the 7 edge types pass
+validation and can be used for baselines and graph models. Still incomplete: transition edges (need feeder
+data the PPT doesn't list), the Risk Index (needs weights), and 2019 retention (needs the 2018-19 file).

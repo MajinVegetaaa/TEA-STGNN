@@ -93,6 +93,33 @@ def main() -> int:
                 mism += not ((np.isnan(exp) and np.isnan(got)) or exp == got)
     check("random cells match raw files", mism == 0, f"{n - mism}/{n} match")
 
+    # demographics (TAPR profile, file Y -> year Y) and retention (file (Y-1)(Y) -> year Y), re-read from raw
+    tapr = {2019: "2019.dat", 2020: "2020.dat", 2021: "2021.csv", 2022: "2022.csv", 2023: "2023.csv"}
+    mism = n = 0
+    for y, f in tapr.items():
+        t = pd.read_csv(ROOT / "data/raw/tea/TAPR" / f, dtype=str, keep_default_na=False)
+        t.index = t.CAMPUS.str.strip().str.lstrip("'").str.zfill(9)
+        for _, row in m[(m.year == y) & m.enrollment.notna()].sample(30, random_state=y).iterrows():
+            for col, v in (("CPETALLC", "enrollment"), ("CPETECOP", "pct_econ_disadv"), ("CPETHISP", "pct_hispanic")):
+                n += 1
+                mism += float(t.at[row.campus_id, col]) != row[v]
+    check("demographic cells match raw TAPR files", mism == 0, f"{n - mism}/{n} match")
+    r23 = pd.read_excel(ROOT / "data/raw/tea/retention/campus-download-ret-2223.xlsx",
+                        sheet_name="Campus_Retention_2223", dtype=str, keep_default_na=False)
+    r23 = r23[r23.GRADE == "AG"].set_index("CAMPUS")
+    smp = m[(m.year == 2023) & m.retention_rate.notna()].sample(50, random_state=0)
+    ok = all(float(r23.at[c, "CAMP_ALLR"]) == v for c, v in zip(smp.campus_id, smp.retention_rate))
+    check("retention 2023 cells match raw 2022-23 file (AG rows)", ok, "50 sampled")
+    check("retention missing for all of 2019 (file not downloaded)", m.loc[m.year == 2019, "retention_rate"].isna().all())
+    race = m[[c for c in m.columns if c.startswith("pct_") and c not in
+              ("pct_econ_disadv", "pct_english_learner", "pct_special_ed", "pct_at_risk")]].sum(axis=1, min_count=7)
+    check("race shares sum to 100 +/- 1", race.dropna().between(99, 101).all())
+    check("demographic lag1 equals previous-year value",
+          np.allclose(tf.set_index(["campus_id", "year"]).xs(2023, level="year")["pct_econ_disadv_lag1"]
+                      .reindex(m[m.year == 2023].campus_id).fillna(-9).to_numpy(),
+                      m[m.year == 2022].set_index("campus_id").pct_econ_disadv
+                      .reindex(m[m.year == 2023].campus_id).fillna(-9).to_numpy()))
+
     # temporal features: no future information
     w = m.pivot(index="campus_id", columns="year", values="act_composite")
     t = tf.set_index(["campus_id", "year"])

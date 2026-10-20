@@ -2,9 +2,9 @@
 
 ```bash
 python3 src/data/build_master.py        # data/processed/  (see DATA_PIPELINE.md)
-python3 src/data/validate_processed.py  # 54 independent checks on data/processed/
+python3 src/data/validate_processed.py  # 59 independent checks on data/processed/
 python3 src/graphs/build_graph_data.py  # data/graph/  (~5 s)
-python3 src/graphs/validate_graph.py    # data/graph/graph_quality_report.csv (72 pass / 0 fail)
+python3 src/graphs/validate_graph.py    # data/graph/graph_quality_report.csv (84 pass / 0 fail)
 ```
 
 The graph is a sequence of **yearly snapshots G₂₀₁₉ … G₂₀₂₃**. A node is one campus in one year. Spatial
@@ -62,8 +62,8 @@ year t are labelled "same-year observation" and must not be inputs for year t:
 |---|---|---|---|---|---|
 | 1 | District membership | `edges_district.csv` | built | 3,737–3,929 | 4.7 |
 | 2 | Geographic proximity | `edges_geographic.csv` | built | 5,087–5,167 | 6.3 |
-| 3 | Academic similarity | `edges_academic.csv` | built for 2020–2023, 6 per-target sets | 9,800–10,900 per set | 12–13 |
-| 4 | Demographic similarity | `edges_demographic.csv` | **not built: data unavailable** (header only) | 0 | — |
+| 3 | Academic similarity | `edges_academic.csv` | built for 2020–2023, 7 per-target sets | 9,800–10,900 per set | 12–13 |
+| 4 | Demographic similarity | `edges_demographic.csv` | built for 2020–2023 (TAPR composition, t−1) | 11,516–11,686 | 14 |
 | 5 | Academic transition | `edges_transition.csv` | **not built: data unavailable** (header only) | 0 | — |
 | 6 | ESC region | `edges_region.csv` | built | 92,844–96,833 | ~116 |
 | 7 | Temporal | `edges_temporal.csv` | built | 1,623–1,651 (into 2020–2023) | — |
@@ -94,7 +94,7 @@ For snapshot t, each campus's profile is built **only from year t−1 values** o
   `dropout_9_12`
 - `chronic_absenteeism`, from the 2021 snapshot on, since it was not published for 2019
 
-**The predicted target is left out of its own similarity edges.** There are six edge sets (column
+**The predicted target is left out of its own similarity edges.** There are seven edge sets (column
 `edge_set`). Each drops the target family it is used for; `academic_edge_sets.csv` maps each target to its
 set:
 
@@ -106,6 +106,7 @@ set:
 | `excl_participation` | `sat_act_participation` | `sat_act_participation` |
 | `excl_attendance` | `attendance_rate`, `chronic_absenteeism` (both from absence days) | `attendance_rate`, `chronic_absenteeism` |
 | `excl_dropout` | `dropout_9_12` | `dropout_9_12` |
+| `excl_retention` | `retention_rate` (not in the profile, so the full profile is used) | `retention_rate` |
 
 Without this, the academic layer would amount to a nearest-neighbour lookup on the target's own history.
 That is the KNN approach the brief found does not beat persistence.
@@ -124,22 +125,34 @@ Results:
 - Campuses with no usable t−1 profile have no academic edges in that set. These are new campuses, or
   campuses with fewer than 4 of the set's features reported.
 
-**Leakage checks.** `validate_graph.py` shuffles every year-t indicator across campuses and rebuilds all 24
+**Leakage checks.** `validate_graph.py` shuffles every year-t indicator across campuses and rebuilds all 28
 set-year edge lists; they come out identical. It also checks that each target's set excludes the target,
 and recomputes 600 sampled distances from that set's own features.
 
 Trajectory measures (Pearson correlation, DTW) were not used. With at most 4 prior years they would be
 unstable. Revisit them if longer history is added.
 
-### 4. Demographic similarity — not built yet (data listed in the PPT, not yet downloaded)
-The architecture PPT asks for this edge type (slide 7, Edge Type 4), and lists the data on slide 2 ("Student
-Data — student demographics") and slide 3 ("Student Demographics: ELL, Special Ed, At-Risk, Race"). It needs each campus's student **composition**: % economically disadvantaged, % English learners,
-% special education, race/ethnicity shares and enrollment, for every year. `Dataset.zip` does not contain it.
-- `subgroup_school_year.csv` gives subgroup *outcomes* (e.g. the SAT average of economically disadvantaged
-  students), not subgroup *shares*.
-- The Directory's `enrollment_oct2025` is a single post-period value.
-- **Required source:** TEA TAPR campus student-information files (or PEIMS enrollment by student group),
-  2019–2023.
+### 4. Demographic similarity (built 2020–2023)
+This is PPT slide 7, Edge Type 4. Each campus's student-composition profile comes from the TAPR campus
+"Profile" files, **using year t−1 only**, so a fall-of-year-t snapshot never shapes the year-t graph. The profile
+has 12 features:
+- % economically disadvantaged, % English learner, % special education, % at-risk
+- the 7 race/ethnicity shares
+- log(1 + enrollment)
+
+Steps:
+1. **Normalise.** z-score each feature with the year t−1 cross-section's mean and standard deviation.
+2. **Distance.** Take the root-mean-square z-difference over features both schools report; a pair needs
+   **at least 6** shared features.
+3. **Neighbours.** Link each campus to its **10 most similar** campuses and keep the union. This gives
+   11,516–11,686 edges per year, with mean degree 14.
+4. **Weight.** `exp(−d² / 2σ²)`, where σ is the median edge distance for that year (0.37).
+
+**No 2019 edges,** because there is no 2018 TAPR file. Demographic edges are not target-specific, since no
+demographic variable is a target.
+
+**Leakage test:** shuffling every school's year-t demographics leaves every year-t demographic edge unchanged.
+Parameters are in `configs/graph.yaml` under `demographic` and are pending professor review.
 
 ### 5. Academic transition — not built (PPT slide 7, Edge Type 5)
 This needs elementary and middle-school nodes, plus a feeder-pattern map (which middle school sends students
@@ -161,7 +174,7 @@ year; no campus currently has a gap. There are no backward edges, so information
 future.
 
 ## Quality report — `data/graph/graph_quality_report.csv`
-72 checks pass and 0 fail; 124 more rows are informational counts. The checks cover:
+84 checks pass and 0 fail; 141 more rows are informational counts. The checks cover:
 - **Nodes:**
   - node keys equal the master keys, with no duplicates and all IDs 9 digits
   - node values identical to `master_school_year`, `temporal_features` and `school_metadata`

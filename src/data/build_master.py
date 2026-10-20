@@ -1,6 +1,6 @@
 """Build the clean 2019–2023 Texas high-school × year master dataset.
 
-Reads only the raw TEA files under data/raw/tea/pro/ (never modifies them) and writes:
+Reads only the raw TEA files under data/raw/tea/ (pro/, TAPR/, retention/; never modifies them) and writes:
   data/processed/master_school_year.csv
   data/processed/school_metadata.csv
   data/processed/temporal_features.csv
@@ -37,6 +37,34 @@ YEAR_FILES = {
     2023: ("2023/2024 Campus College Admissions.csv",
            "2023/2024 Campus Attendance Absenteeism Dropout.csv", 1),
 }
+# TAPR campus "Profile" (student membership). File Y = TAPR report (Y-1)-Y; its membership columns describe
+# school year (Y-1)-Y = our year Y (TEA labels them "Campus Y Student Membership"). Verified: TAPR file Y has
+# exactly the campus list of CCAD year Y-1, because both come from TAPR report Y.
+TAPR_DIR = ROOT / "data" / "raw" / "tea" / "TAPR"
+TAPR_FILES = {2019: "2019.dat", 2020: "2020.dat", 2021: "2021.csv", 2022: "2022.csv", 2023: "2023.csv"}
+DEMOGRAPHICS = {   # TAPR column -> (clean name, description, unit)
+    "CPETALLC": ("enrollment", "Student membership, all students (count)", "students"),
+    "CPETECOP": ("pct_econ_disadv", "% economically disadvantaged", "percent"),
+    "CPETLEPP": ("pct_english_learner", "% emergent bilingual / English learner", "percent"),
+    "CPETSPEP": ("pct_special_ed", "% special education", "percent"),
+    "CPETRSKP": ("pct_at_risk", "% at risk", "percent"),
+    "CPETBLAP": ("pct_african_american", "% African American", "percent"),
+    "CPETHISP": ("pct_hispanic", "% Hispanic", "percent"),
+    "CPETWHIP": ("pct_white", "% White", "percent"),
+    "CPETASIP": ("pct_asian", "% Asian", "percent"),
+    "CPETINDP": ("pct_american_indian", "% American Indian", "percent"),
+    "CPETPCIP": ("pct_pacific_islander", "% Pacific Islander", "percent"),
+    "CPETTWOP": ("pct_two_or_more", "% two or more races", "percent"),
+    "CPEMALLP": ("mobility_rate", "Mobility rate (TEA reports the PRIOR school year's mobility)", "percent"),
+}
+RACE_COLS = ["pct_african_american", "pct_hispanic", "pct_white", "pct_asian", "pct_american_indian",
+             "pct_pacific_islander", "pct_two_or_more"]
+# Grade-level retention: file "(Y-1)(Y)" = students enrolled in school year (Y-1)-Y who were retained in grade
+# the following fall -> an outcome of our year Y. 2023-24 (year 2024) is outside the panel; 2018-19 (year 2019)
+# was not downloaded, so 2019 retention is missing.
+RET_DIR = ROOT / "data" / "raw" / "tea" / "retention"
+RET_FILES = {2020: "campus-download-ret-1920.xlsx", 2021: "campus-download-ret-2021.xlsx",
+             2022: "campus-download-ret-2122-0.xlsx", 2023: "campus-download-ret-2223.xlsx"}
 DIRECTORY = "refernce/Directory.csv"
 LOCATIONS = "refernce/Public_School_Locations_-_Current.csv"
 
@@ -61,7 +89,8 @@ INDICATORS = {
 }
 TARGETS = ["sat_total", "sat_erw", "sat_math", "act_composite", "act_english", "act_math",
            "sat_act_above_criterion", "sat_act_participation", "dropout_9_12", "attendance_rate",
-           "chronic_absenteeism"]
+           "chronic_absenteeism", "retention_rate"]
+DEMOG_NAMES = [v[0] for v in DEMOGRAPHICS.values()]
 VALID_RANGE = {"sat_total": (400, 1600), "sat_erw": (200, 800), "sat_math": (200, 800),
                "act_composite": (1, 36), "act_english": (1, 36), "act_math": (1, 36), "act_science": (1, 36)}
 
@@ -70,7 +99,7 @@ GROUPS = {"A0": "all", "B0": "african_american", "H0": "hispanic", "W0": "white"
           "L0": "english_learner", "S0": "special_ed", "R0": "at_risk", "M0": "male", "F0": "female"}
 
 NOT_REPORTED = {".", ""}
-SUPPRESSION_CODES = {-1.0: 1, -2.0: 2}   # raw code -> value stored in <var>_supp
+SUPPRESSION_CODES = {-1.0: 1, -2.0: 2, -3.0: 3}   # raw code -> <var>_supp (-3 = cross-masked, retention files)
 
 GRADE_TOKENS = {"EE": -3, "PK": -2, "KG": 0}
 
@@ -128,6 +157,7 @@ def read_campus_file(rel: str, skip: int) -> pd.DataFrame:
 def parse_value(raw: pd.Series) -> tuple[pd.Series, pd.Series, int]:
     """-> (numeric value with suppression/not-reported as NaN, suppression code 0/1/2, n unparseable)."""
     s = raw.astype(str).str.strip()
+    s = s.where(~s.str.fullmatch(r"\d{1,3}(,\d{3})+(\.\d+)?"), s.str.replace(",", ""))   # "1,040" -> 1040
     num = pd.to_numeric(s.where(~s.isin(NOT_REPORTED)), errors="coerce")
     unparseable = int((num.isna() & ~s.isin(NOT_REPORTED)).sum())
     supp = num.map(SUPPRESSION_CODES).fillna(0).astype("int8")
@@ -216,6 +246,56 @@ def name_key(s: str) -> set[str]:
     return {w for w in re.sub(r"[^A-Z0-9 ]", " ", s.upper()).split() if w not in stop}
 
 
+# ------------------------------------------------------------------------------ demographics + retention
+def load_demographics() -> pd.DataFrame:
+    rows = []
+    for y, f in TAPR_FILES.items():
+        t = pd.read_csv(TAPR_DIR / f, dtype=str, keep_default_na=False)
+        t["campus_id"] = norm_campus_id(t["CAMPUS"])
+        rel = f"TAPR/{f}"
+        log("raw rows", len(t), rel)
+        log("duplicate campus_id", int(t.campus_id.duplicated().sum()), rel)
+        assert not t.campus_id.duplicated().any()
+        out = pd.DataFrame({"campus_id": t.campus_id, "year": y})
+        for code, (name, _, _) in DEMOGRAPHICS.items():
+            val, supp, bad = parse_value(t[code])
+            if bad:
+                log("unparseable cells -> missing", bad, rel, code)
+            out[name] = val.values
+            if supp.any():
+                log("suppressed cells -> missing", int((supp > 0).sum()), rel, code)
+        out["source_demographics"] = "data/raw/tea/" + rel
+        rows.append(out)
+    return pd.concat(rows, ignore_index=True)
+
+
+def load_retention() -> pd.DataFrame:
+    rows = []
+    for y, f in RET_FILES.items():
+        x = pd.ExcelFile(RET_DIR / f)
+        sheet = [s for s in x.sheet_names if s.startswith("Campus_Retention")]
+        assert len(sheet) == 1, f"{f}: expected one Campus_Retention sheet, got {x.sheet_names}"
+        t = x.parse(sheet[0], dtype=str, keep_default_na=False)
+        t = t[t.GRADE.str.strip() == "AG"].copy()        # all grades combined
+        t["campus_id"] = norm_campus_id(t["CAMPUS"])
+        rel = f"retention/{f}"
+        log("all-grades rows", len(t), rel)
+        log("duplicate campus_id (AG rows)", int(t.campus_id.duplicated().sum()), rel)
+        assert not t.campus_id.duplicated().any()
+        out = pd.DataFrame({"campus_id": t.campus_id.values, "year": y})
+        for col, name in (("CAMP_ALLR", "retention_rate"), ("CAMP_ALLN", "retention_count"),
+                          ("CAMP_ALLD", "retention_denominator")):
+            val, supp, bad = parse_value(t[col])
+            if bad:
+                log("unparseable cells -> missing", bad, rel, col)
+            out[name] = val.values
+            if name == "retention_rate":
+                out["retention_rate_supp"] = supp.values
+        out["source_retention"] = "data/raw/tea/" + rel
+        rows.append(out)
+    return pd.concat(rows, ignore_index=True)
+
+
 # ---------------------------------------------------------------------------------------------- cohort
 def define_cohort(d: pd.DataFrame, panel_all: pd.DataFrame) -> pd.DataFrame:
     """Texas public high schools serving grades 9-12. See DATA_PIPELINE.md, Step 1."""
@@ -283,6 +363,12 @@ def temporal_features(m: pd.DataFrame) -> pd.DataFrame:
         # OLS slope over t-3..t-1 (3 equally spaced points); lag2 does not enter the formula but must exist
         feats[f"{v}_trend3"] = ((lag[1] - lag[3]) / 2).where(lag[2].notna())
         feats[f"{v}_n_prior_obs"] = wide.notna().astype(int).cumsum(axis=1).shift(1, axis=1).fillna(0).astype(int)
+    # demographics: previous-year snapshot and its change (used as inputs; year-t values are same-year observations)
+    gd = m.set_index(["campus_id", "year"])[DEMOG_NAMES].reindex(grid)
+    for v in DEMOG_NAMES:
+        wide = gd[v].unstack("year")
+        feats[f"{v}_lag1"] = wide.shift(1, axis=1)
+        feats[f"{v}_change_lag1"] = wide.shift(1, axis=1) - wide.shift(2, axis=1)
     out = pd.concat({k: w.stack(future_stack=True) for k, w in feats.items()}, axis=1)
     out.index.names = ["campus_id", "year"]
     out = out.reset_index()
@@ -389,6 +475,21 @@ def main() -> None:
 
     m = m.merge(meta[["campus_id", "district_id", "esc_region"]], on="campus_id", how="left",
                 validate="many_to_one")
+    dem = load_demographics()
+    ret = load_retention()
+    m = m.merge(dem, on=["campus_id", "year"], how="left", validate="one_to_one")
+    m = m.merge(ret, on=["campus_id", "year"], how="left", validate="one_to_one")
+    m["retention_rate_supp"] = m.retention_rate_supp.fillna(0).astype("int8")
+    for y in YEARS:
+        my = m[m.year == y]
+        log("cohort rows matched to TAPR demographics", f"{int(my.source_demographics.notna().sum())}/{len(my)}", str(y))
+        log("cohort rows matched to retention file", f"{int(my.source_retention.notna().sum())}/{len(my)}", str(y),
+            "2019 not downloaded" if y == 2019 else "")
+    race_sum = m[RACE_COLS].sum(axis=1, min_count=len(RACE_COLS))
+    log("race shares sum to 100 +/- 1", f"{int(race_sum.between(99, 101).sum())}/{int(race_sum.notna().sum())}", "master")
+    for v in DEMOG_NAMES[1:] + ["retention_rate"]:
+        log(f"out-of-range values: {v} [0,100]", int((~m[v].between(0, 100) & m[v].notna()).sum()), "master")
+    log("retention numerator > denominator", int((m.retention_count > m.retention_denominator).sum()), "master")
     m["covid_affected_year"] = m.year.isin([2020, 2021]).astype(int)
     m["has_graduates_reported"] = (m.sat_act_participation.notna() | (m.sat_act_participation_supp > 0)).astype(int)
 
@@ -408,7 +509,8 @@ def main() -> None:
 
     supp_cols = [c for c in m.columns if c.endswith("_supp")]
     order = (["campus_id", "year", "district_id", "esc_region", "covid_affected_year", "has_graduates_reported"]
-             + [i[0] for i in INDICATORS.values()] + supp_cols + ["source_ccad", "source_cdrop"])
+             + [i[0] for i in INDICATORS.values()] + ["retention_rate", "retention_count", "retention_denominator"]
+             + DEMOG_NAMES + supp_cols + ["source_ccad", "source_cdrop", "source_demographics", "source_retention"])
     m = m[order].sort_values(["campus_id", "year"]).reset_index(drop=True)
 
     # ---------------- per-year coverage and repetition checks
@@ -437,6 +539,9 @@ def main() -> None:
         log(f"missing % {v}", round(100 * m[v].isna().mean(), 2), "master")
         log(f"suppressed -1 count {v}", int((m[f"{v}_supp"] == 1).sum()), "master")
         log(f"suppressed -2 count {v}", int((m[f"{v}_supp"] == 2).sum()), "master")
+    for v in DEMOG_NAMES + ["retention_rate"]:
+        log(f"missing % {v}", round(100 * m[v].isna().mean(), 2), "master")
+    log("suppressed -1/-3 count retention_rate", int((m.retention_rate_supp > 0).sum()), "master")
     ind_cols = [i[0] for i in INDICATORS.values()]
     log("overall missing % (indicator cells)", round(100 * m[ind_cols].isna().to_numpy().mean(), 2), "master")
     missing = m[ind_cols].isna().astype(float).drop(columns="dropout_7_8")
@@ -487,7 +592,15 @@ def write_dictionary(m: pd.DataFrame, meta: pd.DataFrame, tf: pd.DataFrame) -> N
         rows.append(("master_school_year", name, f"{desc}; All Students; target" if name in TARGETS else f"{desc}; All Students",
                      f"{src}: CA0{code}{{yy}}R", unit))
         rows.append(("master_school_year", f"{name}_supp", f"Suppression of {name}: 0 none, 1 raw -1 (small-group mask), 2 raw -2", f"CA0{code}{{yy}}R", "code"))
-    rows += [("master_school_year", "source_ccad", "Raw college-admissions file for this row", "", "path"),
+    rows += [("master_school_year", "retention_rate", "Grade-level retention rate, all grades (% of students retained in grade the following fall); target; 2019 not available", "Grade-Level Retention campus file, GRADE=AG, CAMP_ALLR", "percent"),
+             ("master_school_year", "retention_count", "Students retained (numerator)", "CAMP_ALLN", "students"),
+             ("master_school_year", "retention_denominator", "Students enrolled who returned or graduated (denominator)", "CAMP_ALLD", "students"),
+             ("master_school_year", "retention_rate_supp", "Suppression of retention_rate: 0 none, 1 raw -1, 3 raw -3 (cross-masked)", "CAMP_ALLR", "code")]
+    for code, (name, desc, unit) in DEMOGRAPHICS.items():
+        rows.append(("master_school_year", name, f"{desc}; fall membership snapshot of the school year (same-year observation)", f"TAPR campus Profile: {code}", unit))
+    rows += [("master_school_year", "source_demographics", "Raw TAPR profile file for this row", "", "path"),
+             ("master_school_year", "source_retention", "Raw retention file for this row (empty for 2019)", "", "path"),
+             ("master_school_year", "source_ccad", "Raw college-admissions file for this row", "", "path"),
              ("master_school_year", "source_cdrop", "Raw attendance/dropout file for this row", "", "path")]
     for c in meta.columns:
         rows.append(("school_metadata", c, "", "Directory.csv (Oct 2025)" if c not in
