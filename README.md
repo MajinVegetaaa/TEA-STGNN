@@ -16,4 +16,4 @@ unzip -q Dataset.zip -d data/raw/tea
 python3 src/data/build_master.py && python3 src/data/validate_processed.py
 python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 ```
-Docs: `DATA_PIPELINE.md`, `GRAPH_DATA_DOCUMENTATION.md`, `DATA_LEAD_HANDOFF.md`.
+Docs: `PROJECT_PLAN.md` (start here), `DATA_PIPELINE.md`, `GRAPH_DATA_DOCUMENTATION.md`, `DATA_LEAD_HANDOFF.md`, `DECISIONS.md`.

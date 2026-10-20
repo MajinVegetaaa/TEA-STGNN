@@ -18,3 +18,6 @@ Format: date — decision — who decided.
 - 2026-10-20 — Demographic edges built from year t−1 composition (10-NN, ≥6 shared, log enrollment); parameters pending professor review — data pipeline
 - 2026-10-20 — Academic Risk Index not computed: Eq. 1 weights are qualitative only; ask professor for numeric weights — data pipeline
 - 2026-10-20 — Academic Risk Index built as a corrected version of last year's phase2 code: correct risk direction for dropout/retention, missing kept missing (≥50% weight coverage), fixed default weights (no circular tuning), decline vs prior years only, location dropped; weights pending professor review — user approved corrected-only
+- 2026-10-20 — Repo pushed to private GitHub MajinVegetaaa/TEA-STGNN — team
+- 2026-10-20 — Lightning AI Studio chosen for GPU work (CPU for setup, GPU only for training) — team
+- 2026-10-20 — Master plan and project log kept in PROJECT_PLAN.md — team
