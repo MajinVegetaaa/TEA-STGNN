@@ -21,3 +21,5 @@ Format: date — decision — who decided.
 - 2026-10-20 — Repo pushed to private GitHub MajinVegetaaa/TEA-STGNN — team
 - 2026-10-20 — Lightning AI Studio chosen for GPU work (CPU for setup, GPU only for training) — team
 - 2026-10-20 — Master plan and project log kept in PROJECT_PLAN.md — team
+- 2026-10-22 — COVID fix tested in three target modes (level / relative-to-year-mean / z-score-by-year); results reported as total MAE plus statewide-shift and school-level MAE — Phase 3
+- 2026-10-22 — Raw data reorganised into numbered source folders; src/data/audit_raw.py proves each file's year from its contents (63/63 pass) — data lead

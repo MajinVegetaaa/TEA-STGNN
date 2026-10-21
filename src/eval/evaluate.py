@@ -27,9 +27,18 @@ LABEL = {"act_composite": "ACT composite", "sat_total": "SAT total", "sat_act_ab
 
 
 def metrics(g: pd.DataFrame) -> pd.Series:
+    """Total error, split into a statewide-shift part and a school-level part.
+
+    shift      = mean(prediction) - mean(truth): did the model get the statewide level right?
+    school_mae = MAE after removing each side's own mean: did it get schools' positions right?
+    No school-level model can know next year's statewide shock (e.g. COVID), so school_mae is the fairer
+    measure of what school-level information, including the graph, adds.
+    """
     e = g.y_pred - g.y_true
     ss_res, ss_tot = (e ** 2).sum(), ((g.y_true - g.y_true.mean()) ** 2).sum()
-    return pd.Series({"mae": e.abs().mean(), "rmse": np.sqrt((e ** 2).mean()), "r2": 1 - ss_res / ss_tot, "n": len(g)})
+    school = ((g.y_pred - g.y_pred.mean()) - (g.y_true - g.y_true.mean())).abs().mean()
+    return pd.Series({"mae": e.abs().mean(), "rmse": np.sqrt((e ** 2).mean()), "r2": 1 - ss_res / ss_tot,
+                      "shift": e.mean(), "school_mae": school, "n": len(g)})
 
 
 def paired_bootstrap(a: pd.DataFrame, b: pd.DataFrame, n_boot: int = 2000, seed: int = 0) -> dict:
@@ -57,6 +66,7 @@ def main() -> None:
     per_seed = p.groupby(["model", "target", "split", "seed"]).apply(metrics, include_groups=False).reset_index()
     m = per_seed.groupby(["model", "target", "split"]).agg(
         mae=("mae", "mean"), mae_sd=("mae", "std"), rmse=("rmse", "mean"), r2=("r2", "mean"),
+        shift=("shift", "mean"), school_mae=("school_mae", "mean"),
         r2_sd=("r2", "std"), n=("n", "first")).reset_index()
     m.to_csv(RES / "metrics.csv", index=False)
 

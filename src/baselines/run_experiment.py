@@ -11,6 +11,9 @@ Two target modes (--mode):
   relative  models predict the school's deviation from its year's statewide mean, from inputs expressed the same
             way; the forecast adds LAST year's statewide mean. Common year shocks (COVID) drop out of training,
             and nothing from the forecast year is used.
+  zscore    as relative, but deviations are also divided by that year's statewide spread (sd), so a year whose
+            spread collapsed (attendance 2020: sd 1.0 vs ~3.3) does not teach squashed differences. The forecast
+            is last year's mean + last year's sd x predicted z.
 Writes results/<mode>/predictions.csv (hand-off 3 format) and results/<mode>/tuning.csv.
 Run from the repo root:  python3 src/baselines/run_experiment.py --mode relative
 """
@@ -84,29 +87,36 @@ def feature_table(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str) 
     df = df.merge(nb, on=["campus_id", "year"], how="left", validate="one_to_one")
     graph = [c for c in nb.columns if c.startswith("nbr_")]
     df["_raw_lag1"] = df[f"{t}_lag1"]                 # persistence always uses the raw previous value
-    df["_y_fit"], df["_offset"] = df[t], 0.0
+    df["_y_fit"], df["_offset"], df["_scale"] = df[t], 0.0, 1.0
     return df, {"own": own, "ctx": ctx, "graph": graph}
 
 
-def make_relative(df: pd.DataFrame, nodes: pd.DataFrame, t: str, fg: dict) -> pd.DataFrame:
+def make_relative(df: pd.DataFrame, nodes: pd.DataFrame, t: str, fg: dict, scale: bool = False) -> pd.DataFrame:
     """Express target and every level input as a deviation from that year's statewide (cohort) mean.
 
     Training target: y_t - mean_t. Forecast: mean_{t-1} + predicted deviation, so the forecast year's own
     mean is never used. Inputs from year t-k subtract mean_{t-k}; changes subtract the mean's change.
     """
     df = df.copy()
-    mu = nodes.groupby("year")[list(dict.fromkeys([t] + CONTEXT_VARS))].mean()
+    cols = list(dict.fromkeys([t] + CONTEXT_VARS))
+    mu, sd = nodes.groupby("year")[cols].mean(), nodes.groupby("year")[cols].std()
     m = lambda v, k: (df.year - k).map(mu[v])
-    df["_y_fit"] = df[t] - m(t, 0)
-    df["_offset"] = m(t, 1)
-    df[f"{t}_lag1"] -= m(t, 1)
-    df[f"{t}_lag2"] -= m(t, 2)
-    df[f"{t}_change_lag1"] -= m(t, 1) - m(t, 2)
+    s = (lambda v, k: (df.year - k).map(sd[v])) if scale else (lambda v, k: 1.0)
+    z = lambda x, v, k: (x - m(v, k)) / s(v, k)
+    lag1, lag2 = df[f"{t}_lag1"].copy(), df[f"{t}_lag2"].copy()
+    df["_y_fit"] = z(df[t], t, 0)
+    df["_offset"], df["_scale"] = m(t, 1), s(t, 1)
+    df[f"{t}_lag1"] = z(lag1, t, 1)
+    df[f"{t}_lag2"] = z(lag2, t, 2)
+    df[f"{t}_change_lag1"] = df[f"{t}_lag1"] - df[f"{t}_lag2"]
     for v in CONTEXT_VARS:
         if v != t:
-            df[f"ctx_{v}_lag1"] -= m(v, 1)
+            df[f"ctx_{v}_lag1"] = z(df[f"ctx_{v}_lag1"], v, 1)
     for c in fg["graph"]:
-        df[c] -= m(t, 1) if c.endswith("_lag1") else (m(t, 1) - m(t, 2))
+        if c.endswith("_lag1"):
+            df[c] = z(df[c], t, 1)
+        else:   # neighbours' change t-2 -> t-1, minus the statewide change, in t-1 spread units
+            df[c] = (df[c] - (m(t, 1) - m(t, 2))) / s(t, 1)
     return df
 
 
@@ -179,7 +189,7 @@ def fit_predict(kind, params, seed, Xtr, ytr, Xte, target):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=["level", "relative"], default="relative")
+    ap.add_argument("--mode", choices=["level", "relative", "zscore"], default="zscore")
     mode = ap.parse_args().mode
     out_dir = RES / mode
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -191,8 +201,8 @@ def main() -> None:
 
     for target in TARGETS:
         df, fg = feature_table(nodes, edges, target, sets[target])
-        if mode == "relative":
-            df = make_relative(df, nodes, target, fg)
+        if mode in ("relative", "zscore"):
+            df = make_relative(df, nodes, target, fg, scale=(mode == "zscore"))
         rows = df[df[target].notna() & df["_raw_lag1"].notna()]
         tr, va, te = (rows[rows.year.isin(y)] for y in (TRAIN, VAL, TEST))
         trva = rows[rows.year.isin(TRAIN + VAL)]
@@ -210,15 +220,15 @@ def main() -> None:
             # tune on 2022 with seed 0
             best, best_mae = None, np.inf
             for params in GRIDS[kind]:
-                p = fit_predict(kind, params, 0, tr[X], tr["_y_fit"], va[X], target) + va["_offset"].to_numpy()
+                p = fit_predict(kind, params, 0, tr[X], tr["_y_fit"], va[X], target) * va["_scale"].to_numpy() + va["_offset"].to_numpy()
                 score = mae(va[target], p)
                 tuning.append({"target": target, "model": name, "params": str(params), "val_mae": score})
                 if score < best_mae:
                     best, best_mae = params, score
             seeds = SEEDS if kind in ("rf", "gb") else [SEEDS[0]]
             for s in seeds:
-                pv = fit_predict(kind, best, s, tr[X], tr["_y_fit"], va[X], target) + va["_offset"].to_numpy()
-                pt = fit_predict(kind, best, s, trva[X], trva["_y_fit"], te[X], target) + te["_offset"].to_numpy()
+                pv = fit_predict(kind, best, s, tr[X], tr["_y_fit"], va[X], target) * va["_scale"].to_numpy() + va["_offset"].to_numpy()
+                pt = fit_predict(kind, best, s, trva[X], trva["_y_fit"], te[X], target) * te["_scale"].to_numpy() + te["_offset"].to_numpy()
                 for split_df, p, split in ((va, pv, "val"), (te, pt, "test")):
                     preds.append(pd.DataFrame({"model": name, "seed": s, "campus_id": split_df.campus_id,
                                                "year": split_df.year, "target": target,
