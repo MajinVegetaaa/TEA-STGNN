@@ -8,7 +8,7 @@ See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 - `data/processed/` — cleaned tables (`master_school_year.csv` etc.; see `data/processed/README.md`); `data/graph/` — yearly graph files
 - `src/data/` cleaning & features · `src/eval/` split & metrics · `src/baselines/` · `src/graphs/` · `src/models/`
 - `configs/data_sources.yaml` — every raw file and year used (2018–2024)
-- `configs/split.yaml` — train 2019–2021, validate 2022, test 2023; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
+- `configs/split.yaml` — train 2018–2022, validate 2023, test 2024; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
 - `results/level/`, `results/relative/`, `results/zscore/` — experiment runs (predictions format `model,seed,campus_id,year,target,y_true,y_pred`)
 
 ## Rebuild data and graph

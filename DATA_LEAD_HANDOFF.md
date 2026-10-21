@@ -134,8 +134,8 @@ profile, and no set uses any year-t value. When training a model for target T, l
 7. **COVID:** 2021 has fewer ACT results. `covid_affected_year` flags 2020–2021.
 8. **⚠️ Graph parameters flagged for professor review:** k, radius, τ and profile features are reasoned
    defaults in `configs/graph.yaml` (`status: pending_professor_review`, Q10).
-9. **Split:** `configs/split.yaml` = train 2019–2021, validate 2022, test 2023. The 2019 rows have no
-   history, so the effective training targets are 2020–2021.
+9. **Split:** `configs/split.yaml` = train 2018–2022, validate 2023, test 2024. The 2018 rows have no
+   history, so the effective training targets are 2019–2022.
 
 ## 8. Files and schemas
 
@@ -204,7 +204,7 @@ python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 | graph_quality_report.csv, GRAPH_DATA_DOCUMENTATION.md | ✅ pass | 84 pass / 0 fail |
 | Retention target | ✅ pass (2020–2023) | 2019 missing: 2018-19 file not downloaded |
 | Academic Risk Index | ✅ pass (weights pending review) | corrected Eq. 1; 40/40 hand-recomputed; direction and no-future tests pass |
-| split.yaml | ⚠️ to decide | still train 2019–21 / val 2022 / test 2023; suggested with 2018–2024 data: train 2018–2022 / val 2023 / test 2024 |
+| split.yaml | ✅ done | train 2018–2022 / val 2023 / test 2024 |
 | Graph parameters confirmed by professor | ⚠️ flagged | `configs/graph.yaml` status pending_professor_review |
 
 **Verdict:** the 2018–2024 school × year dataset, the retention target and 6 of the 7 edge types pass

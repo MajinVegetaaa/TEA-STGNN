@@ -26,4 +26,4 @@ Format: date — decision — who decided.
 - 2026-10-22 — Data extended to 2018–2024 (7 years): 2018 and 2024 SAT/ACT, attendance/dropout, demographics and retention added; 2017 downloaded but not used until its 2016-17 retention is fetched from TEA's per-campus reports — user
 - 2026-10-22 — All raw file names and years moved to configs/data_sources.yaml; pipeline, validators, audit and setup read it — data lead
 - 2026-10-22 — Older retention masks ("-", "<200", "<0.1") treated as suppressed; SAT total vs ERW+Math allowed ±5 (3 rows in 2018 published 2–4 apart) — data lead
-- 2026-10-22 — PENDING: split for 2018–2024 data (suggested train 2018–2022, validate 2023, test 2024) — team to decide
+- 2026-10-22 — Split: train 2018–2022, validate 2023, test 2024 (training targets in practice 2019–2022) — user

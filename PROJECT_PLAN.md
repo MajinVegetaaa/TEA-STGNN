@@ -81,7 +81,7 @@ Output: one scoring script and the "numbers to beat".
 - [ ] Fix the COVID distortion for attendance and dropout: year effects, or predict year-over-year change
 - [ ] Re-run baselines with all targets (incl. retention, risk index) and demographic features: persistence, LR, KNN, RF, XGBoost
 - [ ] Breakdowns: urban/rural, ESC region, school size
-- [ ] Freeze the protocol: train 2019–2021, validate 2022, test 2023, 5 seeds, MAE/RMSE/R², paired bootstrap
+- [ ] Freeze the protocol: train 2018–2022, validate 2023, test 2024, 5 seeds, MAE/RMSE/R², paired bootstrap
 
 Gate: baselines beat persistence on every target, or the reason is understood.
 
@@ -195,6 +195,11 @@ All results are on the 2023 test year, averaged over 5 seeds, with every model s
 Newest first. Add one line per decision: date, decision, who, why. Detailed technical entries are also in
 `DECISIONS.md`.
 
+**2026-10-22**
+- Data extended to 2018–2024; split changed to train 2018–2022, validate 2023, test 2024 — team.
+- All raw file names moved to `configs/data_sources.yaml` — data lead.
+- COVID fix: models predict each school's position relative to the yearly statewide average (and spread); results report statewide-shift and school-level error separately — team.
+
 **2026-10-20**
 - Repo pushed to private GitHub `MajinVegetaaa/TEA-STGNN` — team.
 - Lightning AI Studio chosen for GPU work — team.
@@ -207,7 +212,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 - TAPR profile and grade-level retention added; years verified by matching campus lists — data lead.
 
 **2026-10-15**
-- Split: train 2019–2021, validate 2022, test 2023, 5 seeds — team.
+- Split: train 2019–2021, validate 2022, test 2023, 5 seeds — team (superseded 2026-10-22).
 - Graph settings kept as defaults in `configs/graph.yaml`, flagged for professor review — team.
 - Academic similarity edges per target, with the predicted variable left out of its own profile — team.
 - Every feature and edge for year *t* uses only earlier years (no leakage) — data lead.
