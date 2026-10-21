@@ -140,10 +140,10 @@ small experiments.
 2. Python 3.11 environment: install PyTorch with CUDA, PyTorch Geometric and PyTorch Geometric Temporal; pin the
    working versions in `requirements.txt` and commit it.
 3. `gh auth login`, then clone `MajinVegetaaa/TEA-STGNN`.
-4. Upload `Dataset.zip` and the `TAPR/` and `retention/` folders into the Studio's persistent storage (never into git).
+4. Upload `Dataset.zip` and the TAPR and retention download folders into the Studio's persistent storage (never into git); `setup_raw.py` places them in `data/raw/`.
 5. Rebuild and check:
    ```bash
-   unzip -q Dataset.zip -d data/raw/tea
+   python3 src/data/setup_raw.py --zip Dataset.zip --tapr <TAPR folder> --retention <retention folder>
    python src/data/build_master.py && python src/data/validate_processed.py
    python src/graphs/build_graph_data.py && python src/graphs/validate_graph.py
    ```

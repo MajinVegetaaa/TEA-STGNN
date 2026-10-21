@@ -3,23 +3,23 @@
 One script builds everything from the raw TEA files:
 
 ```bash
-unzip -q Dataset.zip -d data/raw/tea     # once; creates data/raw/tea/pro/
-python3 src/data/build_master.py         # ~10 s; reads data/raw/tea/pro/, writes data/processed/
+python3 src/data/setup_raw.py --zip Dataset.zip --tapr <TAPR folder> --retention <retention folder>   # once; fills data/raw/
+python3 src/data/build_master.py         # ~90 s; reads data/raw/, writes data/processed/
 ```
 
-Raw files are never modified. `Dataset.zip` is extracted to `data/raw/tea/` (the `pro/` folder, unchanged).
+Raw files are never modified. They live in numbered source folders under `data/raw/` (layout and year rules in `data/raw/README.md`).
 Only 2019–2023 data exist; no other years are created.
 
 ## Inputs
 
 | Source | Files | Level | Used for |
 |---|---|---|---|
-| College admissions (CCAD) | `2019/CCAD.dat`, `2020–2022/CCAD.csv`, `2023/2024 Campus College Admissions.csv` | campus × year | SAT, ACT, participation, criterion |
-| Attendance / dropout (CDROP_ATT) | `2019/CDROP_ATT.dat`, `2020–2022/CDROP_ATT.csv`, `2023/2024 Campus Attendance Absenteeism Dropout.csv` | campus × year | attendance, chronic absenteeism, dropout |
-| TEA Directory | `refernce/Directory.csv` (Oct 2025 snapshot) | campus | cohort rules, district, ESC region, charter, NCES ID |
-| NCES Public School Locations | `refernce/Public_School_Locations_-_Current.csv` (2024–25) | school | latitude, longitude, locale |
-| TAPR campus Profile (student membership) | `data/raw/tea/TAPR/2019.dat`, `2020.dat`, `2021–2023.csv` | campus × year | enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility |
-| Grade-Level Retention | `data/raw/tea/retention/campus-download-ret-1920 … 2223.xlsx` (2324 not used) | campus × grade × year | retention rate (all grades) |
+| College admissions (CCAD) | `01_sat_act/<year>/`: `CCAD.dat` (2019), `CCAD.csv` (2020–22), `2024 Campus College Admissions.csv` (2023) | campus × year | SAT, ACT, participation, criterion |
+| Attendance / dropout (CDROP_ATT) | `02_attendance_dropout/<year>/`: `CDROP_ATT.dat` (2019), `CDROP_ATT.csv` (2020–22), `2024 Campus Attendance Absenteeism Dropout.csv` (2023) | campus × year | attendance, chronic absenteeism, dropout |
+| TEA Directory | `05_school_directory/Directory.csv` (Oct 2025 snapshot) | campus | cohort rules, district, ESC region, charter, NCES ID |
+| NCES Public School Locations | `06_school_locations/Public_School_Locations_-_Current.csv` (2024–25) | school | latitude, longitude, locale |
+| TAPR campus Profile (student membership) | `03_demographics_tapr/2019.dat`, `2020.dat`, `2021–2023.csv` | campus × year | enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility |
+| Grade-Level Retention | `04_retention/campus-download-ret-1920 … 2223.xlsx` (2324 not used) | campus × grade × year | retention rate (all grades) |
 
 Not used: state files (`SCAD`, `SDROP_ATT`; state benchmarks, not campus data), `Directory (1).csv` (same as
 `Directory.csv` plus site-address columns), the `.geojson` (same points as the CSV), and the earlier audit's
@@ -112,7 +112,7 @@ Campuses that reported graduates but are excluded:
 - 79 campuses whose 2025 grade range has no grade 12. These are mostly middle schools with a one-off
   graduate record, and Plano/Carroll 9–10 campuses.
 - 80 campuses not in the 2025 Directory (closed or renumbered); listed in
-  `data/processed/excluded_not_in_directory.csv`.
+  `data/processed/audit/excluded_not_in_directory.csv`.
 
 Comparison with the old combined Excel file (1,966 campuses): 1,621 of its campuses are in our cohort. Of the
 345 that aren't, 209 are alternative or DAEP campuses, 42 are regular campuses without grade 12, and 94 are no
@@ -185,8 +185,8 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 | `temporal_features.csv` | 8,202 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
 | `subgroup_school_year.csv` | long table: campus, year, group, indicator, value, suppression, raw column, source file |
 | `data_dictionary.csv` | every column with description, raw source code and unit |
-| `data_quality_report.csv` | every check and count printed by the script |
-| `excluded_not_in_directory.csv`, `name_mismatches.csv`, `geo_rejected_matches.csv` | audit lists |
+| `reports/data_quality_report.csv` | every check and count printed by the script |
+| `audit/` (`excluded_not_in_directory.csv`, `name_mismatches.csv`, `geo_rejected_matches.csv`) | audit lists |
 
 ## Validation summary
 
@@ -238,7 +238,7 @@ absenteeism, which TEA did not publish, and dropout 7–8).
 7. **COVID.** 2021 has fewer ACT results (1,160 vs ~1,365 in 2019–20). `covid_affected_year` flags 2020–21.
 8. **Renamed campuses.** 43 campus-years have a file name that differs from the Directory name. On inspection
    these are renames or charter takeovers (e.g. Legacy H S → Midland Lee H S), not reused IDs (see
-   `name_mismatches.csv`).
+   `audit/name_mismatches.csv`).
 9. **Short history.** Only 5 years: `trend3` and `ma3` exist only for 2022–2023, so a model predicting 2023
    from history has at most 4 prior years.
 10. **Earlier audit errors** (corrected here): ACT `CAC` is ACT *Science*, not composite (composite is

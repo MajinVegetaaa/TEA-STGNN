@@ -4,15 +4,15 @@ Forecasting Texas high-school outcomes with a spatio-temporal graph neural netwo
 See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 
 ## Layout
-- `data/raw/` — TEA downloads, untouched (not in git)
+- `data/raw/` — downloads in numbered source folders, untouched (not in git; see `data/raw/README.md`)
 - `data/processed/` — `panel.parquet` + data dictionary (rebuilt by script)
 - `src/data/` cleaning & features · `src/eval/` split & metrics · `src/baselines/` · `src/graphs/` · `src/models/`
-- `configs/split.yaml` — train ≤2022, val 2023, test 2024
-- `results/` — prediction CSVs (`model,seed,campus_id,year,target,y_true,y_pred`)
+- `configs/split.yaml` — train 2019–2021, validate 2022, test 2023; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
+- `results/level/`, `results/relative/`, `results/zscore/` — experiment runs (predictions format `model,seed,campus_id,year,target,y_true,y_pred`)
 
 ## Rebuild data and graph
 ```bash
-unzip -q Dataset.zip -d data/raw/tea
+python3 src/data/setup_raw.py --zip Dataset.zip --tapr <TAPR folder> --retention <retention folder>
 python3 src/data/build_master.py && python3 src/data/validate_processed.py
 python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 ```

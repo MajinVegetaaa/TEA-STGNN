@@ -1,6 +1,7 @@
 """Build the clean 2019–2023 Texas high-school × year master dataset.
 
-Reads only the raw TEA files under data/raw/tea/ (pro/, TAPR/, retention/; never modifies them) and writes:
+Reads only the raw files under data/raw/ (numbered source folders, see data/raw/README.md; never modifies them)
+and writes:
   data/processed/master_school_year.csv
   data/processed/school_metadata.csv
   data/processed/temporal_features.csv
@@ -23,7 +24,7 @@ import pandas as pd
 import risk_index
 
 ROOT = Path(__file__).resolve().parents[2]
-RAW = ROOT / "data" / "raw" / "tea" / "pro"
+RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data" / "processed"
 
 YEARS = [2019, 2020, 2021, 2022, 2023]
@@ -33,17 +34,17 @@ YEARS = [2019, 2020, 2021, 2022, 2023]
 # "2024 ..." because they come from the 2023-24 TAPR publication cycle.
 # (ccad file, cdrop file, header rows to skip: 2023 files have an English description row above the codes)
 YEAR_FILES = {
-    2019: ("2019/CCAD.dat", "2019/CDROP_ATT.dat", 0),
-    2020: ("2020/CCAD.csv", "2020/CDROP_ATT.csv", 0),
-    2021: ("2021/CCAD.csv", "2021/CDROP_ATT.csv", 0),
-    2022: ("2022/CCAD.csv", "2022/CDROP_ATT.csv", 0),
-    2023: ("2023/2024 Campus College Admissions.csv",
-           "2023/2024 Campus Attendance Absenteeism Dropout.csv", 1),
+    2019: ("01_sat_act/2019/CCAD.dat", "02_attendance_dropout/2019/CDROP_ATT.dat", 0),
+    2020: ("01_sat_act/2020/CCAD.csv", "02_attendance_dropout/2020/CDROP_ATT.csv", 0),
+    2021: ("01_sat_act/2021/CCAD.csv", "02_attendance_dropout/2021/CDROP_ATT.csv", 0),
+    2022: ("01_sat_act/2022/CCAD.csv", "02_attendance_dropout/2022/CDROP_ATT.csv", 0),
+    2023: ("01_sat_act/2023/2024 Campus College Admissions.csv",
+           "02_attendance_dropout/2023/2024 Campus Attendance Absenteeism Dropout.csv", 1),
 }
 # TAPR campus "Profile" (student membership). File Y = TAPR report (Y-1)-Y; its membership columns describe
 # school year (Y-1)-Y = our year Y (TEA labels them "Campus Y Student Membership"). Verified: TAPR file Y has
 # exactly the campus list of CCAD year Y-1, because both come from TAPR report Y.
-TAPR_DIR = ROOT / "data" / "raw" / "tea" / "TAPR"
+TAPR_DIR = RAW / "03_demographics_tapr"
 TAPR_FILES = {2019: "2019.dat", 2020: "2020.dat", 2021: "2021.csv", 2022: "2022.csv", 2023: "2023.csv"}
 DEMOGRAPHICS = {   # TAPR column -> (clean name, description, unit)
     "CPETALLC": ("enrollment", "Student membership, all students (count)", "students"),
@@ -65,11 +66,11 @@ RACE_COLS = ["pct_african_american", "pct_hispanic", "pct_white", "pct_asian", "
 # Grade-level retention: file "(Y-1)(Y)" = students enrolled in school year (Y-1)-Y who were retained in grade
 # the following fall -> an outcome of our year Y. 2023-24 (year 2024) is outside the panel; 2018-19 (year 2019)
 # was not downloaded, so 2019 retention is missing.
-RET_DIR = ROOT / "data" / "raw" / "tea" / "retention"
+RET_DIR = RAW / "04_retention"
 RET_FILES = {2020: "campus-download-ret-1920.xlsx", 2021: "campus-download-ret-2021.xlsx",
              2022: "campus-download-ret-2122-0.xlsx", 2023: "campus-download-ret-2223.xlsx"}
-DIRECTORY = "refernce/Directory.csv"
-LOCATIONS = "refernce/Public_School_Locations_-_Current.csv"
+DIRECTORY = "05_school_directory/Directory.csv"
+LOCATIONS = "06_school_locations/Public_School_Locations_-_Current.csv"
 
 # Indicator code (between group code and 2-digit year) -> (clean name, source file kind, description, unit).
 # Only indicators published as a rate/average (suffix R) in all five years are kept, so every column means
@@ -255,7 +256,7 @@ def load_demographics() -> pd.DataFrame:
     for y, f in TAPR_FILES.items():
         t = pd.read_csv(TAPR_DIR / f, dtype=str, keep_default_na=False)
         t["campus_id"] = norm_campus_id(t["CAMPUS"])
-        rel = f"TAPR/{f}"
+        rel = f"03_demographics_tapr/{f}"
         log("raw rows", len(t), rel)
         log("duplicate campus_id", int(t.campus_id.duplicated().sum()), rel)
         assert not t.campus_id.duplicated().any()
@@ -267,7 +268,7 @@ def load_demographics() -> pd.DataFrame:
             out[name] = val.values
             if supp.any():
                 log("suppressed cells -> missing", int((supp > 0).sum()), rel, code)
-        out["source_demographics"] = "data/raw/tea/" + rel
+        out["source_demographics"] = "data/raw/" + rel
         rows.append(out)
     return pd.concat(rows, ignore_index=True)
 
@@ -281,7 +282,7 @@ def load_retention() -> pd.DataFrame:
         t = x.parse(sheet[0], dtype=str, keep_default_na=False)
         t = t[t.GRADE.str.strip() == "AG"].copy()        # all grades combined
         t["campus_id"] = norm_campus_id(t["CAMPUS"])
-        rel = f"retention/{f}"
+        rel = f"04_retention/{f}"
         log("all-grades rows", len(t), rel)
         log("duplicate campus_id (AG rows)", int(t.campus_id.duplicated().sum()), rel)
         assert not t.campus_id.duplicated().any()
@@ -294,7 +295,7 @@ def load_retention() -> pd.DataFrame:
             out[name] = val.values
             if name == "retention_rate":
                 out["retention_rate_supp"] = supp.values
-        out["source_retention"] = "data/raw/tea/" + rel
+        out["source_retention"] = "data/raw/" + rel
         rows.append(out)
     return pd.concat(rows, ignore_index=True)
 
@@ -338,7 +339,7 @@ def define_cohort(d: pd.DataFrame, panel_all: pd.DataFrame) -> pd.DataFrame:
     closed = has_grads - set(d.campus_id)
     log("excluded campuses with graduates: not in 2025 Directory (closed/renumbered)", len(closed), "cohort",
         "no metadata to verify type; survivorship limitation")
-    pd.Series(sorted(closed), name="campus_id").to_csv(OUT / "excluded_not_in_directory.csv", index=False)
+    pd.Series(sorted(closed), name="campus_id").to_csv(OUT / "audit" / "excluded_not_in_directory.csv", index=False)
     log("cohort campuses not serving the full 9-12 span (e.g. 10-12, 11-12)", int((c.in_cohort & ~c.serves_9_12).sum()), "cohort")
     log("under-construction campuses in cohort", int((c.in_cohort & (c["School Status"] != "Active")).sum()), "cohort")
     return c
@@ -382,7 +383,8 @@ def temporal_features(m: pd.DataFrame) -> pd.DataFrame:
 
 # ------------------------------------------------------------------------------------------------- main
 def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+    for d in (OUT, OUT / "audit", OUT / "reports"):
+        d.mkdir(parents=True, exist_ok=True)
 
     years, subs = [], []
     for y in YEARS:
@@ -426,7 +428,7 @@ def main() -> None:
     bad = md.geo_match != "reliable"
     md.loc[bad, ["LAT", "LON", "LOCALE", "CBSA", "NMCBSA"]] = np.nan
     md[md.geo_match == "rejected_name_city_mismatch"][["campus_id", "School Name", "School City", "NAME", "CITY"]] \
-        .to_csv(OUT / "geo_rejected_matches.csv", index=False)
+        .to_csv(OUT / "audit" / "geo_rejected_matches.csv", index=False)
 
     meta = pd.DataFrame({
         "campus_id": md.campus_id,
@@ -473,7 +475,7 @@ def main() -> None:
     log("campus-years where file name shares a word with Directory name", f"{sum(name_match)}/{len(nm)}",
         "master", "low share would suggest reused campus IDs")
     nm.loc[~pd.Series(name_match, index=nm.index), ["campus_id", "year", "_name_in_file", "campus_name"]] \
-        .to_csv(OUT / "name_mismatches.csv", index=False)
+        .to_csv(OUT / "audit" / "name_mismatches.csv", index=False)
     m = m.drop(columns="_name_in_file")
 
     m = m.merge(meta[["campus_id", "district_id", "esc_region"]], on="campus_id", how="left",
@@ -594,7 +596,7 @@ def main() -> None:
     tf.to_csv(OUT / "temporal_features.csv", index=False)
     sub.to_csv(OUT / "subgroup_school_year.csv", index=False)
     write_dictionary(m, meta, tf)
-    pd.DataFrame(qa).to_csv(OUT / "data_quality_report.csv", index=False)
+    pd.DataFrame(qa).to_csv(OUT / "reports" / "data_quality_report.csv", index=False)
     print(f"\nwrote outputs to {OUT}")
 
 

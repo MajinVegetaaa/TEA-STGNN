@@ -259,7 +259,8 @@ def main() -> int:
     rec("graph parameters status", B.PARAM_STATUS, None, "config", "configs/graph.yaml; flagged for professor review (Q10)")
 
     rep = pd.DataFrame(rows)
-    rep.to_csv(G / "graph_quality_report.csv", index=False)
+    (G / "reports").mkdir(exist_ok=True)
+    rep.to_csv(G / "reports" / "graph_quality_report.csv", index=False)
     failed = rep[rep.passed.astype(str) == "False"]
     print(f"\n{(rep.passed.astype(str) == 'True').sum()} passed, {len(failed)} failed, "
           f"{(rep.passed.astype(str) == '').sum()} informational")

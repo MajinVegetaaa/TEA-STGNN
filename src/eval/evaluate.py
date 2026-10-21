@@ -1,11 +1,13 @@
 """Score results/predictions.csv (hand-off 3 format) the same way for every model.
 
-Outputs results/metrics.csv (per model, target, split; mean and sd over seeds), results/comparisons.csv
+Usage: python3 src/eval/evaluate.py results/relative   (a folder holding predictions.csv)
+Outputs <folder>/metrics.csv (per model, target, split; mean and sd over seeds), results/comparisons.csv
 (paired bootstrap of test MAE differences on identical schools) and results/figures/*.png.
 Run from the repo root:  python3 src/eval/evaluate.py
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -15,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-RES = ROOT / "results"
+RES = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT / "results"
 FIG = RES / "figures"
 PERSIST = "persistence (last year's value)"
 NO_GRAPH = "gradient_boosting (+context)"

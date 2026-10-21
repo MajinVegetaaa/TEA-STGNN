@@ -5,7 +5,7 @@ stages. Details are in `DATA_PIPELINE.md` (processed data) and `GRAPH_DATA_DOCUM
 The data decisions are logged in `DECISIONS.md`.
 
 ## 1. Data sources and years
-Inputs: `Dataset.zip` (unpacked unchanged to `data/raw/tea/pro/`) plus the TAPR profile and Grade-Level Retention files the team downloaded into `data/raw/tea/TAPR/` and `data/raw/tea/retention/`.
+Inputs: `Dataset.zip` plus the TAPR profile and Grade-Level Retention downloads, placed unchanged into numbered source folders under `data/raw/` by `src/data/setup_raw.py` (see `data/raw/README.md`).
 
 | Source | Years | Content |
 |---|---|---|
@@ -145,12 +145,12 @@ profile, and no set uses any year-t value. When training a model for target T, l
 | `data/processed/temporal_features.csv` | 8,202 × 132 | campus_id, year | lag/MA/trend features |
 | `data/processed/subgroup_school_year.csv` | long | campus_id, year, group, indicator | subgroup outcomes |
 | `data/processed/data_dictionary.csv` | — | file, column | descriptions, raw codes, units |
-| `data/processed/data_quality_report.csv` | — | — | build-time checks and counts |
-| `data/processed/processed_validation.csv` | 54 | — | independent re-validation results |
+| `data/processed/reports/data_quality_report.csv` | — | — | build-time checks and counts |
+| `data/processed/reports/processed_validation.csv` | 64 | — | independent re-validation results |
 | `data/graph/nodes.csv` | 8,202 × 200 | campus_id, year (`node_index` per year) | node table |
 | `data/graph/node_feature_catalog.csv` | 200 | column | static / annual / target role |
 | `data/graph/edges_<type>.csv` | see §6 | — | `src_campus_id, dst_campus_id, src_year, dst_year, year, edge_type, weight, directed, distance, method` |
-| `data/graph/graph_quality_report.csv` | 196 | — | graph checks |
+| `data/graph/reports/graph_quality_report.csv` | 225 | — | graph checks |
 | `data/graph/academic_edge_sets.csv` | 12 | target | which academic edge set to use per target |
 
 ## 9. Loading
@@ -180,7 +180,7 @@ edge_index = [list(src) + list(dst), list(dst) + list(src)]      # undirected: b
 - Rebuild everything with:
 
 ```bash
-unzip -q Dataset.zip -d data/raw/tea
+python3 src/data/setup_raw.py --zip Dataset.zip --tapr <TAPR folder> --retention <retention folder>
 python3 src/data/build_master.py && python3 src/data/validate_processed.py
 python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 ```

@@ -1,5 +1,8 @@
-# Data (rebuilt from Dataset.zip by src/data/build_master.py) — root-level only, so src/data/ code is tracked
-/data/
+# Data (rebuilt from the raw downloads by src/data/build_master.py) — root-level only, so src/data/ code is tracked.
+# Folder READMEs inside data/ are kept in git.
+/data/**
+!/data/**/
+!/data/**/README.md
 *.zip
 *.parquet
 *.pt
@@ -8,7 +11,7 @@
 *.pptx
 *.png
 # Large, rebuildable experiment output (python3 src/baselines/run_experiment.py)
-results/predictions.csv
+results/**/predictions.csv
 .DS_Store
 __pycache__/
 .venv/

@@ -13,9 +13,9 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 P = ROOT / "data" / "processed"
-RAW = ROOT / "data" / "raw" / "tea" / "pro"
+RAW = ROOT / "data" / "raw"
 REQUIRED = ["master_school_year.csv", "school_metadata.csv", "temporal_features.csv",
-            "data_quality_report.csv"]
+            "reports/data_quality_report.csv"]
 ID = {"campus_id": str, "district_id": str, "esc_region": str, "county_id": str, "nces_school_id": str}
 
 results: list[dict] = []
@@ -33,7 +33,7 @@ def main() -> int:
     m = pd.read_csv(P / "master_school_year.csv", dtype=ID)
     md = pd.read_csv(P / "school_metadata.csv", dtype=ID)
     tf = pd.read_csv(P / "temporal_features.csv", dtype=ID)
-    qa = pd.read_csv(P / "data_quality_report.csv")
+    qa = pd.read_csv(P / "reports" / "data_quality_report.csv")
     check("files readable", True, f"master {m.shape}, metadata {md.shape}, temporal {tf.shape}, qa {qa.shape}")
 
     # identifiers
@@ -74,8 +74,10 @@ def main() -> int:
 
     # spot-check against raw files: 200 random cells re-read straight from raw
     rs = np.random.default_rng(0)
-    raw_files = {2019: ("2019/CCAD.dat", "2019/CDROP_ATT.dat", 0), 2021: ("2021/CCAD.csv", "2021/CDROP_ATT.csv", 0),
-                 2023: ("2023/2024 Campus College Admissions.csv", "2023/2024 Campus Attendance Absenteeism Dropout.csv", 1)}
+    raw_files = {2019: ("01_sat_act/2019/CCAD.dat", "02_attendance_dropout/2019/CDROP_ATT.dat", 0),
+                 2021: ("01_sat_act/2021/CCAD.csv", "02_attendance_dropout/2021/CDROP_ATT.csv", 0),
+                 2023: ("01_sat_act/2023/2024 Campus College Admissions.csv",
+                        "02_attendance_dropout/2023/2024 Campus Attendance Absenteeism Dropout.csv", 1)}
     codes = {"sat_total": ("CSA", 0), "act_composite": ("CAA", 0), "sat_act_participation": ("CT", 0),
              "attendance_rate": ("AT", 1), "dropout_9_12": ("912DR", 1)}
     mism = n = 0
@@ -97,14 +99,14 @@ def main() -> int:
     tapr = {2019: "2019.dat", 2020: "2020.dat", 2021: "2021.csv", 2022: "2022.csv", 2023: "2023.csv"}
     mism = n = 0
     for y, f in tapr.items():
-        t = pd.read_csv(ROOT / "data/raw/tea/TAPR" / f, dtype=str, keep_default_na=False)
+        t = pd.read_csv(RAW / "03_demographics_tapr" / f, dtype=str, keep_default_na=False)
         t.index = t.CAMPUS.str.strip().str.lstrip("'").str.zfill(9)
         for _, row in m[(m.year == y) & m.enrollment.notna()].sample(30, random_state=y).iterrows():
             for col, v in (("CPETALLC", "enrollment"), ("CPETECOP", "pct_econ_disadv"), ("CPETHISP", "pct_hispanic")):
                 n += 1
                 mism += float(t.at[row.campus_id, col]) != row[v]
     check("demographic cells match raw TAPR files", mism == 0, f"{n - mism}/{n} match")
-    r23 = pd.read_excel(ROOT / "data/raw/tea/retention/campus-download-ret-2223.xlsx",
+    r23 = pd.read_excel(RAW / "04_retention/campus-download-ret-2223.xlsx",
                         sheet_name="Campus_Retention_2223", dtype=str, keep_default_na=False)
     r23 = r23[r23.GRADE == "AG"].set_index("CAMPUS")
     smp = m[(m.year == 2023) & m.retention_rate.notna()].sample(50, random_state=0)
@@ -177,7 +179,7 @@ def main() -> int:
     check("coordinates inside Texas", md.latitude.between(25.5, 36.6).all() and md.longitude.between(-106.7, -93.4).all())
     check("NCES ID unique", not md.nces_school_id.duplicated().any())
 
-    pd.DataFrame(results).to_csv(P / "processed_validation.csv", index=False)
+    pd.DataFrame(results).to_csv(P / "reports" / "processed_validation.csv", index=False)
     failed = [r for r in results if not r["passed"]]
     print(f"\n{len(results) - len(failed)}/{len(results)} checks passed")
     return 1 if failed else 0

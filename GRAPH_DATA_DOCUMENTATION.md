@@ -4,7 +4,7 @@
 python3 src/data/build_master.py        # data/processed/  (see DATA_PIPELINE.md)
 python3 src/data/validate_processed.py  # 64 independent checks on data/processed/
 python3 src/graphs/build_graph_data.py  # data/graph/  (~5 s)
-python3 src/graphs/validate_graph.py    # data/graph/graph_quality_report.csv (84 pass / 0 fail)
+python3 src/graphs/validate_graph.py    # data/graph/reports/graph_quality_report.csv (84 pass / 0 fail)
 ```
 
 The graph is a sequence of **yearly snapshots G₂₀₁₉ … G₂₀₂₃**. A node is one campus in one year. Spatial
@@ -176,7 +176,7 @@ Every pair of cohort campuses in the same ESC region in that year (full clique),
 year; no campus currently has a gap. There are no backward edges, so information only flows from past to
 future.
 
-## Quality report — `data/graph/graph_quality_report.csv`
+## Quality report — `data/graph/reports/graph_quality_report.csv`
 84 checks pass and 0 fail; 141 more rows are informational counts. The checks cover:
 - **Nodes:**
   - node keys equal the master keys, with no duplicates and all IDs 9 digits

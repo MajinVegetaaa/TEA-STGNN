@@ -6,11 +6,17 @@ improve next-year forecasts beyond each school's own history?
 Split (configs/split.yaml): tune on train 2019-2021 -> validate 2022; refit on 2019-2022 -> test 2023.
 Every model is scored on exactly the same rows: target observed AND the school's previous-year value
 observed (so the persistence baseline is defined).
-Writes results/predictions.csv (hand-off 3 format) and results/tuning.csv.
-Run from the repo root:  python3 src/baselines/run_experiment.py
+Two target modes (--mode):
+  level     models predict the raw value (the first run; COVID-year swings in 2020-21 leak into 2023 forecasts)
+  relative  models predict the school's deviation from its year's statewide mean, from inputs expressed the same
+            way; the forecast adds LAST year's statewide mean. Common year shocks (COVID) drop out of training,
+            and nothing from the forecast year is used.
+Writes results/<mode>/predictions.csv (hand-off 3 format) and results/<mode>/tuning.csv.
+Run from the repo root:  python3 src/baselines/run_experiment.py --mode relative
 """
 from __future__ import annotations
 
+import argparse
 import itertools
 from pathlib import Path
 
@@ -77,7 +83,31 @@ def feature_table(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str) 
     nb = neighbour_features(nodes, edges, t, edge_set)
     df = df.merge(nb, on=["campus_id", "year"], how="left", validate="one_to_one")
     graph = [c for c in nb.columns if c.startswith("nbr_")]
+    df["_raw_lag1"] = df[f"{t}_lag1"]                 # persistence always uses the raw previous value
+    df["_y_fit"], df["_offset"] = df[t], 0.0
     return df, {"own": own, "ctx": ctx, "graph": graph}
+
+
+def make_relative(df: pd.DataFrame, nodes: pd.DataFrame, t: str, fg: dict) -> pd.DataFrame:
+    """Express target and every level input as a deviation from that year's statewide (cohort) mean.
+
+    Training target: y_t - mean_t. Forecast: mean_{t-1} + predicted deviation, so the forecast year's own
+    mean is never used. Inputs from year t-k subtract mean_{t-k}; changes subtract the mean's change.
+    """
+    df = df.copy()
+    mu = nodes.groupby("year")[list(dict.fromkeys([t] + CONTEXT_VARS))].mean()
+    m = lambda v, k: (df.year - k).map(mu[v])
+    df["_y_fit"] = df[t] - m(t, 0)
+    df["_offset"] = m(t, 1)
+    df[f"{t}_lag1"] -= m(t, 1)
+    df[f"{t}_lag2"] -= m(t, 2)
+    df[f"{t}_change_lag1"] -= m(t, 1) - m(t, 2)
+    for v in CONTEXT_VARS:
+        if v != t:
+            df[f"ctx_{v}_lag1"] -= m(v, 1)
+    for c in fg["graph"]:
+        df[c] -= m(t, 1) if c.endswith("_lag1") else (m(t, 1) - m(t, 2))
+    return df
 
 
 def impute_for_linear(X: pd.DataFrame, target: str) -> pd.DataFrame:
@@ -148,7 +178,12 @@ def fit_predict(kind, params, seed, Xtr, ytr, Xte, target):
 
 
 def main() -> None:
-    RES.mkdir(exist_ok=True)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--mode", choices=["level", "relative"], default="relative")
+    mode = ap.parse_args().mode
+    out_dir = RES / mode
+    out_dir.mkdir(parents=True, exist_ok=True)
+    print(f"target mode: {mode} -> {out_dir}")
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID)
     edges = {l: pd.read_csv(G / f"edges_{l}.csv", dtype=ID) for l in LAYERS}
     sets = pd.read_csv(G / "academic_edge_sets.csv").set_index("target").edge_set
@@ -156,7 +191,9 @@ def main() -> None:
 
     for target in TARGETS:
         df, fg = feature_table(nodes, edges, target, sets[target])
-        rows = df[df[target].notna() & df[f"{target}_lag1"].notna()]
+        if mode == "relative":
+            df = make_relative(df, nodes, target, fg)
+        rows = df[df[target].notna() & df["_raw_lag1"].notna()]
         tr, va, te = (rows[rows.year.isin(y)] for y in (TRAIN, VAL, TEST))
         trva = rows[rows.year.isin(TRAIN + VAL)]
         print(f"\n== {target}: train {len(tr)} (years {sorted(tr.year.unique())}), val {len(va)}, test {len(te)}")
@@ -167,21 +204,21 @@ def main() -> None:
                 preds.append(pd.DataFrame({"model": "persistence (last year's value)", "seed": s,
                                            "campus_id": split_df.campus_id, "year": split_df.year,
                                            "target": target, "y_true": split_df[target],
-                                           "y_pred": split_df[f"{target}_lag1"], "split": split}))
+                                           "y_pred": split_df["_raw_lag1"], "split": split}))
         for name, (kind, groups) in MODELS.items():
             X = cols_for(groups, fg)
             # tune on 2022 with seed 0
             best, best_mae = None, np.inf
             for params in GRIDS[kind]:
-                p = fit_predict(kind, params, 0, tr[X], tr[target], va[X], target)
+                p = fit_predict(kind, params, 0, tr[X], tr["_y_fit"], va[X], target) + va["_offset"].to_numpy()
                 score = mae(va[target], p)
                 tuning.append({"target": target, "model": name, "params": str(params), "val_mae": score})
                 if score < best_mae:
                     best, best_mae = params, score
             seeds = SEEDS if kind in ("rf", "gb") else [SEEDS[0]]
             for s in seeds:
-                pv = fit_predict(kind, best, s, tr[X], tr[target], va[X], target)
-                pt = fit_predict(kind, best, s, trva[X], trva[target], te[X], target)   # refit on 2019-2022
+                pv = fit_predict(kind, best, s, tr[X], tr["_y_fit"], va[X], target) + va["_offset"].to_numpy()
+                pt = fit_predict(kind, best, s, trva[X], trva["_y_fit"], te[X], target) + te["_offset"].to_numpy()
                 for split_df, p, split in ((va, pv, "val"), (te, pt, "test")):
                     preds.append(pd.DataFrame({"model": name, "seed": s, "campus_id": split_df.campus_id,
                                                "year": split_df.year, "target": target,
@@ -192,8 +229,8 @@ def main() -> None:
                     preds += [d.assign(seed=s) for d in last]
             print(f"  {name:45s} best {best} val MAE {best_mae:.3f}", flush=True)
 
-    pd.concat(preds, ignore_index=True).to_csv(RES / "predictions.csv", index=False)
-    pd.DataFrame(tuning).to_csv(RES / "tuning.csv", index=False)
+    pd.concat(preds, ignore_index=True).to_csv(out_dir / "predictions.csv", index=False)
+    pd.DataFrame(tuning).to_csv(out_dir / "tuning.csv", index=False)
 
 
 if __name__ == "__main__":
