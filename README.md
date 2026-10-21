@@ -5,7 +5,7 @@ See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 
 ## Layout
 - `data/raw/` — downloads in numbered source folders, untouched (not in git; see `data/raw/README.md`)
-- `data/processed/` — `panel.parquet` + data dictionary (rebuilt by script)
+- `data/processed/` — cleaned tables (`master_school_year.csv` etc.; see `data/processed/README.md`); `data/graph/` — yearly graph files
 - `src/data/` cleaning & features · `src/eval/` split & metrics · `src/baselines/` · `src/graphs/` · `src/models/`
 - `configs/data_sources.yaml` — every raw file and year used (2018–2024)
 - `configs/split.yaml` — train 2019–2021, validate 2022, test 2023; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
