@@ -1,4 +1,4 @@
-"""Build graph node and edge tables (one snapshot per year, 2019-2023) from data/processed/.
+"""Build graph node and edge tables (one snapshot per year; years from configs/data_sources.yaml) from data/processed/.
 
 Run from the repo root:  python3 src/graphs/build_graph_data.py
 Writes data/graph/*.csv. See GRAPH_DATA_DOCUMENTATION.md for every rule and parameter.
@@ -17,7 +17,7 @@ P = ROOT / "data" / "processed"
 OUT = ROOT / "data" / "graph"
 ID = {"campus_id": str, "district_id": str, "esc_region": str, "county_id": str, "nces_school_id": str,
       "nces_locale_code": str, "cbsa_code": str}
-YEARS = [2019, 2020, 2021, 2022, 2023]
+YEARS = [int(y) for y in yaml.safe_load((Path(__file__).resolve().parents[2] / "configs" / "data_sources.yaml").read_text())["years"]]
 EARTH_KM = 6371.0088
 
 # Parameters live in configs/graph.yaml and are PENDING PROFESSOR REVIEW (Questions PDF Q10)

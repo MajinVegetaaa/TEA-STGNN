@@ -1,4 +1,6 @@
-# Data pipeline — TEA STGNN master dataset (2019–2023)
+# Data pipeline — TEA STGNN master dataset (2018–2024)
+> **Updated 2026-10-22: the data now covers 2018–2024** (7 years; 2017 files are on disk for later). Years and files are listed in `configs/data_sources.yaml`.
+
 
 One script builds everything from the raw TEA files:
 
@@ -8,7 +10,7 @@ python3 src/data/build_master.py         # ~90 s; reads data/raw/, writes data/p
 ```
 
 Raw files are never modified. They live in numbered source folders under `data/raw/` (layout and year rules in `data/raw/README.md`).
-Only 2019–2023 data exist; no other years are created.
+Years used are exactly those listed in `configs/data_sources.yaml` (2018–2024); no other years are created.
 
 ## Inputs
 
@@ -97,7 +99,7 @@ The index summarises year *t*'s outcomes, so it is a target for year *t*; its `_
 | Instruction Type = REGULAR INSTRUCTIONAL (drops Alternative, DAEP, JJAEP) | 8,550 |
 | AEA = N | 8,550 (no regular campus is AEA, so this rule changes nothing; kept explicit) |
 | Grade range includes grade 12 | 1,857 |
-| A graduating class reported in ≥1 year 2019–2023 (SAT/ACT participation published as a value, 0, or a −1/−2 code) | **1,653** |
+| A graduating class reported in ≥1 year 2018–2024 (SAT/ACT participation published as a value, 0, or a −1/−2 code) | **1,670** |
 
 Why grade 12 and not "covers 9–12": split-campus districts run senior highs that graduate all their seniors
 (Plano Senior and Plano West 11–12, Allen/Bell/Trinity 10–12, Carroll Senior 11–12). A strict 9–12 rule drops
@@ -135,7 +137,7 @@ longer in the Directory.
    | anything else | the number | 0 |
 
    No other non-numeric tokens occur. No value is imputed.
-4. **Variables.** Kept: only All-Students indicators published as a rate or average in all five years (13
+4. **Variables.** Kept: only All-Students indicators published as a rate or average in every year (13
    columns). 2023-only count, denominator and "% graduates above criterion" columns are not in the master.
    Other student groups go in `subgroup_school_year.csv` (long format).
 5. **Duplicates.** Every raw file is checked for exact duplicate rows and for conflicting rows that share an
@@ -146,7 +148,7 @@ longer in the Directory.
    (see limitations).
 8. **Geography.** Directory `NCES School ID` ↔ NCES `NCESSCH` (TX only; IDs unique on both sides). A match is
    kept as `reliable` only if the NCES ID is unique in the cohort and the NCES record agrees with the
-   Directory on city or on school-name words. Result: 1,653/1,653 reliable.
+   Directory on city or on school-name words. Result: 1,670/1,670 reliable.
    - The NCES name agrees for 99.5% of campuses and the city for 94.5%.
    - No match fails both checks.
    - Every coordinate lies inside the Texas bounding box.
@@ -179,10 +181,10 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 
 | File | Content |
 |---|---|
-| `master_school_year.csv` | 8,202 rows × 55 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
-| `risk_index_components.csv` | 8,202 rows: the 9 risk components (0–1, higher = riskier) and weight coverage |
-| `school_metadata.csv` | 1,653 campuses: names, district, county, ESC region, charter/magnet/virtual flags, grade range, enrollment (Oct 2025), NCES ID, lat/lon, locale, CBSA |
-| `temporal_features.csv` | 8,202 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
+| `master_school_year.csv` | 11,546 rows × 55 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
+| `risk_index_components.csv` | 11,546 rows: the 9 risk components (0–1, higher = riskier) and weight coverage |
+| `school_metadata.csv` | 1,670 campuses: names, district, county, ESC region, charter/magnet/virtual flags, grade range, enrollment (Oct 2025), NCES ID, lat/lon, locale, CBSA |
+| `temporal_features.csv` | 11,546 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
 | `subgroup_school_year.csv` | long table: campus, year, group, indicator, value, suppression, raw column, source file |
 | `data_dictionary.csv` | every column with description, raw source code and unit |
 | `reports/data_quality_report.csv` | every check and count printed by the script |
@@ -193,13 +195,13 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 | Item | Value |
 |---|---|
 | Campuses in raw files (all levels) | 9,540 |
-| Final target high schools | 1,653 |
-| School-year rows | 8,202 |
-| Years | 2019–2023 |
+| Final target high schools | 1,670 |
+| School-year rows | 11,546 |
+| Years | 2018–2024 |
 | Schools per year | 2019: 1,623 · 2020: 1,633 · 2021: 1,643 · 2022: 1,652 · 2023: 1,651 |
-| Present in all 5 years | 1,621 |
+| Present in all 7 years | 1,616 |
 | Duplicate campus-years | 0 |
-| Geographic match | 100% (1,653/1,653) |
+| Geographic match | 100% (1,670/1,670) |
 | Districts / ESC regions | 1,046 / 20 |
 | Urbanicity | Rural 708 · City 501 · Suburb 290 · Town 154 |
 
@@ -222,7 +224,7 @@ absenteeism, which TEA did not publish, and dropout 7–8).
 ## Known limitations and unresolved issues
 
 1. **Survivorship.** The cohort is defined using the 2025 Directory, so 80 campuses that reported graduates
-   in 2019–2023 but have since closed or been renumbered are excluded. The 2025 grade range and instruction
+   in 2018–2024 but have since closed or been renumbered are excluded. The 2025 grade range and instruction
    type are applied to all years.
 2. **Static metadata is from 2025.** `enrollment_oct2025` is measured after the study period. Do not use it as
    a model feature without acknowledging the look-ahead; a yearly enrollment source (TAPR/PEIMS) would fix
@@ -239,7 +241,7 @@ absenteeism, which TEA did not publish, and dropout 7–8).
 8. **Renamed campuses.** 43 campus-years have a file name that differs from the Directory name. On inspection
    these are renames or charter takeovers (e.g. Legacy H S → Midland Lee H S), not reused IDs (see
    `audit/name_mismatches.csv`).
-9. **Short history.** Only 5 years: `trend3` and `ma3` exist only for 2022–2023, so a model predicting 2023
+9. **Short history.** 7 years: `trend3` and `ma3` exist from 2021, so a model predicting 2024
    from history has at most 4 prior years.
 10. **Earlier audit errors** (corrected here): ACT `CAC` is ACT *Science*, not composite (composite is
     `CAA`). The "~1,966 high schools" figure came from the old file, which includes alternative campuses.

@@ -2,8 +2,9 @@
 
   python3 src/data/setup_raw.py --zip Dataset.zip [--tapr <folder>] [--retention <folder>]
 
-Extracts the TEA files from Dataset.zip into the numbered source folders, copies the TAPR and retention
-downloads if their folders are given, then checks every file the pipeline needs is present. File contents and
+Extracts the TEA files from Dataset.zip (2019-2023) into the numbered source folders, copies the TAPR and
+retention downloads if their folders are given, then checks every file in configs/data_sources.yaml is present.
+Files for other years (2018, 2024) are downloaded separately and placed at the paths the config lists. File contents and
 names are never changed. Safe to re-run: existing files are left as they are.
 """
 from __future__ import annotations
@@ -12,11 +13,12 @@ import argparse
 import shutil
 import sys
 import zipfile
+
+import yaml
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data" / "raw"
-YEARS = range(2019, 2024)
 
 
 def target_for(member: str) -> Path | None:
@@ -40,17 +42,11 @@ def target_for(member: str) -> Path | None:
 
 
 def required_files() -> list[Path]:
-    req = [RAW / "05_school_directory" / "Directory.csv",
-           RAW / "06_school_locations" / "Public_School_Locations_-_Current.csv"]
-    for y in YEARS:
-        if y < 2023:
-            ext = "dat" if y == 2019 else "csv"
-            req += [RAW / "01_sat_act" / str(y) / f"CCAD.{ext}", RAW / "02_attendance_dropout" / str(y) / f"CDROP_ATT.{ext}"]
-        req.append(RAW / "03_demographics_tapr" / (f"{y}.dat" if y < 2021 else f"{y}.csv"))
-    req += [RAW / "01_sat_act" / "2023" / "2024 Campus College Admissions.csv",
-            RAW / "02_attendance_dropout" / "2023" / "2024 Campus Attendance Absenteeism Dropout.csv"]
-    req += [RAW / "04_retention" / f for f in ("campus-download-ret-1920.xlsx", "campus-download-ret-2021.xlsx",
-                                               "campus-download-ret-2122-0.xlsx", "campus-download-ret-2223.xlsx")]
+    """Every raw file listed in configs/data_sources.yaml for the years in use."""
+    src = yaml.safe_load((ROOT / "configs" / "data_sources.yaml").read_text())
+    req = [RAW / src["directory"], RAW / src["locations"]]
+    for source in ("sat_act", "attendance_dropout", "demographics", "retention"):
+        req += [RAW / src[source][y]["file"] for y in src["years"] if y in src[source]]
     return req
 
 
@@ -64,7 +60,7 @@ def copy_folder(src: Path, dst: Path) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--zip", type=Path, default=ROOT / "Dataset.zip")
-    ap.add_argument("--tapr", type=Path, help="folder with the TAPR profile files 2019.dat ... 2023.csv")
+    ap.add_argument("--tapr", type=Path, help="folder with the TAPR student-information files (names as in configs/data_sources.yaml)")
     ap.add_argument("--retention", type=Path, help="folder with campus-download-ret-*.xlsx")
     a = ap.parse_args()
 

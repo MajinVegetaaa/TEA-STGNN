@@ -17,18 +17,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data" / "processed" / "reports" / "raw_audit.csv"
-YEARS = [2019, 2020, 2021, 2022, 2023]
-SAT = {2019: "CCAD.dat", 2020: "CCAD.csv", 2021: "CCAD.csv", 2022: "CCAD.csv", 2023: "2024 Campus College Admissions.csv"}
-ATT = {2019: "CDROP_ATT.dat", 2020: "CDROP_ATT.csv", 2021: "CDROP_ATT.csv", 2022: "CDROP_ATT.csv",
-       2023: "2024 Campus Attendance Absenteeism Dropout.csv"}
-TAPR = {2019: "2019.dat", 2020: "2020.dat", 2021: "2021.csv", 2022: "2022.csv", 2023: "2023.csv"}
-RET = {2020: "campus-download-ret-1920.xlsx", 2021: "campus-download-ret-2021.xlsx",
-       2022: "campus-download-ret-2122-0.xlsx", 2023: "campus-download-ret-2223.xlsx",
-       2024: "campus-download-ret-2324.xlsx"}
+SRC = yaml.safe_load((ROOT / "configs" / "data_sources.yaml").read_text())
+YEARS = [int(y) for y in SRC["years"]]
+SKIP = lambda e: int(e.get("header_rows", 1)) - 1
 rows: list[dict] = []
 
 
@@ -64,12 +60,14 @@ def main() -> int:
     rec("all", "no two raw files are byte-identical", not dups, f"{len(files)} files" + (f"; dups {dups}" if dups else ""))
 
     # 2-4. SAT/ACT and attendance/dropout: year from column-code suffix; copy check
-    sat = {y: read(RAW / "01_sat_act" / str(y) / f, 1 if y == 2023 else 0) for y, f in SAT.items()}
-    att = {y: read(RAW / "02_attendance_dropout" / str(y) / f, 1 if y == 2023 else 0) for y, f in ATT.items()}
+    sat = {y: read(RAW / SRC["sat_act"][y]["file"], SKIP(SRC["sat_act"][y])) for y in YEARS}
+    att = {y: read(RAW / SRC["attendance_dropout"][y]["file"], SKIP(SRC["attendance_dropout"][y])) for y in YEARS}
     for name, d, key in (("01_sat_act", sat, "CA0CSA"), ("02_attendance_dropout", att, "CA0AT")):
         for y, t in d.items():
             yy = {int(m.group(1)) for c in t.columns if (m := re.fullmatch(r"C..[A-Z0-9]+?(\d\d)[RNDA]", c))}
-            rec(name, f"{y}: every column code carries year {y % 100}", yy == {y % 100}, f"years in codes {sorted(yy)}")
+            # older (pre-2019) TEA files also carry the prior year's columns; the newer ones carry only their own
+            rec(name, f"{y}: column codes carry year {y % 100} (plus at most the prior year)",
+                y % 100 in yy and yy <= {y % 100, (y - 1) % 100}, f"years in codes {sorted(yy)}")
             rec(name, f"{y}: contains its key indicator {key}{y % 100}R", f"{key}{y % 100}R" in t.columns)
         for y in YEARS[1:]:
             a, b = d[y - 1].set_index(ids(d[y - 1].CAMPUS)), d[y].set_index(ids(d[y].CAMPUS))
@@ -78,20 +76,18 @@ def main() -> int:
             rec(name, f"{y - 1}->{y}: values not copied between years", r < 0.2, f"{r:.1%} identical of {n}")
 
     # TAPR profile: right category, year proven by campus-list match with SAT/ACT year Y-1 (same TEA report)
-    tapr = {y: read(RAW / "03_demographics_tapr" / f) for y, f in TAPR.items()}
+    tapr = {y: read(RAW / SRC["demographics"][y]["file"], SKIP(SRC["demographics"][y])) for y in YEARS}
     sat_ids = {y: set(ids(t.CAMPUS)) for y, t in sat.items()}
+    for y, f in SRC.get("not_yet_used", {}).get("sat_act", {}).items():     # extra years only used as year evidence
+        sat_ids[int(y)] = set(ids(read(RAW / f).CAMPUS))
     for y, t in tapr.items():
         need = {"CPETALLC", "CPETECOP", "CPETLEPP", "CPETSPEP", "CPETHISP", "CPEMALLP"}
-        rec("03_demographics_tapr", f"{y}: is the campus Profile (student) download", need <= set(t.columns),
+        rec("03_demographics_tapr", f"{y}: is the campus student-information download", need <= set(t.columns),
             f"{t.shape[1]} columns")
         tid = set(ids(t.CAMPUS))
-        match = [k for k, s in sat_ids.items() if s == tid]
-        if y - 1 in sat_ids:
-            rec("03_demographics_tapr", f"{y}: campus list equals SAT/ACT year {y - 1} (same TEA report => year {y})",
-                match == [y - 1], f"exact match with {match}")
-        else:
-            rec("03_demographics_tapr", f"{y}: earliest file, campus list matches no later year exactly", not match,
-                f"overlap with 2019 SAT/ACT: {len(tid & sat_ids[2019])}/{len(tid)}")
+        match = [k for k, v in sat_ids.items() if v == tid]
+        rec("03_demographics_tapr", f"{y}: campus list equals SAT/ACT year {y - 1} (same TEA report => year {y})",
+            match == [y - 1] if y - 1 in sat_ids else None, f"exact match with {match}")
     for y in YEARS[1:]:
         a, b = tapr[y - 1].set_index(ids(tapr[y - 1].CAMPUS)), tapr[y].set_index(ids(tapr[y].CAMPUS))
         c = a.index.intersection(b.index)
@@ -102,8 +98,9 @@ def main() -> int:
 
     # retention: title row names the school year; file (Y-1)(Y) -> year Y
     ret = {}
-    for y, f in RET.items():
-        x = pd.ExcelFile(RAW / "04_retention" / f)
+    for y in YEARS:
+        f = SRC["retention"][y]["file"]
+        x = pd.ExcelFile(RAW / f)
         title = str(x.parse("Overview", header=None).iloc[0, 0])
         want = f"{y - 1}-{str(y)[2:]}"
         rec("04_retention", f"{f}: title says school year {want} (=> year {y})", want in title, title[:80])
@@ -112,18 +109,17 @@ def main() -> int:
         rec("04_retention", f"{f}: campus-level, all-grades rows present", (t.GRADE == "AG").sum() > 8000,
             f"{int((t.GRADE == 'AG').sum())} AG rows")
         ret[y] = t[t.GRADE == "AG"].set_index("CAMPUS")
-    for y in list(RET)[1:]:
+    for y in YEARS[1:]:
         a, b = ret[y - 1], ret[y]
         c = a.index.intersection(b.index)
         r, n = copy_rate(a.loc[c, "CAMP_ALLR"].str.replace(",", ""), b.loc[c, "CAMP_ALLR"].str.replace(",", ""))
         rec("04_retention", f"{y - 1}->{y}: retention rate not copied", r < 0.2, f"{r:.1%} identical of {n}")
-    rec("04_retention", "2018-19 file (year 2019) present", None, "not downloaded: 2019 retention is missing by design")
 
     # directory and locations: right dataset
-    d = read(RAW / "05_school_directory" / "Directory.csv")
+    d = read(RAW / SRC["directory"])
     rec("05_school_directory", "is the TEA school directory", {"School Number", "Grade Range", "Instruction Type",
                                                              "NCES School ID"} <= set(d.columns), f"{len(d)} rows")
-    loc = pd.read_csv(RAW / "06_school_locations" / "Public_School_Locations_-_Current.csv", dtype=str,
+    loc = pd.read_csv(RAW / SRC["locations"], dtype=str,
                       usecols=["NCESSCH", "STATE", "LAT", "LON", "SCHOOLYEAR"], encoding="utf-8-sig")
     rec("06_school_locations", "is NCES school locations with Texas schools", (loc.STATE == "TX").sum() > 9000,
         f"{int((loc.STATE == 'TX').sum())} TX schools; school year {loc.SCHOOLYEAR.mode().iloc[0]}")

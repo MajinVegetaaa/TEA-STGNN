@@ -1,4 +1,6 @@
-# Graph data — TEA STGNN (2019–2023)
+# Graph data — TEA STGNN (2018–2024)
+> **Updated 2026-10-22: the data now covers 2018–2024** (7 years; 2017 files are on disk for later). Years and files are listed in `configs/data_sources.yaml`.
+
 
 ```bash
 python3 src/data/build_master.py        # data/processed/  (see DATA_PIPELINE.md)
@@ -13,7 +15,7 @@ is trained here.
 
 ## Nodes — `data/graph/nodes.csv`
 
-There are 8,202 nodes (one per row of `master_school_year.csv`) and 139 columns. `node_index` numbers the nodes
+There are 11,546 nodes (one per row of `master_school_year.csv`) and 200 columns. `node_index` numbers the nodes
 0…n−1 within each year, in `campus_id` order, so it can be used directly as the PyG node index of that
 year's snapshot.
 
@@ -217,4 +219,4 @@ future.
 | Same-year targets in academic edges | Edges use t−1 only, and the predicted target's family is dropped per edge set. The shuffle test passes. |
 | Normalisation statistics | Computed from the t−1 cross-section only. |
 | Static metadata from 2025 | District, region, coordinates, charter and grade range are a 2025 snapshot applied to all years. They are structural, not outcomes, but a campus that changed district or type would be misdescribed in early years. `enrollment_oct2025` is excluded from nodes. |
-| Cohort definition | It uses "reported graduates in ≥1 year of 2019–2023", which looks at the whole period. This decides which schools are in the study, not any feature value. |
+| Cohort definition | It uses "reported graduates in ≥1 year of 2018–2024", which looks at the whole period. This decides which schools are in the study, not any feature value. |

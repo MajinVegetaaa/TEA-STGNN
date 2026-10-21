@@ -1,0 +1,57 @@
+# Every raw file the pipeline reads, by source and data year. Paths are relative to data/raw/.
+# year = school-year end (2024 = 2023-24). Each file's year was proven from its contents (src/data/audit_raw.py).
+# To add a year: download, place the file, add one line per source here, re-run the pipeline.
+#
+# header_rows: 2 for files with an English description row above the column codes (TEA's newer downloads).
+
+years: [2018, 2019, 2020, 2021, 2022, 2023, 2024]
+
+# SAT/ACT (CCAD). Note TEA's one-year lag: data year Y is published in the (Y)-(Y+1) TAPR report.
+sat_act:
+  2018: {file: 01_sat_act/2018/CAMPPERF.dat, header_rows: 1}      # TAPR 2018-19, "Postsecondary Indicators"
+  2019: {file: 01_sat_act/2019/CCAD.dat, header_rows: 1}
+  2020: {file: 01_sat_act/2020/CCAD.csv, header_rows: 1}
+  2021: {file: 01_sat_act/2021/CCAD.csv, header_rows: 1}
+  2022: {file: 01_sat_act/2022/CCAD.csv, header_rows: 1}
+  2023: {file: "01_sat_act/2023/2024 Campus College Admissions.csv", header_rows: 2}
+  2024: {file: "01_sat_act/2024/2025 Campus College Admissions.csv", header_rows: 2}
+
+# Attendance, chronic absenteeism (published from 2020), dropout (COTHR / CDROP_ATT)
+attendance_dropout:
+  2018: {file: 02_attendance_dropout/2018/CAMPGRAD.dat, header_rows: 1}
+  2019: {file: 02_attendance_dropout/2019/CDROP_ATT.dat, header_rows: 1}
+  2020: {file: 02_attendance_dropout/2020/CDROP_ATT.csv, header_rows: 1}
+  2021: {file: 02_attendance_dropout/2021/CDROP_ATT.csv, header_rows: 1}
+  2022: {file: 02_attendance_dropout/2022/CDROP_ATT.csv, header_rows: 1}
+  2023: {file: "02_attendance_dropout/2023/2024 Campus Attendance Absenteeism Dropout.csv", header_rows: 2}
+  2024: {file: "02_attendance_dropout/2024/2025 Campus Attendance Absenteeism Dropout.csv", header_rows: 2}
+
+# TAPR campus student information (no lag: data year Y is in the (Y-1)-(Y) report)
+demographics:
+  2018: {file: 03_demographics_tapr/2018.dat, header_rows: 1}
+  2019: {file: 03_demographics_tapr/2019.dat, header_rows: 1}
+  2020: {file: 03_demographics_tapr/2020.dat, header_rows: 1}
+  2021: {file: 03_demographics_tapr/2021.csv, header_rows: 1}
+  2022: {file: 03_demographics_tapr/2022.csv, header_rows: 1}
+  2023: {file: 03_demographics_tapr/2023.csv, header_rows: 1}
+  2024: {file: "03_demographics_tapr/2024 Campus Student Information.csv", header_rows: 2}
+
+# Grade-level retention, campus Excel files; file (Y-1)(Y) = school year (Y-1)-Y = data year Y
+retention:
+  2018: {file: 04_retention/campus-download-1718.xlsx}
+  2019: {file: 04_retention/campus-download-ret-1819.xlsx}
+  2020: {file: 04_retention/campus-download-ret-1920.xlsx}
+  2021: {file: 04_retention/campus-download-ret-2021.xlsx}
+  2022: {file: 04_retention/campus-download-ret-2122-0.xlsx}
+  2023: {file: 04_retention/campus-download-ret-2223.xlsx}
+  2024: {file: 04_retention/campus-download-ret-2324.xlsx}
+
+directory: 05_school_directory/Directory.csv
+locations: 06_school_locations/Public_School_Locations_-_Current.csv
+
+# On disk but not used yet: 2017 (SAT/ACT, attendance, demographics); its 2016-17 retention is not downloadable
+# (TEA's link is broken) and will be fetched from TEA's per-campus reports later.
+not_yet_used:
+  sat_act: {2017: 01_sat_act/2017/CAMPPERF.dat}
+  attendance_dropout: {2017: 02_attendance_dropout/2017/CAMPGRAD.dat}
+  demographics: {2017: 03_demographics_tapr/2017.dat}

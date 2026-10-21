@@ -7,12 +7,14 @@ See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 - `data/raw/` — downloads in numbered source folders, untouched (not in git; see `data/raw/README.md`)
 - `data/processed/` — `panel.parquet` + data dictionary (rebuilt by script)
 - `src/data/` cleaning & features · `src/eval/` split & metrics · `src/baselines/` · `src/graphs/` · `src/models/`
+- `configs/data_sources.yaml` — every raw file and year used (2018–2024)
 - `configs/split.yaml` — train 2019–2021, validate 2022, test 2023; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
 - `results/level/`, `results/relative/`, `results/zscore/` — experiment runs (predictions format `model,seed,campus_id,year,target,y_true,y_pred`)
 
 ## Rebuild data and graph
 ```bash
 python3 src/data/setup_raw.py --zip Dataset.zip --tapr <TAPR folder> --retention <retention folder>
+python3 src/data/audit_raw.py            # proves every raw file is the right dataset and year
 python3 src/data/build_master.py && python3 src/data/validate_processed.py
 python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 ```

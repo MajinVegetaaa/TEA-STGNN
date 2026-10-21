@@ -150,7 +150,7 @@ def main() -> int:
 
     # ------------------------------------------------------------------ academic: recompute sample + leakage
     e = E["academic"]
-    rec("academic edges in 2019 (no prior year)", int((e.year == 2019).sum()), (e.year == 2019).sum() == 0, "academic")
+    rec(f"academic edges in {B.YEARS[0]} (no prior year)", int((e.year == B.YEARS[0]).sum()), (e.year == B.YEARS[0]).sum() == 0, "academic")
     rng = np.random.default_rng(1)
     sets = pd.read_csv(G / "academic_edge_sets.csv")
     own = all(r.target in r.excluded_features.split() or B.ACAD_EDGE_SETS[r.edge_set] == r.excluded_features.split()
@@ -161,9 +161,9 @@ def main() -> int:
     self_excl = all((fam.get(r.target, r.target) in r.excluded_features.split()) for r in sets.itertuples())
     rec("every target's academic edge set excludes the target (or the total it is part of)", self_excl,
         self_excl and no_overlap and own, "academic", "; ".join(f"{r.target}->{r.edge_set}" for r in sets.itertuples()))
-    rec("academic edge sets present every year 2020-2023",
+    rec(f"academic edge sets present every year {B.YEARS[1]}-{B.YEARS[-1]}",
         sorted(e.groupby(["edge_set", "year"]).size().index.tolist()) ==
-        sorted((es, y) for es in B.ACAD_EDGE_SETS for y in (2020, 2021, 2022, 2023)), True, "academic")
+        sorted((es, y) for es in B.ACAD_EDGE_SETS for y in B.YEARS[1:]), True, "academic")
     for (es, y), c in e.groupby(["edge_set", "year"]).size().items():
         rec("edges", int(c), scope=f"academic {es} {y}")
     samp = e.iloc[rng.choice(len(e), 600, replace=False)]
@@ -183,7 +183,7 @@ def main() -> int:
     rec("academic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per set and year", w_ok, w_ok, "academic")
     # leakage: scramble every indicator in year t, rebuild year-t academic edges, they must be identical
     leak_ok = True
-    for y in [2020, 2021, 2022, 2023]:
+    for y in B.YEARS[1:]:
         scr = master.copy()
         mask = scr.year == y
         for f in B.ACAD_FEATURES:
@@ -200,7 +200,7 @@ def main() -> int:
 
     # ------------------------------------------------------------------ demographic: recompute + leakage
     e = E["demographic"]
-    rec("demographic edges in 2019 (no prior year)", int((e.year == 2019).sum()), (e.year == 2019).sum() == 0, "demographic")
+    rec(f"demographic edges in {B.YEARS[0]} (no prior year)", int((e.year == B.YEARS[0]).sum()), (e.year == B.YEARS[0]).sum() == 0, "demographic")
     samp = e.iloc[rng.choice(len(e), 400, replace=False)]
     bad = 0
     for _, r in samp.iterrows():
@@ -216,7 +216,7 @@ def main() -> int:
                for _, g in e.groupby("year"))
     rec("demographic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per year", w_ok, w_ok, "demographic")
     leak_ok = True
-    for y in [2020, 2021, 2022, 2023]:
+    for y in B.YEARS[1:]:
         scr = master.copy()
         mask = scr.year == y
         for f in B.DEMO_FEATURES:

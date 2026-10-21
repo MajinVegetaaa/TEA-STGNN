@@ -40,7 +40,7 @@ predicted on its own.
 
 | Area | Status | Key numbers |
 |---|---|---|
-| Dataset (2019–2023) | Done | 1,653 high schools, 8,202 school-years, 64/64 checks |
+| Dataset (2018–2024) | Done | 1,670 high schools, 11,546 school-years; 89/89 raw-audit, 65/65 data and 86/86 graph checks |
 | Targets | Done | SAT, ACT, college-ready, participation, attendance, chronic absenteeism, dropout, retention (2020–23), risk index |
 | Student demographics | Done | 13 TAPR fields, matched for 99–100% of school-years |
 | Academic Risk Index | Done, weights pending review | corrected version of last year's Eq. 1 |
@@ -57,8 +57,8 @@ Lightning AI GPUs. Each phase ends with a **gate**: the condition to meet before
 
 ### Phase 1 — Data (done)
 Output: `data/processed/` (`master_school_year.csv`, `school_metadata.csv`, `temporal_features.csv`).
-- [x] Clean 2019–2023 campus files; standardise IDs; suppression codes → missing values with a flag
-- [x] Select 1,653 regular high schools (regular instruction, not alternative accountability, serves grade 12, reported graduates)
+- [x] Clean 2018–2024 campus files (2017 on disk for later); standardise IDs; suppression codes → missing values with a flag
+- [x] Select 1,670 regular high schools (regular instruction, not alternative accountability, serves grade 12, reported graduates)
 - [x] Add geography (NCES coordinates), TAPR demographics, grade-level retention
 - [x] History features from earlier years only
 - [x] Corrected Academic Risk Index

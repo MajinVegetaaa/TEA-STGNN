@@ -23,3 +23,7 @@ Format: date — decision — who decided.
 - 2026-10-20 — Master plan and project log kept in PROJECT_PLAN.md — team
 - 2026-10-22 — COVID fix tested in three target modes (level / relative-to-year-mean / z-score-by-year); results reported as total MAE plus statewide-shift and school-level MAE — Phase 3
 - 2026-10-22 — Raw data reorganised into numbered source folders; src/data/audit_raw.py proves each file's year from its contents (63/63 pass) — data lead
+- 2026-10-22 — Data extended to 2018–2024 (7 years): 2018 and 2024 SAT/ACT, attendance/dropout, demographics and retention added; 2017 downloaded but not used until its 2016-17 retention is fetched from TEA's per-campus reports — user
+- 2026-10-22 — All raw file names and years moved to configs/data_sources.yaml; pipeline, validators, audit and setup read it — data lead
+- 2026-10-22 — Older retention masks ("-", "<200", "<0.1") treated as suppressed; SAT total vs ERW+Math allowed ±5 (3 rows in 2018 published 2–4 apart) — data lead
+- 2026-10-22 — PENDING: split for 2018–2024 data (suggested train 2018–2022, validate 2023, test 2024) — team to decide
