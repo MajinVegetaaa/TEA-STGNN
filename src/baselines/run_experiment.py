@@ -3,7 +3,9 @@
 Question: does information from related schools (district, nearby, academically similar, same ESC region)
 improve next-year forecasts beyond each school's own history?
 
-Split (configs/split.yaml): tune on train 2019-2021 -> validate 2022; refit on 2019-2022 -> test 2023.
+Split (configs/split.yaml): tune on train 2018-2022 -> validate 2023; refit on 2018-2023 -> test 2024.
+Targets: ACT, SAT, college-ready %, dropout, attendance, grade-level retention, Academic Risk Index. Risk index
+has no academic-similarity layer (every academic indicator is one of its components).
 Every model is scored on exactly the same rows: target observed AND the school's previous-year value
 observed (so the persistence baseline is defined).
 Two target modes (--mode):
@@ -26,6 +28,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import yaml
+from xgboost import XGBRegressor
 from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
@@ -39,14 +42,18 @@ SPLIT = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())
 TRAIN, VAL, TEST, SEEDS = SPLIT["train_years"], SPLIT["val_years"], SPLIT["test_years"], SPLIT["seeds"]
 ID = {"campus_id": str, "src_campus_id": str, "dst_campus_id": str, "district_id": str, "esc_region": str}
 
-TARGETS = ["act_composite", "sat_total", "sat_act_above_criterion", "dropout_9_12", "attendance_rate"]
+TARGETS = ["act_composite", "sat_total", "sat_act_above_criterion", "dropout_9_12", "attendance_rate",
+           "retention_rate", "risk_index"]
 CONTEXT_VARS = ["sat_total", "act_composite", "sat_act_above_criterion", "sat_act_participation",
                 "attendance_rate", "dropout_9_12", "chronic_absenteeism"]
-LAYERS = ["district", "geographic", "academic", "region"]
+DEMO_VARS = ["enrollment", "pct_econ_disadv", "pct_english_learner", "pct_special_ed", "pct_at_risk",
+             "pct_african_american", "pct_hispanic", "pct_white", "pct_asian", "pct_american_indian",
+             "pct_pacific_islander", "pct_two_or_more", "mobility_rate"]   # previous year's student make-up
+LAYERS = ["district", "geographic", "academic", "demographic", "region"]
 
 
 # ------------------------------------------------------------------------------------------- features
-def neighbour_features(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str) -> pd.DataFrame:
+def neighbour_features(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str | None) -> pd.DataFrame:
     """Weighted mean of neighbours' previous-year value and previous change, per layer.
 
     Uses <target>_lag1 and <target>_change_lag1 of neighbours, i.e. years t-1 and t-2 only.
@@ -54,6 +61,8 @@ def neighbour_features(nodes: pd.DataFrame, edges: dict, target: str, edge_set: 
     vals = nodes.set_index(["campus_id", "year"])[[f"{target}_lag1", f"{target}_change_lag1"]]
     out = nodes[["campus_id", "year"]].copy()
     for layer in LAYERS:
+        if layer == "academic" and edge_set is None:   # risk_index: every academic indicator is a component
+            continue
         e = edges[layer]
         if layer == "academic":
             e = e[e.edge_set == edge_set]          # similarity profile built without this target's family
@@ -70,7 +79,7 @@ def neighbour_features(nodes: pd.DataFrame, edges: dict, target: str, edge_set: 
     return out
 
 
-def feature_table(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str) -> tuple[pd.DataFrame, dict]:
+def feature_table(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str | None) -> tuple[pd.DataFrame, dict]:
     t = target
     df = nodes[["campus_id", "year", t, f"{t}_lag1", f"{t}_lag2", f"{t}_change_lag1", f"{t}_n_prior_obs",
                 "covid_affected_year", "is_charter", "urbanicity", "esc_region"]].copy()
@@ -80,6 +89,9 @@ def feature_table(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str) 
         if v != t:
             df[f"ctx_{v}_lag1"] = nodes[f"{v}_lag1"]
             ctx.append(f"ctx_{v}_lag1")
+    for v in DEMO_VARS:
+        df[f"demo_{v}_lag1"] = nodes[f"{v}_lag1"]
+        ctx.append(f"demo_{v}_lag1")
     for u in ["City", "Suburb", "Town", "Rural"]:
         df[f"urb_{u}"] = (df.urbanicity == u).astype(int)
     ctx += ["covid_affected_year", "is_charter"] + [f"urb_{u}" for u in ["City", "Suburb", "Town", "Rural"]]
@@ -136,6 +148,8 @@ def make(kind: str, params: dict, seed: int):
         return RandomForestRegressor(n_estimators=150, random_state=seed, n_jobs=-1, **params)
     if kind == "gb":
         return HistGradientBoostingRegressor(max_iter=200, random_state=seed, **params)
+    if kind == "xgb":
+        return XGBRegressor(n_estimators=200, random_state=seed, n_jobs=-1, tree_method="hist", **params)
     if kind == "knn":
         return make_pipeline(StandardScaler(), KNeighborsRegressor(**params))
     if kind == "lr":
@@ -147,6 +161,7 @@ GRIDS = {
     # light grid (kept small so the full run finishes in minutes on a laptop CPU)
     "rf": [{"min_samples_leaf": a, "max_features": 0.5} for a in [5, 20]],
     "gb": [{"learning_rate": a, "max_leaf_nodes": b, "min_samples_leaf": 20} for a, b in [(0.1, 15), (0.05, 31)]],
+    "xgb": [{"learning_rate": a, "max_depth": b, "min_child_weight": 20, "subsample": 0.8} for a, b in [(0.1, 4), (0.05, 6)]],
     "knn": [{"n_neighbors": k} for k in [10, 20, 40]],
     "lr": [{}],
 }
@@ -159,6 +174,8 @@ MODELS = {
     "gradient_boosting (+context)": ("gb", ["own", "ctx"]),
     "random_forest (+context +graph)": ("rf", ["own", "ctx", "graph"]),
     "gradient_boosting (+context +graph)": ("gb", ["own", "ctx", "graph"]),
+    "xgboost (+context)": ("xgb", ["own", "ctx"]),
+    "xgboost (+context +graph)": ("xgb", ["own", "ctx", "graph"]),
 }
 for layer in LAYERS:   # single-layer ablation on the strongest model family
     MODELS[f"gradient_boosting (+context +{layer} only)"] = ("gb", ["own", "ctx", f"graph:{layer}"])
@@ -190,8 +207,11 @@ def fit_predict(kind, params, seed, Xtr, ytr, Xte, target):
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["level", "relative", "zscore"], default="zscore")
-    mode = ap.parse_args().mode
-    out_dir = RES / mode
+    ap.add_argument("--targets", nargs="*", default=TARGETS, help="subset of targets (smoke tests)")
+    ap.add_argument("--out", default=None, help="output folder name under results/ (default: the mode)")
+    args = ap.parse_args()
+    mode = args.mode
+    out_dir = RES / (args.out or mode)
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"target mode: {mode} -> {out_dir}")
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID)
@@ -199,8 +219,8 @@ def main() -> None:
     sets = pd.read_csv(G / "academic_edge_sets.csv").set_index("target").edge_set
     preds, tuning = [], []
 
-    for target in TARGETS:
-        df, fg = feature_table(nodes, edges, target, sets[target])
+    for target in args.targets:
+        df, fg = feature_table(nodes, edges, target, sets.get(target))
         if mode in ("relative", "zscore"):
             df = make_relative(df, nodes, target, fg, scale=(mode == "zscore"))
         rows = df[df[target].notna() & df["_raw_lag1"].notna()]
@@ -217,7 +237,9 @@ def main() -> None:
                                            "y_pred": split_df["_raw_lag1"], "split": split}))
         for name, (kind, groups) in MODELS.items():
             X = cols_for(groups, fg)
-            # tune on 2022 with seed 0
+            if any(g.startswith("graph:") for g in groups) and not any(c in X for c in fg["graph"]):
+                continue                      # layer absent for this target (risk_index has no academic layer)
+            # tune on the validation year with seed 0
             best, best_mae = None, np.inf
             for params in GRIDS[kind]:
                 p = fit_predict(kind, params, 0, tr[X], tr["_y_fit"], va[X], target) * va["_scale"].to_numpy() + va["_offset"].to_numpy()
@@ -225,7 +247,7 @@ def main() -> None:
                 tuning.append({"target": target, "model": name, "params": str(params), "val_mae": score})
                 if score < best_mae:
                     best, best_mae = params, score
-            seeds = SEEDS if kind in ("rf", "gb") else [SEEDS[0]]
+            seeds = SEEDS if kind in ("rf", "gb", "xgb") else [SEEDS[0]]
             for s in seeds:
                 pv = fit_predict(kind, best, s, tr[X], tr["_y_fit"], va[X], target) * va["_scale"].to_numpy() + va["_offset"].to_numpy()
                 pt = fit_predict(kind, best, s, trva[X], trva["_y_fit"], te[X], target) * te["_scale"].to_numpy() + te["_offset"].to_numpy()
@@ -233,7 +255,7 @@ def main() -> None:
                     preds.append(pd.DataFrame({"model": name, "seed": s, "campus_id": split_df.campus_id,
                                                "year": split_df.year, "target": target,
                                                "y_true": split_df[target], "y_pred": p, "split": split}))
-            if kind not in ("rf", "gb"):          # deterministic: copy seed 0 so every model has 5 seeds
+            if kind not in ("rf", "gb", "xgb"):          # deterministic: copy seed 0 so every model has 5 seeds
                 last = [d for d in preds[-2:]]
                 for s in SEEDS[1:]:
                     preds += [d.assign(seed=s) for d in last]

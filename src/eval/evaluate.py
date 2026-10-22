@@ -23,7 +23,8 @@ PERSIST = "persistence (last year's value)"
 NO_GRAPH = "gradient_boosting (+context)"
 GRAPH = "gradient_boosting (+context +graph)"
 LABEL = {"act_composite": "ACT composite", "sat_total": "SAT total", "sat_act_above_criterion": "College-ready %",
-         "dropout_9_12": "Dropout rate 9-12", "attendance_rate": "Attendance rate"}
+         "dropout_9_12": "Dropout rate 9-12", "attendance_rate": "Attendance rate",
+         "retention_rate": "Grade retention %", "risk_index": "Academic Risk Index"}
 
 
 def metrics(g: pd.DataFrame) -> pd.Series:
@@ -82,14 +83,15 @@ def main() -> None:
 
     # figure: test MAE relative to persistence, per target
     order = [PERSIST, "linear_regression (own lags)", "knn (own lags)", "random_forest (own lags)",
-             "random_forest (+context)", NO_GRAPH, "random_forest (+context +graph)", GRAPH]
+             "random_forest (+context)", NO_GRAPH, "random_forest (+context +graph)", GRAPH,
+             "xgboost (+context)", "xgboost (+context +graph)"]
     tm = m[m.split == "test"]
     targets = list(LABEL)
-    fig, axes = plt.subplots(1, len(targets), figsize=(18, 4.2), sharey=True)
+    fig, axes = plt.subplots(1, len(targets), figsize=(24, 4.2), sharey=True)
     for ax, t in zip(axes, targets):
         d = tm[tm.target == t].set_index("model").reindex(order)
         rel = 100 * (d.mae / d.loc[PERSIST, "mae"] - 1)
-        colors = ["#9e9e9e"] * 6 + ["#7aa6d6", "#1f5fa8"]
+        colors = ["#9e9e9e"] * 6 + ["#7aa6d6", "#1f5fa8", "#9e9e9e", "#7aa6d6"]
         ax.barh(range(len(order)), rel, color=colors)
         ax.axvline(0, color="black", lw=0.8)
         ax.set_title(f"{LABEL[t]}\npersistence MAE {d.loc[PERSIST, 'mae']:.3g}", fontsize=10)
@@ -97,7 +99,7 @@ def main() -> None:
         ax.invert_yaxis()
     axes[0].set_yticks(range(len(order)))
     axes[0].set_yticklabels(order, fontsize=9)
-    fig.suptitle("2023 test year: error relative to 'same as last year' (left = better)", fontsize=12)
+    fig.suptitle("2024 test year: error relative to 'same as last year' (left = better)", fontsize=12)
     fig.tight_layout()
     fig.savefig(FIG / "test_mae_vs_persistence.png", dpi=150)
 

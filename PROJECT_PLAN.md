@@ -52,7 +52,7 @@ predicted on its own.
 
 ## 3. Master plan
 
-There are eight phases, from data to paper. Phases 1–2 are done; Phase 3 runs on a laptop; Phases 4–7 run on
+There are eight phases, from data to paper. Phases 1–3 are done (all on a laptop); Phases 4–7 run on
 Lightning AI GPUs. Each phase ends with a **gate**: the condition to meet before relying on its output.
 
 ### Phase 1 — Data (done)
@@ -76,14 +76,15 @@ Output: `data/graph/` (yearly nodes and edge files).
 
 Gate: passed (84/84 checks, including leakage tests).
 
-### Phase 3 — Evaluation protocol and non-graph baselines (laptop)
+### Phase 3 — Evaluation protocol and non-graph baselines (laptop, done)
 Output: one scoring script and the "numbers to beat".
 - [x] Fix the COVID distortion: three target versions (raw / vs yearly mean / vs yearly mean and spread), chosen per target on 2023; plus the 2018–2024 data, which makes COVID 2 of 4 training years
-- [ ] Re-run baselines with all targets (incl. retention, risk index) and demographic features: persistence, LR, KNN, RF, XGBoost
-- [ ] Breakdowns: urban/rural, ESC region, school size
-- [ ] Freeze the protocol: train 2018–2022, validate 2023, test 2024, 5 seeds, MAE/RMSE/R², paired bootstrap
+- [x] Re-run baselines with all targets (incl. retention, risk index) and demographic features: persistence, LR, KNN, RF, XGBoost
+- [x] Breakdowns: urban/rural, ESC region, school size (`results/breakdowns.csv`)
+- [x] Freeze the protocol: train 2018–2022, validate 2023, test 2024, 5 seeds, MAE/RMSE/R², paired bootstrap
 
 Gate: baselines beat persistence on every target, or the reason is understood.
+Result: beat on ACT, college-ready, dropout, risk index (significant). SAT and retention: ahead but not significant. Attendance: no model beats persistence — see `DECISIONS.md` (2026-10-22). Numbers to beat: `results/selection.csv`.
 
 ### Phase 4 — GPU environment (Lightning AI)
 Output: a cloud Studio that reproduces our data and runs a graph model.
@@ -103,7 +104,7 @@ Output: prediction files for each model in the shared format.
 
 These take one graph, so run them on the combined edges and on the strongest single relation.
 
-Gate: each tuned on 2022 as carefully as our own model.
+Gate: each tuned on 2023 (validation) as carefully as our own model.
 
 ### Phase 6 — The proposed model (PPT slide 14)
 Output: the model, its predictions and attention weights.
@@ -111,8 +112,8 @@ Output: the model, its predictions and attention weights.
 - [ ] Spatial encoder: relation-aware graph attention (one attention per edge type) or a Heterogeneous Graph Transformer
 - [ ] Temporal encoder: GRU across the yearly snapshots
 - [ ] Multi-task heads, one per target
-- [ ] Training: masked loss for missing targets, per-target scaling, early stopping on 2022
-- [ ] Tune on 2022 only; final run on 2023 with 5 seeds
+- [ ] Training: masked loss for missing targets, per-target scaling, early stopping on 2023
+- [ ] Tune on 2023 only; final run on 2024 with 5 seeds
 
 Gate: beats the best baseline on the validation year.
 
@@ -198,6 +199,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 **2026-10-22**
 - Data extended to 2018–2024; split changed to train 2018–2022, validate 2023, test 2024 — team.
 - All raw file names moved to `configs/data_sources.yaml` — data lead.
+- Phase 3 closed: protocol frozen (train 2018–2022, select on 2023, test 2024); numbers to beat in `results/selection.csv`; attendance stays at persistence — team.
 - COVID fix: models predict each school's position relative to the yearly statewide average (and spread); results report statewide-shift and school-level error separately — team.
 
 **2026-10-20**
@@ -226,7 +228,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 
 - [ ] **Transition edges:** keep in scope? Needs middle schools and feeder data TEA doesn't publish (options:
   NCES attendance boundaries, district websites, a labelled proxy).
-- [ ] **Graph settings:** preferred neighbour counts, distance limit, similarity measure, or tune on 2022?
+- [ ] **Graph settings:** preferred neighbour counts, distance limit, similarity measure, or tune on 2023?
 - [ ] **Risk Index weights:** accept last year's defaults, or supply the tuned weights from the original output workbook?
 - [ ] **Last year's code:** dropout and retention scored in the wrong direction in the risk index; weight tuning
   is circular; Table 6 scores missing values as 0. How should the paper refer to this?
