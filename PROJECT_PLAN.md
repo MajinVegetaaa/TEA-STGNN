@@ -200,6 +200,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 **2026-10-22**
 - Data extended to 2017–2024; split changed to train 2017–2022, validate 2023, test 2024 — team.
 - All raw file names moved to `configs/data_sources.yaml` — data lead.
+- 2017 added as a data year and Phase 3 re-run: same conclusions, no accuracy gain (see `DECISIONS.md`) — team.
 - Phase 3 closed: protocol frozen (train 2017–2022, select on 2023, test 2024); numbers to beat in `results/selection.csv`; attendance stays at persistence — team.
 - COVID fix: models predict each school's position relative to the yearly statewide average (and spread); results report statewide-shift and school-level error separately — team.
 
