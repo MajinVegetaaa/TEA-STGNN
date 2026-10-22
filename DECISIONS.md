@@ -27,3 +27,4 @@ Format: date — decision — who decided.
 - 2026-10-22 — All raw file names and years moved to configs/data_sources.yaml; pipeline, validators, audit and setup read it — data lead
 - 2026-10-22 — Older retention masks ("-", "<200", "<0.1") treated as suppressed; SAT total vs ERW+Math allowed ±5 (3 rows in 2018 published 2–4 apart) — data lead
 - 2026-10-22 — Split: train 2018–2022, validate 2023, test 2024 (training targets in practice 2019–2022) — user
+- 2026-10-22 — Baseline target version chosen per target on the 2023 validation year: level for ACT, SAT, college-ready; relative for dropout; attendance: no model beat persistence on 2023, so persistence is its baseline. 2024 test: ACT −8.6%, college-ready −10.8%, dropout −6.5% vs persistence (significant); SAT −2.1% (not significant); attendance tie — Phase 3

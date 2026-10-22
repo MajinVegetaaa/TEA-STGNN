@@ -78,7 +78,7 @@ Gate: passed (84/84 checks, including leakage tests).
 
 ### Phase 3 — Evaluation protocol and non-graph baselines (laptop)
 Output: one scoring script and the "numbers to beat".
-- [ ] Fix the COVID distortion for attendance and dropout: year effects, or predict year-over-year change
+- [x] Fix the COVID distortion: three target versions (raw / vs yearly mean / vs yearly mean and spread), chosen per target on 2023; plus the 2018–2024 data, which makes COVID 2 of 4 training years
 - [ ] Re-run baselines with all targets (incl. retention, risk index) and demographic features: persistence, LR, KNN, RF, XGBoost
 - [ ] Breakdowns: urban/rural, ESC region, school size
 - [ ] Freeze the protocol: train 2018–2022, validate 2023, test 2024, 5 seeds, MAE/RMSE/R², paired bootstrap
