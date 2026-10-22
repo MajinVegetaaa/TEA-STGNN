@@ -65,7 +65,7 @@ LOCATIONS = SRC["locations"]
 CHRONIC_FROM = 2020   # TEA first published chronic absenteeism for 2019-20
 
 # Indicator code (between group code and 2-digit year) -> (clean name, source file kind, description, unit).
-# Only indicators published as a rate/average (suffix R) in all five years are kept, so every column means
+# Only indicators published as a rate/average (suffix R) in all years are kept, so every column means
 # the same thing every year. ACT codes verified against the 2023 description row: CAA = ACT composite
 # average, CAC = ACT Science (NOT composite, as the earlier audit dictionary assumed).
 INDICATORS = {
@@ -490,6 +490,12 @@ def main() -> None:
     for v in DEMOG_NAMES[1:] + ["retention_rate"]:
         log(f"out-of-range values: {v} [0,100]", int((~m[v].between(0, 100) & m[v].notna()).sum()), "master")
     log("retention numerator > denominator", int((m.retention_count > m.retention_denominator).sum()), "master")
+    # published but not comparable across a definition change: blank and flag (configs/data_sources.yaml: known_breaks)
+    for v, br in SRC.get("known_breaks", {}).items():
+        hit = m.year.isin(br["years"]) & m[v].notna()
+        m.loc[hit, v] = np.nan
+        m.loc[m.year.isin(br["years"]), f"{v}_supp"] = np.int8(4)
+        log(f"known break: {v} blanked", int(hit.sum()), ",".join(map(str, br["years"])), br["why"])
     # ---------------- Academic Risk Index (corrected Eq. 1; within-year percentiles over the cohort)
     ri = risk_index.compute(m, YEARS)
     m[["risk_index", "risk_index_coverage"]] = ri[["risk_index", "risk_index_coverage"]]
@@ -606,7 +612,7 @@ def write_dictionary(m: pd.DataFrame, meta: pd.DataFrame, tf: pd.DataFrame) -> N
         src = "CCAD (college admissions)" if kind == "ccad" else "CDROP_ATT (attendance/dropout)"
         rows.append(("master_school_year", name, f"{desc}; All Students; target" if name in TARGETS else f"{desc}; All Students",
                      f"{src}: CA0{code}{{yy}}R", unit))
-        rows.append(("master_school_year", f"{name}_supp", f"Suppression of {name}: 0 none, 1 raw -1 (small-group mask), 2 raw -2", f"CA0{code}{{yy}}R", "code"))
+        rows.append(("master_school_year", f"{name}_supp", f"Suppression of {name}: 0 none, 1 raw -1 (small-group mask), 2 raw -2, 4 blanked: not comparable across a definition change", f"CA0{code}{{yy}}R", "code"))
     rows += [("master_school_year", "retention_rate", "Grade-level retention rate, all grades (% of students retained in grade the following fall); target", "Grade-Level Retention campus file, GRADE=AG, CAMP_ALLR", "percent"),
              ("master_school_year", "retention_count", "Students retained (numerator)", "CAMP_ALLN", "students"),
              ("master_school_year", "retention_denominator", "Students enrolled who returned or graduated (denominator)", "CAMP_ALLD", "students"),

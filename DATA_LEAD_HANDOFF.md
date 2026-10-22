@@ -1,5 +1,5 @@
-# Data lead handoff — TEA STGNN (2018–2024)
-> **Updated 2026-10-22: the data now covers 2018–2024** (7 years; 2017 files are on disk for later). Years and files are listed in `configs/data_sources.yaml`.
+# Data lead handoff — TEA STGNN (2017–2024)
+> **Updated 2026-10-22: the data now covers 2017–2024** (8 years). Years and files are listed in `configs/data_sources.yaml`. The 2017 college-ready % is blanked (definition change, see below).
 
 
 This is the hand-off from the data stage (Person A) to the baselines/evaluation (B) and graph/model (C)
@@ -11,14 +11,14 @@ Inputs: `Dataset.zip` plus the TAPR profile and Grade-Level Retention downloads,
 
 | Source | Years | Content |
 |---|---|---|
-| TEA campus college admissions (CCAD / "Campus College Admissions"; 2018 from CAMPPERF) | 2018–2024 | SAT, ACT, participation, criterion |
-| TEA campus attendance & dropout (CDROP_ATT; 2018 from CAMPGRAD) | 2018–2024 | attendance, chronic absenteeism (2020+), dropout |
+| TEA campus college admissions (CCAD / "Campus College Admissions"; 2018 from CAMPPERF) | 2017–2024 | SAT, ACT, participation, criterion |
+| TEA campus attendance & dropout (CDROP_ATT; 2018 from CAMPGRAD) | 2017–2024 | attendance, chronic absenteeism (2020+), dropout |
 | TEA Directory (`Directory.csv`) | Oct 2025 snapshot | district, ESC region, charter, AEA, grades, NCES ID |
 | NCES Public School Locations | 2024–25 | latitude/longitude, locale |
-| TAPR campus student information | 2018–2024 | enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility |
+| TAPR campus student information | 2017–2024 | enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility |
 | Grade-Level Retention | 2020–2023 (2019 not downloaded) | all-grades retention rate |
 
-**Years covered: 2018–2024** (from `configs/data_sources.yaml`). `year` is the school-year end or graduating class (2024 = 2023–24). The
+**Years covered: 2017–2024** (from `configs/data_sources.yaml`). `year` is the school-year end or graduating class (2024 = 2023–24). The
 "2024 …" files in the `2023/` folder hold 2023 data; this was verified from the column codes and against the
 old Excel file.
 
@@ -27,9 +27,9 @@ These rules are applied to the Directory:
 - Instruction type REGULAR
 - not AEA
 - the grade range includes grade 12
-- TEA reported a graduating class (SAT/ACT participation) in at least one year of 2018–2024
+- TEA reported a graduating class (SAT/ACT participation) in at least one year of 2017–2024
 
-That gives **1,670 schools**. 1,616 of them are present in all 7 years, and 1,644 serve the full 9–12 span
+That gives **1,670 schools**. 1,591 of them are present in all 8 years, and 1,644 serve the full 9–12 span
 (`serves_full_9_12 = 1`). The other 9 are senior highs such as Plano Senior (11–12) and Allen (10–12).
 Excluded campuses that reported graduates:
 - 333 alternative, DAEP or JJAEP campuses
@@ -37,7 +37,7 @@ Excluded campuses that reported graduates:
 - 80 campuses missing from the 2025 Directory
 
 ## 3. Master dataset
-`data/processed/master_school_year.csv` has **11,546 rows** (one per campus-year) and **55 columns**.
+`data/processed/master_school_year.csv` has **13,140 rows** (one per campus-year) and **55 columns**.
 Per year: 1,623 · 1,633 · 1,643 · 1,652 · 1,651.
 
 All targets below are All-Students values for year t. Non-missing counts by year (2019 → 2023):
@@ -120,36 +120,34 @@ profile, and no set uses any year-t value. When training a model for target T, l
 - Participation 4.5%, criterion 6.7%, attendance 0.8%, dropout 1.1%.
 
 **Limitations:**
-1. **Short history:** 7 years. The 2018 nodes have no lags and no academic or demographic edges, and 3-year features exist
-   only for 2022–2023.
+1. **Short history:** 8 years. The 2017 nodes have no lags and no academic or demographic edges, and 3-year features exist
+   only for 2020–2024.
 2. **Survivorship:** the cohort is defined by the 2025 Directory, so 80 closed or renumbered campuses are
    excluded.
 3. **Static metadata from 2025:** district, region, grade range and coordinates are applied to every year.
-4. **Retention for 2019 is missing** (the 2018-19 file was not downloaded), so the 2019 risk index has no
-   retention or decline term. **Risk Index weights** are last year's defaults, not re-tuned, and are pending
+4. **Retention** covers 98–100% of school-years (2017: 98%). **Risk Index weights** are last year's defaults, not re-tuned, and are pending
    professor review.
-5. **Possible definition change:** the "above criterion" average falls from 31.6% to 25.0% over 2019–2023 (check 2018 and 2024 too).
-   Check TEA's glossary before using it as a target.
+5. **Definition change confirmed for 2017:** the "above criterion" statewide mean is 19.3% in 2017 and 34.8% in 2018 (median school +15.2 points, against −1.5 the year after). The 2017 values are blanked and flagged (`sat_act_above_criterion_supp` = 4; `known_breaks` in `configs/data_sources.yaml`). It also falls from 31.6% to 25.0% over 2019–2023; check TEA's glossary before using it as a target. SAT total ≠ ERW + Math by 2–12 points in 7% of 2017 rows (0.2% in 2018, none after); kept, with a looser check for 2017.
 6. **Undocumented code:** the meaning of `-2` is not documented (33 cells).
 7. **COVID:** 2021 has fewer ACT results. `covid_affected_year` flags 2020–2021.
 8. **⚠️ Graph parameters flagged for professor review:** k, radius, τ and profile features are reasoned
    defaults in `configs/graph.yaml` (`status: pending_professor_review`, Q10).
-9. **Split:** `configs/split.yaml` = train 2018–2022, validate 2023, test 2024. The 2018 rows have no
-   history, so the effective training targets are 2019–2022.
+9. **Split:** `configs/split.yaml` = train 2017–2022, validate 2023, test 2024. The 2017 rows have no
+   history, so the effective training targets are 2018–2022.
 
 ## 8. Files and schemas
 
 | Path | Rows × cols | Key | Content |
 |---|---|---|---|
-| `data/processed/master_school_year.csv` | 11,546 × 55 | campus_id, year | indicators, retention, risk index, demographics, `_supp` flags, district/region, source files |
-| `data/processed/risk_index_components.csv` | 11,546 × 13 | campus_id, year | the 9 risk components and weight coverage |
+| `data/processed/master_school_year.csv` | 13,140 × 55 | campus_id, year | indicators, retention, risk index, demographics, `_supp` flags, district/region, source files |
+| `data/processed/risk_index_components.csv` | 13,140 × 13 | campus_id, year | the 9 risk components and weight coverage |
 | `data/processed/school_metadata.csv` | 1,670 × 31 | campus_id | Directory + NCES static metadata |
-| `data/processed/temporal_features.csv` | 11,546 × 132 | campus_id, year | lag/MA/trend features |
+| `data/processed/temporal_features.csv` | 13,140 × 132 | campus_id, year | lag/MA/trend features |
 | `data/processed/subgroup_school_year.csv` | long | campus_id, year, group, indicator | subgroup outcomes |
 | `data/processed/data_dictionary.csv` | — | file, column | descriptions, raw codes, units |
 | `data/processed/reports/data_quality_report.csv` | — | — | build-time checks and counts |
 | `data/processed/reports/processed_validation.csv` | 64 | — | independent re-validation results |
-| `data/graph/nodes.csv` | 11,546 × 200 | campus_id, year (`node_index` per year) | node table |
+| `data/graph/nodes.csv` | 13,140 × 200 | campus_id, year (`node_index` per year) | node table |
 | `data/graph/node_feature_catalog.csv` | 200 | column | static / annual / target role |
 | `data/graph/edges_<type>.csv` | see §6 | — | `src_campus_id, dst_campus_id, src_year, dst_year, year, edge_type, weight, directed, distance, method` |
 | `data/graph/reports/graph_quality_report.csv` | 225 | — | graph checks |
@@ -204,10 +202,10 @@ python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 | graph_quality_report.csv, GRAPH_DATA_DOCUMENTATION.md | ✅ pass | 84 pass / 0 fail |
 | Retention target | ✅ pass (2020–2023) | 2019 missing: 2018-19 file not downloaded |
 | Academic Risk Index | ✅ pass (weights pending review) | corrected Eq. 1; 40/40 hand-recomputed; direction and no-future tests pass |
-| split.yaml | ✅ done | train 2018–2022 / val 2023 / test 2024 |
+| split.yaml | ✅ done | train 2017–2022 / val 2023 / test 2024 |
 | Graph parameters confirmed by professor | ⚠️ flagged | `configs/graph.yaml` status pending_professor_review |
 
-**Verdict:** the 2018–2024 school × year dataset, the retention target and 6 of the 7 edge types pass
+**Verdict:** the 2017–2024 school × year dataset, the retention target and 6 of the 7 edge types pass
 validation and can be used for baselines and graph models. Still incomplete: transition edges (need feeder
 data the PPT doesn't list) and 2019 retention (needs the 2018-19 file). Risk Index weights await the professor's
 review.

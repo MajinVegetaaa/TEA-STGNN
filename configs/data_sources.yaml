@@ -4,10 +4,11 @@
 #
 # header_rows: 2 for files with an English description row above the column codes (TEA's newer downloads).
 
-years: [2018, 2019, 2020, 2021, 2022, 2023, 2024]
+years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
 
 # SAT/ACT (CCAD). Note TEA's one-year lag: data year Y is published in the (Y)-(Y+1) TAPR report.
 sat_act:
+  2017: {file: 01_sat_act/2017/CAMPPERF.dat, header_rows: 1}      # TAPR 2017-18, "Postsecondary Indicators"
   2018: {file: 01_sat_act/2018/CAMPPERF.dat, header_rows: 1}      # TAPR 2018-19, "Postsecondary Indicators"
   2019: {file: 01_sat_act/2019/CCAD.dat, header_rows: 1}
   2020: {file: 01_sat_act/2020/CCAD.csv, header_rows: 1}
@@ -18,6 +19,7 @@ sat_act:
 
 # Attendance, chronic absenteeism (published from 2020), dropout (COTHR / CDROP_ATT)
 attendance_dropout:
+  2017: {file: 02_attendance_dropout/2017/CAMPGRAD.dat, header_rows: 1}
   2018: {file: 02_attendance_dropout/2018/CAMPGRAD.dat, header_rows: 1}
   2019: {file: 02_attendance_dropout/2019/CDROP_ATT.dat, header_rows: 1}
   2020: {file: 02_attendance_dropout/2020/CDROP_ATT.csv, header_rows: 1}
@@ -28,6 +30,7 @@ attendance_dropout:
 
 # TAPR campus student information (no lag: data year Y is in the (Y-1)-(Y) report)
 demographics:
+  2017: {file: 03_demographics_tapr/2017.dat, header_rows: 1}
   2018: {file: 03_demographics_tapr/2018.dat, header_rows: 1}
   2019: {file: 03_demographics_tapr/2019.dat, header_rows: 1}
   2020: {file: 03_demographics_tapr/2020.dat, header_rows: 1}
@@ -36,8 +39,9 @@ demographics:
   2023: {file: 03_demographics_tapr/2023.csv, header_rows: 1}
   2024: {file: "03_demographics_tapr/2024 Campus Student Information.csv", header_rows: 2}
 
-# Grade-level retention, campus Excel files; file (Y-1)(Y) = school year (Y-1)-Y = data year Y
+# Grade-level retention, campus Excel files (2017: fetched 2026-10-22 from TEA under the 2017-18 file naming); file (Y-1)(Y) = school year (Y-1)-Y = data year Y
 retention:
+  2017: {file: 04_retention/campus-download-1617.xlsx}
   2018: {file: 04_retention/campus-download-1718.xlsx}
   2019: {file: 04_retention/campus-download-ret-1819.xlsx}
   2020: {file: 04_retention/campus-download-ret-1920.xlsx}
@@ -46,14 +50,10 @@ retention:
   2023: {file: 04_retention/campus-download-ret-2223.xlsx}
   2024: {file: 04_retention/campus-download-ret-2324.xlsx}
 
+# Values that are published but not comparable with the next year (definition changed) are blanked in the master
+# table and flagged with <indicator>_supp = 4. Evidence: 2017 -> 2018 median school change vs the next year's.
+known_breaks:
+  sat_act_above_criterion: {years: [2017], why: "college-ready criterion changed: statewide mean 19.3 (2017) -> 34.8 (2018); median school +15.2 pts vs -1.5 the year after"}
+
 directory: 05_school_directory/Directory.csv
 locations: 06_school_locations/Public_School_Locations_-_Current.csv
-
-# On disk but not used yet: 2017 (SAT/ACT, attendance, demographics, retention). The 2016-17 retention file was
-# fetched 2026-10-22 from the file name TEA's 2017-18 page uses (the 2016-17 page links a retired path that 404s).
-# Checked: title "2016-17", 8,649 all-grades rows, 11.8% of rates identical to 2017-18 (not copied).
-not_yet_used:
-  sat_act: {2017: 01_sat_act/2017/CAMPPERF.dat}
-  attendance_dropout: {2017: 02_attendance_dropout/2017/CAMPGRAD.dat}
-  demographics: {2017: 03_demographics_tapr/2017.dat}
-  retention: {2017: 04_retention/campus-download-1617.xlsx}
