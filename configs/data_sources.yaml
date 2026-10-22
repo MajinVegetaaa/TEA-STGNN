@@ -49,9 +49,11 @@ retention:
 directory: 05_school_directory/Directory.csv
 locations: 06_school_locations/Public_School_Locations_-_Current.csv
 
-# On disk but not used yet: 2017 (SAT/ACT, attendance, demographics); its 2016-17 retention is not downloadable
-# (TEA's link is broken) and will be fetched from TEA's per-campus reports later.
+# On disk but not used yet: 2017 (SAT/ACT, attendance, demographics, retention). The 2016-17 retention file was
+# fetched 2026-10-22 from the file name TEA's 2017-18 page uses (the 2016-17 page links a retired path that 404s).
+# Checked: title "2016-17", 8,649 all-grades rows, 11.8% of rates identical to 2017-18 (not copied).
 not_yet_used:
   sat_act: {2017: 01_sat_act/2017/CAMPPERF.dat}
   attendance_dropout: {2017: 02_attendance_dropout/2017/CAMPGRAD.dat}
   demographics: {2017: 03_demographics_tapr/2017.dat}
+  retention: {2017: 04_retention/campus-download-1617.xlsx}

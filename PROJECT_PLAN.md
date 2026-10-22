@@ -62,7 +62,8 @@ Output: `data/processed/` (`master_school_year.csv`, `school_metadata.csv`, `tem
 - [x] Add geography (NCES coordinates), TAPR demographics, grade-level retention
 - [x] History features from earlier years only
 - [x] Corrected Academic Risk Index
-- [ ] Optional: add 2018-19 retention to fill 2019
+- [x] Add 2018-19 retention to fill 2019
+- [x] Fetch 2016-17 retention (on disk, not yet in the pipeline: adding 2017 as a data year needs a team decision)
 
 Gate: passed (64/64 independent checks).
 
