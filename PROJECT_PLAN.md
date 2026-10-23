@@ -90,9 +90,10 @@ Result: beat on ACT, college-ready, dropout, risk index (significant). SAT and r
 ### Phase 4 — GPU environment (Lightning AI)
 Output: a cloud Studio that reproduces our data and runs a graph model.
 - [x] Pin versions: `requirements.txt` (pipeline + baselines) and `requirements-gpu.txt` (torch 2.12.1, PyG, PyG Temporal);
-  tested in fresh Python 3.12 environments. Python 3.12, not 3.11: xgboost 3.4.1 (used for the Phase 3 numbers) needs ≥3.12.
+  Python 3.13, the laptop's version (3.12 also works; not 3.11: xgboost 3.4.1, used for the Phase 3 numbers, needs ≥3.12).
+  Fresh 3.13 environment: 89 / 65 / 86 / 60 checks pass and Phase 3 ACT predictions match the laptop's (max difference 3e-14).
   torch 2.12.1, not the newest: PyG Temporal needs `torch_sparse`, which has builds for 2.12.1 but none for 2.13+.
-- [ ] Studio: Python 3.12, torch from the CUDA wheel index, then both requirements files (steps below)
+- [ ] Studio: Python 3.13, torch from the CUDA wheel index, then both requirements files (steps below)
 - [ ] Clone the repo, upload the raw data, rebuild and validate (Section 4)
 - [x] Convert yearly CSVs to PyTorch Geometric snapshots: `src/graphs/to_pyg.py` → `data/graph/pyg/snapshots.pt`
   (one `HeteroData` per year, fixed 1,670-campus order, 273 inputs, 60/60 self-checks incl. evaluation rows = Phase 3 rows)
@@ -100,11 +101,13 @@ Output: a cloud Studio that reproduces our data and runs a graph model.
 - [ ] Smoke test on the Studio GPU; time one run to estimate GPU-hours
 
 Studio steps (needs the account owner):
-1. New Studio (CPU is enough for steps 2–4); Python 3.12.
+1. New Studio (CPU is enough for steps 2–4); Python 3.13 (check `python --version`).
 2. `git clone https://github.com/MajinVegetaaa/TEA-STGNN.git && cd TEA-STGNN`
 3. Upload `data/raw/` (538 MB; not in git) to the same path, or upload `Dataset.zip` plus the TAPR and retention
    folders and run `src/data/setup_raw.py`.
 4. `pip install -r requirements.txt`, then run the four rebuild-and-validate commands in the README (expect 89 / 65 / 86 checks).
+   The rebuilt `edges_academic.csv` breaks one distance tie (2024, excl_criterion) differently from the laptop build
+   (depends on the numpy build, see `DECISIONS.md`); for byte-identical Phase 3 inputs, upload the laptop's `data/graph/` too.
 5. Switch to a GPU; `pip install torch==2.12.1 --index-url https://download.pytorch.org/whl/cu130` (cu126 if
    `nvidia-smi` shows an older driver), then
    `pip install -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html`; `python src/graphs/to_pyg.py` (60/60);
@@ -155,8 +158,7 @@ small experiments.
 
 **One-time setup**
 1. Create a Studio; start it on a CPU machine.
-2. Python 3.11 environment: install PyTorch with CUDA, PyTorch Geometric and PyTorch Geometric Temporal; pin the
-   working versions in `requirements.txt` and commit it.
+2. Python 3.13 environment: install torch with CUDA, then `requirements.txt` and `requirements-gpu.txt` (Phase 4 steps).
 3. `gh auth login`, then clone `MajinVegetaaa/TEA-STGNN`.
 4. Upload `Dataset.zip` and the TAPR and retention download folders into the Studio's persistent storage (never into git); `setup_raw.py` places them in `data/raw/`.
 5. Rebuild and check:
@@ -214,7 +216,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 `DECISIONS.md`.
 
 **2026-10-23**
-- Phase 4 laptop side: Python 3.12 (xgboost needs it), torch 2.12.1 so PyG Temporal works, snapshot converter and CPU smoke test done — team.
+- Phase 4 laptop side: Python 3.13 (3.12+; xgboost needs it), torch 2.12.1 so PyG Temporal works, snapshot converter and CPU smoke test done — team.
 - 2017 tried as a data year and dropped: unusable columns and no accuracy gain; data stays 2018–2024 and the 2018–2024 Phase 3 results stand — user.
 
 **2026-10-22**

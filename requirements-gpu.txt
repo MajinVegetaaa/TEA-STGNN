@@ -1,10 +1,10 @@
-# Graph models (Phases 4-7), on top of requirements.txt. Python 3.12+ (xgboost 3.4.1 in requirements.txt needs it).
+# Graph models (Phases 4-7), on top of requirements.txt. Python 3.13 (3.12+ works; xgboost 3.4.1 needs ≥3.12).
 # torch 2.12.1 (not the newest): PyG publishes torch_sparse / torch_scatter builds for it, which PyTorch Geometric
 # Temporal needs; there are none for torch 2.13+. Install order on the Lightning AI Studio (CUDA 13.0 shown; use
 # cu126 if the driver is older, see nvidia-smi):
 #   pip install torch==2.12.1 --index-url https://download.pytorch.org/whl/cu130
 #   pip install -r requirements.txt -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html
-# Laptop CPU: same, with +cpu in the -f URL. Tested on macOS arm64, Python 3.12 (CPU): all import, converter 60/60.
+# Laptop CPU: same, with +cpu in the -f URL. Tested on macOS arm64 (CPU), fresh Python 3.12 and 3.13: all import, all checks pass.
 torch==2.12.1
 torch_geometric==2.8.1
 torch_scatter==2.1.2
