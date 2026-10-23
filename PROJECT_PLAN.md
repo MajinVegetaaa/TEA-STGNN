@@ -93,12 +93,14 @@ Output: a cloud Studio that reproduces our data and runs a graph model.
   Python 3.13, the laptop's version (3.12 also works; not 3.11: xgboost 3.4.1, used for the Phase 3 numbers, needs ≥3.12).
   Fresh 3.13 environment: 89 / 65 / 86 / 60 checks pass and Phase 3 ACT predictions match the laptop's (max difference 3e-14).
   torch 2.12.1, not the newest: PyG Temporal needs `torch_sparse`, which has builds for 2.12.1 but none for 2.13+.
-- [ ] Studio: Python 3.13, torch from the CUDA wheel index, then both requirements files (steps below)
-- [ ] Clone the repo, upload the raw data, rebuild and validate (Section 4)
+- [x] Studio: Python 3.13, torch from the CUDA wheel index, then both requirements files (steps below)
+- [x] Clone the repo, upload the raw data, rebuild and validate (Section 4): audit 89, data 65, graph 86 checks pass on the Studio
 - [x] Convert yearly CSVs to PyTorch Geometric snapshots: `src/graphs/to_pyg.py` → `data/graph/pyg/snapshots.pt`
   (one `HeteroData` per year, fixed 1,670-campus order, 273 inputs, 60/60 self-checks incl. evaluation rows = Phase 3 rows)
 - [x] Smoke test on laptop CPU: `src/models/smoke_test.py` (SAGEConv per relation + GRU across years), ACT, 0.12 s/epoch
-- [ ] Smoke test on the Studio GPU; time one run to estimate GPU-hours
+- [x] Smoke test on the Studio GPU: ACT, 150 epochs in 5.1 s (0.03 s/epoch; Studio CPU 0.61, laptop 0.17);
+  validation MAE 1.2052 at epoch 25 (laptop 1.2051), persistence 1.2936. Converter 46/46 there: the 14 Phase 3 row
+  checks need the gitignored `results/level/predictions.csv` (upload it for 60/60).
 
 Studio steps (needs the account owner):
 1. New Studio (CPU is enough for steps 2–4); Python 3.13 (check `python --version`).
@@ -113,7 +115,7 @@ Studio steps (needs the account owner):
    `pip install -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html`; `python src/graphs/to_pyg.py` (60/60);
    `python src/models/smoke_test.py --target act_composite --out /tmp/smoke`.
 
-Gate: validators pass in the cloud and one model trains.
+Gate: validators pass in the cloud and one model trains. **Passed 2026-10-23.**
 
 ### Phase 5 — Standard STGNN baselines (PPT slide 16)
 Output: prediction files for each model in the shared format.
@@ -216,6 +218,8 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 `DECISIONS.md`.
 
 **2026-10-23**
+- Phase 4 closed: validators pass on the Studio and the smoke test runs on its GPU — team.
+- Smoke test runs on the Studio GPU: 0.03 s/epoch, same validation curve as the laptop up to epoch 50 — team.
 - Phase 4 laptop side: Python 3.13 (3.12+; xgboost needs it), torch 2.12.1 so PyG Temporal works, snapshot converter and CPU smoke test done — team.
 - 2017 tried as a data year and dropped: unusable columns and no accuracy gain; data stays 2018–2024 and the 2018–2024 Phase 3 results stand — user.
 
