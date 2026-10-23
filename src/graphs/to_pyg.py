@@ -165,6 +165,9 @@ def check(snaps, nodes, edges, campuses, names) -> None:
                 mine = {campuses[i] for i in m.nonzero().flatten().tolist()}
                 theirs = set(p[(p.target == t) & (p.year == y)].campus_id)
                 rec(f"eval rows = Phase 3 rows: {t} {y}", mine == theirs, f"{len(mine)} vs {len(theirs)}")
+    else:
+        print(f"SKIP  eval rows = Phase 3 rows ({len(TARGETS) * len(SPLIT['val_years'] + SPLIT['test_years'])} checks): "
+              f"{pred.relative_to(ROOT)} not found (gitignored; upload it or run Phase 3 to enable)")
     print(f"\n{sum(ok)}/{len(ok)} checks passed")
     assert all(ok), "converter self-checks failed"
 
