@@ -89,9 +89,9 @@ Result: beat on ACT, college-ready, dropout, risk index (significant). SAT and r
 
 ### Phase 4 — GPU environment (Lightning AI)
 Output: a cloud Studio that reproduces our data and runs a graph model.
-- [x] Pin versions: `requirements.txt` (pipeline + baselines) and `requirements-gpu.txt` (torch, PyG); tested in fresh
-  Python 3.12 environments. Python 3.12, not 3.11: xgboost 3.4.1 (used for the Phase 3 numbers) needs ≥3.12.
-  PyTorch Geometric Temporal dropped: it needs `torch_sparse`, which has no wheel for current torch.
+- [x] Pin versions: `requirements.txt` (pipeline + baselines) and `requirements-gpu.txt` (torch 2.12.1, PyG, PyG Temporal);
+  tested in fresh Python 3.12 environments. Python 3.12, not 3.11: xgboost 3.4.1 (used for the Phase 3 numbers) needs ≥3.12.
+  torch 2.12.1, not the newest: PyG Temporal needs `torch_sparse`, which has builds for 2.12.1 but none for 2.13+.
 - [ ] Studio: Python 3.12, torch from the CUDA wheel index, then both requirements files (steps below)
 - [ ] Clone the repo, upload the raw data, rebuild and validate (Section 4)
 - [x] Convert yearly CSVs to PyTorch Geometric snapshots: `src/graphs/to_pyg.py` → `data/graph/pyg/snapshots.pt`
@@ -105,8 +105,9 @@ Studio steps (needs the account owner):
 3. Upload `data/raw/` (538 MB; not in git) to the same path, or upload `Dataset.zip` plus the TAPR and retention
    folders and run `src/data/setup_raw.py`.
 4. `pip install -r requirements.txt`, then run the four rebuild-and-validate commands in the README (expect 89 / 65 / 86 checks).
-5. Switch to a GPU; `pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/<cuda tag>`,
-   `pip install -r requirements-gpu.txt`; `python src/graphs/to_pyg.py` (60/60);
+5. Switch to a GPU; `pip install torch==2.12.1 --index-url https://download.pytorch.org/whl/cu130` (cu126 if
+   `nvidia-smi` shows an older driver), then
+   `pip install -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html`; `python src/graphs/to_pyg.py` (60/60);
    `python src/models/smoke_test.py --target act_composite --out /tmp/smoke`.
 
 Gate: validators pass in the cloud and one model trains.
@@ -213,7 +214,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 `DECISIONS.md`.
 
 **2026-10-23**
-- Phase 4 laptop side: Python 3.12 (xgboost needs it), PyG Temporal dropped (recurrent models written on plain PyG), snapshot converter and CPU smoke test done — team.
+- Phase 4 laptop side: Python 3.12 (xgboost needs it), torch 2.12.1 so PyG Temporal works, snapshot converter and CPU smoke test done — team.
 - 2017 tried as a data year and dropped: unusable columns and no accuracy gain; data stays 2018–2024 and the 2018–2024 Phase 3 results stand — user.
 
 **2026-10-22**
