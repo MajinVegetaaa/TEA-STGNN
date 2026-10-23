@@ -89,10 +89,25 @@ Result: beat on ACT, college-ready, dropout, risk index (significant). SAT and r
 
 ### Phase 4 — GPU environment (Lightning AI)
 Output: a cloud Studio that reproduces our data and runs a graph model.
-- [ ] Studio with Python 3.11, PyTorch, PyTorch Geometric, PyTorch Geometric Temporal; pin versions in `requirements.txt`
+- [x] Pin versions: `requirements.txt` (pipeline + baselines) and `requirements-gpu.txt` (torch, PyG); tested in fresh
+  Python 3.12 environments. Python 3.12, not 3.11: xgboost 3.4.1 (used for the Phase 3 numbers) needs ≥3.12.
+  PyTorch Geometric Temporal dropped: it needs `torch_sparse`, which has no wheel for current torch.
+- [ ] Studio: Python 3.12, torch from the CUDA wheel index, then both requirements files (steps below)
 - [ ] Clone the repo, upload the raw data, rebuild and validate (Section 4)
-- [ ] Convert yearly CSVs to PyTorch Geometric snapshots (`HeteroData` per year)
-- [ ] Smoke test: one small GNN trains end to end; time one run to estimate GPU-hours
+- [x] Convert yearly CSVs to PyTorch Geometric snapshots: `src/graphs/to_pyg.py` → `data/graph/pyg/snapshots.pt`
+  (one `HeteroData` per year, fixed 1,670-campus order, 273 inputs, 60/60 self-checks incl. evaluation rows = Phase 3 rows)
+- [x] Smoke test on laptop CPU: `src/models/smoke_test.py` (SAGEConv per relation + GRU across years), ACT, 0.12 s/epoch
+- [ ] Smoke test on the Studio GPU; time one run to estimate GPU-hours
+
+Studio steps (needs the account owner):
+1. New Studio (CPU is enough for steps 2–4); Python 3.12.
+2. `git clone https://github.com/MajinVegetaaa/TEA-STGNN.git && cd TEA-STGNN`
+3. Upload `data/raw/` (538 MB; not in git) to the same path, or upload `Dataset.zip` plus the TAPR and retention
+   folders and run `src/data/setup_raw.py`.
+4. `pip install -r requirements.txt`, then run the four rebuild-and-validate commands in the README (expect 89 / 65 / 86 checks).
+5. Switch to a GPU; `pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/<cuda tag>`,
+   `pip install -r requirements-gpu.txt`; `python src/graphs/to_pyg.py` (60/60);
+   `python src/models/smoke_test.py --target act_composite --out /tmp/smoke`.
 
 Gate: validators pass in the cloud and one model trains.
 
@@ -198,6 +213,7 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 `DECISIONS.md`.
 
 **2026-10-23**
+- Phase 4 laptop side: Python 3.12 (xgboost needs it), PyG Temporal dropped (recurrent models written on plain PyG), snapshot converter and CPU smoke test done — team.
 - 2017 tried as a data year and dropped: unusable columns and no accuracy gain; data stays 2018–2024 and the 2018–2024 Phase 3 results stand — user.
 
 **2026-10-22**

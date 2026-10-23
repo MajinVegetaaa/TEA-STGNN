@@ -9,6 +9,8 @@ See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 - `src/data/` cleaning & features · `src/eval/` split & metrics · `src/baselines/` · `src/graphs/` · `src/models/`
 - `configs/data_sources.yaml` — every raw file and year used (2018–2024)
 - `configs/split.yaml` — train 2018–2022, validate 2023, test 2024; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
+- `requirements.txt` (pipeline, baselines) and `requirements-gpu.txt` (torch, PyG) — Python 3.12+
+- `src/graphs/to_pyg.py` — PyG snapshots (`data/graph/pyg/snapshots.pt`); `src/models/smoke_test.py` — Phase 4 smoke test
 - `results/level/`, `results/relative/`, `results/zscore/` — experiment runs (predictions format `model,seed,campus_id,year,target,y_true,y_pred`)
 
 ## Rebuild data and graph

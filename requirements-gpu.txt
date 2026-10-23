@@ -1,0 +1,9 @@
+# Graph models (Phases 4-7), on top of requirements.txt. Python 3.12+ (xgboost 3.4.1 in requirements.txt needs it).
+# On the Lightning AI Studio install torch from the CUDA wheel index that matches the Studio's driver, e.g.
+#   pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu128
+# then: pip install -r requirements.txt -r requirements-gpu.txt
+# Versions below were seen to install and import (CPU, macOS arm64, Python 3.12); re-check on the Studio.
+torch==2.14.1
+torch_geometric==2.8.1
+# torch-geometric-temporal is NOT listed: it imports torch_sparse (a compiled extension with no wheel for current
+# torch), so GConvGRU / T-GCN / A3TGCN are written on plain torch_geometric layers instead (see DECISIONS.md).
