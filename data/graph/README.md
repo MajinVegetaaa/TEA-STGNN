@@ -1,7 +1,7 @@
 # Graph data
 
 Built from `data/processed/` by `python3 src/graphs/build_graph_data.py`; checked by
-`python3 src/graphs/validate_graph.py`. One graph snapshot per year, 2017–2024. Full rules are in
+`python3 src/graphs/validate_graph.py`. One graph snapshot per year, 2018–2024. Full rules are in
 `GRAPH_DATA_DOCUMENTATION.md`.
 
 | File | What it holds |

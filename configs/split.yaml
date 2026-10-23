@@ -1,7 +1,7 @@
-# Temporal split for the 2017-2024 data (decided 2026-10-22). Never tune on the test year.
+# Temporal split for the 2018-2024 data (decided 2026-10-22). Never tune on the test year.
 # Everyone reads years from here. Row year = target year; features come from earlier years only,
-# so 2017 rows (no history) can't be forecasting targets: in practice training targets are 2018-2022.
-train_years: [2017, 2018, 2019, 2020, 2021, 2022]
+# so 2018 rows (no history) can't be forecasting targets: in practice training targets are 2019-2022.
+train_years: [2018, 2019, 2020, 2021, 2022]
 val_years: [2023]
 test_years: [2024]
 seeds: [0, 1, 2, 3, 4]

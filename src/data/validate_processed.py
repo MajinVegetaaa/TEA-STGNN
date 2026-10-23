@@ -75,17 +75,10 @@ def main() -> int:
     for v, (lo, hi) in {**rng, **{p: (0, 100) for p in pct}}.items():
         check(f"range {v} [{lo},{hi}]", m[v].dropna().between(lo, hi).all())
         check(f"suppressed => missing: {v}", m.loc[m[f"{v}_supp"] > 0, v].isna().all())
-    for v, br in SRC.get("known_breaks", {}).items():
-        yy = m.year.isin(br["years"])
-        check(f"known break blanked and flagged: {v} {br['years']}", m.loc[yy, v].isna().all() and (m.loc[yy, f"{v}_supp"] == 4).all())
-    # TEA rounds each average separately; 3 of 1,231 school-years in 2018 are published 2-4 points apart.
-    # 2017 (first class after the 2016 SAT redesign) is looser: 7% of rows differ by 2-12 points.
-    gap = (m.sat_total - m.sat_erw - m.sat_math).abs()
-    g1, g0 = gap[m.year > 2017].dropna(), gap[m.year == 2017].dropna()
-    check("SAT total == ERW + Math, 2018 on (within 1 for >= 99.5% of rows, within 5 for all)",
-          (g1 <= 1).mean() >= 0.995 and (g1 <= 5).all(), f"{int((g1 > 1).sum())} rows differ by 2-5")
-    check("SAT total == ERW + Math, 2017 (within 1 for >= 92% of rows, within 15 for all; known looser year)",
-          (g0 <= 1).mean() >= 0.92 and (g0 <= 15).all(), f"{int((g0 > 1).sum())} of {len(g0)} rows differ by 2-12")
+    sat_gap = (m.sat_total - m.sat_erw - m.sat_math).abs().dropna()
+    # TEA rounds each average separately; 3 of 1,231 school-years in 2018 are published 2-4 points apart
+    check("SAT total == ERW + Math (within 1 for >= 99.5% of rows, within 5 for all)",
+          (sat_gap <= 1).mean() >= 0.995 and (sat_gap <= 5).all(), f"{int((sat_gap > 1).sum())} rows differ by 2-5")
     check("chronic absenteeism missing before 2020 (not published)", m.loc[m.year < 2020, "chronic_absenteeism"].isna().all())
 
     # spot-check against raw files: 200 random cells re-read straight from raw

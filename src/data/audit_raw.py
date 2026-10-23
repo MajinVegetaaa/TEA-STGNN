@@ -115,16 +115,6 @@ def main() -> int:
         r, n = copy_rate(a.loc[c, "CAMP_ALLR"].str.replace(",", ""), b.loc[c, "CAMP_ALLR"].str.replace(",", ""))
         rec("04_retention", f"{y - 1}->{y}: retention rate not copied", r < 0.2, f"{r:.1%} identical of {n}")
 
-    # TAPR profile year, independent of SAT/ACT: its campus list overlaps most with the retention file of the same year
-    # (needed for the first year, which has no earlier SAT/ACT file to match against)
-    ret_ids = {y: set(ids(pd.Series(t.index))) for y, t in ret.items()}
-    for y, t in tapr.items():
-        tid = set(ids(t.CAMPUS))
-        jac = {k: len(tid & v) / len(tid | v) for k, v in ret_ids.items()}
-        best = max(jac, key=jac.get)
-        rec("03_demographics_tapr", f"{y}: campus list overlaps the {y} retention file most (same school year)",
-            best == y, f"best match {best}: " + ", ".join(f"{k} {v:.3f}" for k, v in sorted(jac.items()) if abs(k - y) <= 1))
-
     # directory and locations: right dataset
     d = read(RAW / SRC["directory"])
     rec("05_school_directory", "is the TEA school directory", {"School Number", "Grade Range", "Instruction Type",

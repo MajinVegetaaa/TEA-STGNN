@@ -1,5 +1,5 @@
-# Data pipeline — TEA STGNN master dataset (2017–2024)
-> **Updated 2026-10-22: the data now covers 2017–2024** (8 years). Years and files are listed in `configs/data_sources.yaml`. The 2017 college-ready % is blanked (definition change, see below).
+# Data pipeline — TEA STGNN master dataset (2018–2024)
+> **Updated 2026-10-22: the data now covers 2018–2024** (7 years; 2017 files are on disk for later). Years and files are listed in `configs/data_sources.yaml`.
 
 
 One script builds everything from the raw TEA files:
@@ -10,7 +10,7 @@ python3 src/data/build_master.py         # ~90 s; reads data/raw/, writes data/p
 ```
 
 Raw files are never modified. They live in numbered source folders under `data/raw/` (layout and year rules in `data/raw/README.md`).
-Years used are exactly those listed in `configs/data_sources.yaml` (2017–2024); no other years are created.
+Years used are exactly those listed in `configs/data_sources.yaml` (2018–2024); no other years are created.
 
 ## Inputs
 
@@ -79,7 +79,7 @@ code (`phase2code_ST_LLM_WGHTS_NODROP.py`) where that code is sound, and fixes f
 All components are within-year percentile ranks over the cohort.
 
 **Results:**
-- **Coverage:** 12,088 school-years get an index (88–95% per year; 2017 has no decline term and no college-ready component).
+- **Coverage:** 7,630 school-years get an index (91–95% per year). 2019 has no retention or decline term.
 - **Direction:** Spearman +0.53 with dropout, +0.51 with retention, −0.84 with ACT composite.
 - **Old vs corrected, on the same data with the old directions and missing = 0:**
   - correlation with dropout: 0.01 under the old formula, 0.53 corrected
@@ -99,7 +99,7 @@ The index summarises year *t*'s outcomes, so it is a target for year *t*; its `_
 | Instruction Type = REGULAR INSTRUCTIONAL (drops Alternative, DAEP, JJAEP) | 8,550 |
 | AEA = N | 8,550 (no regular campus is AEA, so this rule changes nothing; kept explicit) |
 | Grade range includes grade 12 | 1,857 |
-| A graduating class reported in ≥1 year 2017–2024 (SAT/ACT participation published as a value, 0, or a −1/−2 code) | **1,670** |
+| A graduating class reported in ≥1 year 2018–2024 (SAT/ACT participation published as a value, 0, or a −1/−2 code) | **1,670** |
 
 Why grade 12 and not "covers 9–12": split-campus districts run senior highs that graduate all their seniors
 (Plano Senior and Plano West 11–12, Allen/Bell/Trinity 10–12, Carroll Senior 11–12). A strict 9–12 rule drops
@@ -181,10 +181,10 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 
 | File | Content |
 |---|---|
-| `master_school_year.csv` | 13,140 rows × 55 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
-| `risk_index_components.csv` | 13,140 rows: the 9 risk components (0–1, higher = riskier) and weight coverage |
+| `master_school_year.csv` | 11,546 rows × 55 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
+| `risk_index_components.csv` | 11,546 rows: the 9 risk components (0–1, higher = riskier) and weight coverage |
 | `school_metadata.csv` | 1,670 campuses: names, district, county, ESC region, charter/magnet/virtual flags, grade range, enrollment (Oct 2025), NCES ID, lat/lon, locale, CBSA |
-| `temporal_features.csv` | 13,140 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
+| `temporal_features.csv` | 11,546 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
 | `subgroup_school_year.csv` | long table: campus, year, group, indicator, value, suppression, raw column, source file |
 | `data_dictionary.csv` | every column with description, raw source code and unit |
 | `reports/data_quality_report.csv` | every check and count printed by the script |
@@ -196,10 +196,10 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 |---|---|
 | Campuses in raw files (all levels) | 9,540 |
 | Final target high schools | 1,670 |
-| School-year rows | 13,140 |
-| Years | 2017–2024 |
+| School-year rows | 11,546 |
+| Years | 2018–2024 |
 | Schools per year | 2019: 1,623 · 2020: 1,633 · 2021: 1,643 · 2022: 1,652 · 2023: 1,651 |
-| Present in all 8 years | 1,591 |
+| Present in all 7 years | 1,616 |
 | Duplicate campus-years | 0 |
 | Geographic match | 100% (1,670/1,670) |
 | Districts / ESC regions | 1,046 / 20 |
@@ -224,28 +224,24 @@ absenteeism, which TEA did not publish, and dropout 7–8).
 ## Known limitations and unresolved issues
 
 1. **Survivorship.** The cohort is defined using the 2025 Directory, so 80 campuses that reported graduates
-   in 2017–2024 but have since closed or been renumbered are excluded. The 2025 grade range and instruction
+   in 2018–2024 but have since closed or been renumbered are excluded. The 2025 grade range and instruction
    type are applied to all years.
 2. **Static metadata is from 2025.** `enrollment_oct2025` is measured after the study period. Do not use it as
    a model feature without acknowledging the look-ahead; a yearly enrollment source (TAPR/PEIMS) would fix
    this.
 3. **Demographics** come from TAPR. They are matched for 99.3–100% of school-years; the 11 unmatched rows per
    year are campuses missing from that year's TAPR file. `mobility_rate` is TEA's prior-year mobility.
-4. **Retention** covers 98–100% of school-years in every year 2017–2024 (the 2016-17 file is TEA's
-   `campus-download-1617.xlsx`; the page that links it points to a retired path). 2021 retention is high (mean 4.4% vs 2.2–3.5%), consistent with pandemic-year retention.
+4. **Retention is missing for 2019** (2018-19 file not downloaded). It covers 2020–2023 for 99–100% of
+   school-years. 2021 retention is high (mean 4.4% vs 2.2–3.5%), consistent with pandemic-year retention.
 5. **`-2` code meaning is undocumented.** It appears only on SAT/ACT participation (33 cells) and is treated
    as suppressed.
-6. **"Above criterion" definition changed between 2017 and 2018:** statewide mean 19.3% → 34.8%; the median school
-   moves +15.2 points, against −1.5 the year after. The 2017 values are blanked and flagged
-   (`sat_act_above_criterion_supp` = 4, `known_breaks` in `configs/data_sources.yaml`), so no 2018 lag uses them. The
-   mean also falls from 31.6% (2019) to 25.0% (2023); confirm against TEA's TAPR glossary before using it as a target.
-   **SAT 2017:** total ≠ ERW + Math by 2–12 points in 7% of 2017 rows (0.2% in 2018, none after); kept, with a
-   looser validator check for 2017.
+6. **"Above criterion" definition** may have changed across years: the mean falls from 31.6% (2019) to 25.0%
+   (2023). Confirm against TEA's TAPR glossary before using it as a target.
 7. **COVID.** 2021 has fewer ACT results (1,160 vs ~1,365 in 2019–20). `covid_affected_year` flags 2020–21.
 8. **Renamed campuses.** 43 campus-years have a file name that differs from the Directory name. On inspection
    these are renames or charter takeovers (e.g. Legacy H S → Midland Lee H S), not reused IDs (see
    `audit/name_mismatches.csv`).
-9. **Short history.** 8 years: `trend3` and `ma3` exist from 2020, so a model predicting 2024
-   from history has at most 7 prior years.
+9. **Short history.** 7 years: `trend3` and `ma3` exist from 2021, so a model predicting 2024
+   from history has at most 4 prior years.
 10. **Earlier audit errors** (corrected here): ACT `CAC` is ACT *Science*, not composite (composite is
     `CAA`). The "~1,966 high schools" figure came from the old file, which includes alternative campuses.

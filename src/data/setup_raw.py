@@ -4,7 +4,7 @@
 
 Extracts the TEA files from Dataset.zip (2019-2023) into the numbered source folders, copies the TAPR and
 retention downloads if their folders are given, then checks every file in configs/data_sources.yaml is present.
-Files for other years (2017, 2018, 2024) are downloaded separately and placed at the paths the config lists. File contents and
+Files for other years (2018, 2024) are downloaded separately and placed at the paths the config lists. File contents and
 names are never changed. Safe to re-run: existing files are left as they are.
 """
 from __future__ import annotations

@@ -3,7 +3,7 @@
 Question: does information from related schools (district, nearby, academically similar, same ESC region)
 improve next-year forecasts beyond each school's own history?
 
-Split (configs/split.yaml): tune on train 2017-2022 -> validate 2023; refit on 2017-2023 -> test 2024 (2017 rows have no history, so training targets are 2018-2022).
+Split (configs/split.yaml): tune on train 2018-2022 -> validate 2023; refit on 2018-2023 -> test 2024.
 Targets: ACT, SAT, college-ready %, dropout, attendance, grade-level retention, Academic Risk Index. Risk index
 has no academic-similarity layer (every academic indicator is one of its components).
 Every model is scored on exactly the same rows: target observed AND the school's previous-year value

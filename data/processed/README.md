@@ -5,7 +5,7 @@ Never edit by hand; rebuild instead. Always read ID columns as text (`dtype=str`
 
 | File | One row per | What it holds |
 |---|---|---|
-| `master_school_year.csv` | school × year (13,140) | **the main table**: all targets, demographics, risk index, suppression flags, source file of each row |
+| `master_school_year.csv` | school × year (11,546) | **the main table**: all targets, demographics, risk index, suppression flags, source file of each row |
 | `school_metadata.csv` | school (1,670) | name, district, county, ESC region, charter/magnet/virtual flags, grade range, coordinates, urban/rural |
 | `temporal_features.csv` | school × year | history features built only from earlier years (lags, change, averages, trend) |
 | `risk_index_components.csv` | school × year | the 9 parts of the Academic Risk Index (0–1, higher = riskier) and weight coverage |

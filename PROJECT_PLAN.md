@@ -40,7 +40,7 @@ predicted on its own.
 
 | Area | Status | Key numbers |
 |---|---|---|
-| Dataset (2017–2024) | Done | 1,670 high schools, 13,140 school-years; 110 raw-audit (109 pass + 1 expected info), 67/67 data and 87/87 graph checks |
+| Dataset (2018–2024) | Done | 1,670 high schools, 11,546 school-years; 89/89 raw-audit, 65/65 data and 86/86 graph checks |
 | Targets | Done | SAT, ACT, college-ready, participation, attendance, chronic absenteeism, dropout, retention (2020–23), risk index |
 | Student demographics | Done | 13 TAPR fields, matched for 99–100% of school-years |
 | Academic Risk Index | Done, weights pending review | corrected version of last year's Eq. 1 |
@@ -57,7 +57,7 @@ Lightning AI GPUs. Each phase ends with a **gate**: the condition to meet before
 
 ### Phase 1 — Data (done)
 Output: `data/processed/` (`master_school_year.csv`, `school_metadata.csv`, `temporal_features.csv`).
-- [x] Clean 2017–2024 campus files (2017 added later the same day); standardise IDs; suppression codes → missing values with a flag
+- [x] Clean 2018–2024 campus files (2017 on disk for later); standardise IDs; suppression codes → missing values with a flag
 - [x] Select 1,670 regular high schools (regular instruction, not alternative accountability, serves grade 12, reported graduates)
 - [x] Add geography (NCES coordinates), TAPR demographics, grade-level retention
 - [x] History features from earlier years only
@@ -79,10 +79,10 @@ Gate: passed (84/84 checks, including leakage tests).
 
 ### Phase 3 — Evaluation protocol and non-graph baselines (laptop, done)
 Output: one scoring script and the "numbers to beat".
-- [x] Fix the COVID distortion: three target versions (raw / vs yearly mean / vs yearly mean and spread), chosen per target on 2023; plus the 2017–2024 data, which makes COVID 2 of 4 training years
+- [x] Fix the COVID distortion: three target versions (raw / vs yearly mean / vs yearly mean and spread), chosen per target on 2023; plus the 2018–2024 data, which makes COVID 2 of 4 training years
 - [x] Re-run baselines with all targets (incl. retention, risk index) and demographic features: persistence, LR, KNN, RF, XGBoost
 - [x] Breakdowns: urban/rural, ESC region, school size (`results/breakdowns.csv`)
-- [x] Freeze the protocol: train 2017–2022, validate 2023, test 2024, 5 seeds, MAE/RMSE/R², paired bootstrap
+- [x] Freeze the protocol: train 2018–2022, validate 2023, test 2024, 5 seeds, MAE/RMSE/R², paired bootstrap
 
 Gate: baselines beat persistence on every target, or the reason is understood.
 Result: beat on ACT, college-ready, dropout, risk index (significant). SAT and retention: ahead but not significant. Attendance: no model beats persistence — see `DECISIONS.md` (2026-10-22). Numbers to beat: `results/selection.csv`.
@@ -197,11 +197,13 @@ All results are on the 2023 test year, averaged over 5 seeds, with every model s
 Newest first. Add one line per decision: date, decision, who, why. Detailed technical entries are also in
 `DECISIONS.md`.
 
+**2026-10-23**
+- 2017 tried as a data year and dropped: unusable columns and no accuracy gain; data stays 2018–2024 and the 2018–2024 Phase 3 results stand — user.
+
 **2026-10-22**
-- Data extended to 2017–2024; split changed to train 2017–2022, validate 2023, test 2024 — team.
+- Data extended to 2018–2024; split changed to train 2018–2022, validate 2023, test 2024 — team.
 - All raw file names moved to `configs/data_sources.yaml` — data lead.
-- 2017 added as a data year and Phase 3 re-run: same conclusions, no accuracy gain (see `DECISIONS.md`) — team.
-- Phase 3 closed: protocol frozen (train 2017–2022, select on 2023, test 2024); numbers to beat in `results/selection.csv`; attendance stays at persistence — team.
+- Phase 3 closed: protocol frozen (train 2018–2022, select on 2023, test 2024); numbers to beat in `results/selection.csv`; attendance stays at persistence — team.
 - COVID fix: models predict each school's position relative to the yearly statewide average (and spread); results report statewide-shift and school-level error separately — team.
 
 **2026-10-20**
