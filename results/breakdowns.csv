@@ -161,6 +161,33 @@ sat_total,gradient_boosting (+context +academic only),esc_region,20,118,27.28813
 sat_total,gradient_boosting (+context +academic only),size,small,420,43.819047619047616,40.72328961007342,-7.064868309982408
 sat_total,gradient_boosting (+context +academic only),size,medium,420,29.707142857142856,29.880647450214934,0.5840500848783625
 sat_total,gradient_boosting (+context +academic only),size,large,420,19.0,20.077467554885793,5.670881867819966
+tsi_both,random_forest (+context +graph),urbanicity,City,486,14.34650205761317,14.02550323815551,-2.2374709749357846
+tsi_both,random_forest (+context +graph),urbanicity,Rural,686,15.797813411078716,15.094747274936596,-4.4504015704418425
+tsi_both,random_forest (+context +graph),urbanicity,Suburb,282,12.451773049645391,12.38861062366187,-0.5072564825241432
+tsi_both,random_forest (+context +graph),urbanicity,Town,150,12.002,12.320532522605353,2.653995355818628
+tsi_both,random_forest (+context +graph),esc_region,01,107,9.211214953271027,9.795222202294328,6.340176100395012
+tsi_both,random_forest (+context +graph),esc_region,02,40,17.5925,16.110659481447975,-8.423137806178914
+tsi_both,random_forest (+context +graph),esc_region,03,31,15.474193548387095,13.943503917179832,-9.891886297149288
+tsi_both,random_forest (+context +graph),esc_region,04,227,13.934361233480178,14.329099924849821,2.8328438222284813
+tsi_both,random_forest (+context +graph),esc_region,05,39,12.094871794871795,11.315846619559839,-6.440954385661712
+tsi_both,random_forest (+context +graph),esc_region,06,68,10.352941176470589,9.681719755819607,-6.483388722196981
+tsi_both,random_forest (+context +graph),esc_region,07,98,14.644897959183671,13.963527373111885,-4.652614091069884
+tsi_both,random_forest (+context +graph),esc_region,08,41,16.597560975609756,14.799917891051578,-10.830766563833262
+tsi_both,random_forest (+context +graph),esc_region,09,34,20.052941176470586,19.653582808297,-1.9915201698301521
+tsi_both,random_forest (+context +graph),esc_region,10,198,18.012121212121215,17.202194088643537,-4.49656713909209
+tsi_both,random_forest (+context +graph),esc_region,11,134,12.500746268656716,12.574655887555036,0.5912416531774101
+tsi_both,random_forest (+context +graph),esc_region,12,86,15.252325581395349,16.116045045909143,5.662870621955185
+tsi_both,random_forest (+context +graph),esc_region,13,87,14.23103448275862,14.081565557338434,-1.0503026016926098
+tsi_both,random_forest (+context +graph),esc_region,14,56,17.2875,15.4947785399859,-10.370044598780048
+tsi_both,random_forest (+context +graph),esc_region,15,49,17.495918367346942,15.043399867124801,-14.017660855113135
+tsi_both,random_forest (+context +graph),esc_region,16,58,17.186206896551724,14.050836996012183,-18.243524702176295
+tsi_both,random_forest (+context +graph),esc_region,17,58,15.827586206896552,15.778273604363884,-0.31156110532621906
+tsi_both,random_forest (+context +graph),esc_region,18,33,15.24848484848485,16.773895801930706,10.003688685157641
+tsi_both,random_forest (+context +graph),esc_region,19,41,9.592682926829267,10.161091631434504,5.925440348033217
+tsi_both,random_forest (+context +graph),esc_region,20,119,11.664705882352942,11.64109584348572,-0.2024057794971168
+tsi_both,random_forest (+context +graph),size,small,535,16.686915887850468,15.85487431947808,-4.986191420657827
+tsi_both,random_forest (+context +graph),size,medium,534,12.930337078651686,13.105500063127849,1.354666807297411
+tsi_both,random_forest (+context +graph),size,large,535,13.62448598130841,13.1446065121168,-3.52218402844674
 risk_index,random_forest (+context),urbanicity,City,480,6.37030499408196,5.717715755878572,-10.244238522482762
 risk_index,random_forest (+context),urbanicity,Rural,634,9.153028471493606,7.884950872755573,-13.854186105586386
 risk_index,random_forest (+context),urbanicity,Suburb,281,5.773700470262808,5.240033627043518,-9.24306423528407

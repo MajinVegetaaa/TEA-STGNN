@@ -52,6 +52,8 @@ TARGET_EDGE_SET = {
     "sat_act_above_criterion": "excl_criterion", "sat_act_participation": "excl_participation",
     "attendance_rate": "excl_attendance", "chronic_absenteeism": "excl_attendance",
     "dropout_9_12": "excl_dropout", "retention_rate": "excl_retention",
+    # TSI criteria can be met with the same SAT/ACT scores that make up the college-ready %, so TSI shares its family
+    "tsi_both": "excl_criterion",
 }
 
 EDGE_COLS = ["src_campus_id", "dst_campus_id", "src_year", "dst_year", "year", "edge_type", "weight",
@@ -227,14 +229,14 @@ def build() -> dict:
     meta_cols = ["campus_id"] + [c for c in STATIC_META if c not in ("district_id", "esc_region")]
     nodes = (master.merge(tf, on=["campus_id", "year"], how="left", validate="one_to_one")
                    .merge(meta[meta_cols], on="campus_id", how="left", validate="many_to_one"))
-    nodes = nodes.drop(columns=["source_ccad", "source_cdrop", "source_demographics", "source_retention"]) \
+    nodes = nodes.drop(columns=["source_ccad", "source_cdrop", "source_demographics", "source_retention", "source_tsi"]) \
                  .sort_values(["year", "campus_id"])
     nodes.insert(2, "node_index", nodes.groupby("year").cumcount())     # 0..n-1 within each yearly snapshot
     nodes.to_csv(OUT / "nodes.csv", index=False)
 
     # feature catalogue: static vs annual
     annual = set(master.columns) - {"campus_id", "year", "district_id", "esc_region", "source_ccad", "source_cdrop",
-                                    "source_demographics", "source_retention"}
+                                    "source_demographics", "source_retention", "source_tsi"}
     demog = {v for v in master.columns if v.startswith("pct_")} | {"enrollment", "mobility_rate"}
     cat = []
     for c in nodes.columns:

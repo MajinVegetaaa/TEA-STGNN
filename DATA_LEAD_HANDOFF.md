@@ -37,7 +37,7 @@ Excluded campuses that reported graduates:
 - 80 campuses missing from the 2025 Directory
 
 ## 3. Master dataset
-`data/processed/master_school_year.csv` has **11,546 rows** (one per campus-year) and **55 columns**.
+`data/processed/master_school_year.csv` has **11,546 rows** (one per campus-year) and **59 columns** (55 before the TSI columns were appended on 2026-10-25).
 Per year: 1,623 · 1,633 · 1,643 · 1,652 · 1,651.
 
 All targets below are All-Students values for year t. Non-missing counts by year (2019 → 2023):
@@ -85,7 +85,7 @@ review in `configs/risk_index.yaml`; details are in `DATA_PIPELINE.md`. Not avai
   - 600 random cells re-read from the raw files: all match
 
 ## 5. Temporal features (`temporal_features.csv`, also included in `nodes.csv`)
-For each of the 11 targets, row (campus, t) holds values computed **only from years before t**. A missing
+For each of the 14 targets (incl. `tsi_both`), row (campus, t) holds values computed **only from years before t**. A missing
 input gives NaN; there is no carry-forward.
 
 | Feature | Definition | First year available |

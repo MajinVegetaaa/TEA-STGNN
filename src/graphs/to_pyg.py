@@ -31,7 +31,7 @@ SPLIT = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())
 ID = {"campus_id": str, "src_campus_id": str, "dst_campus_id": str, "district_id": str, "esc_region": str}
 
 TARGETS = ["act_composite", "sat_total", "sat_act_above_criterion", "dropout_9_12", "attendance_rate",
-           "retention_rate", "risk_index"]
+           "retention_rate", "risk_index", "tsi_both"]
 LAYERS = ["district", "geographic", "demographic", "region", "academic"]
 STATIC_NUM = ["is_charter", "is_magnet", "is_virtual_or_hybrid", "is_residential_facility", "serves_full_9_12",
               "latitude", "longitude"]

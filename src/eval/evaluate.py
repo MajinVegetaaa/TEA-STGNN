@@ -24,7 +24,8 @@ NO_GRAPH = "gradient_boosting (+context)"
 GRAPH = "gradient_boosting (+context +graph)"
 LABEL = {"act_composite": "ACT composite", "sat_total": "SAT total", "sat_act_above_criterion": "College-ready %",
          "dropout_9_12": "Dropout rate 9-12", "attendance_rate": "Attendance rate",
-         "retention_rate": "Grade retention %", "risk_index": "Academic Risk Index"}
+         "retention_rate": "Grade retention %", "risk_index": "Academic Risk Index",
+         "tsi_both": "TSI both subjects %"}
 
 
 def metrics(g: pd.DataFrame) -> pd.Series:

@@ -15,7 +15,7 @@ is trained here.
 
 ## Nodes — `data/graph/nodes.csv`
 
-There are 11,546 nodes (one per row of `master_school_year.csv`) and 200 columns. `node_index` numbers the nodes
+There are 11,546 nodes (one per row of `master_school_year.csv`) and 211 columns (200 before the TSI columns were added on 2026-10-25). `node_index` numbers the nodes
 0…n−1 within each year, in `campus_id` order, so it can be used directly as the PyG node index of that
 year's snapshot.
 
@@ -104,7 +104,7 @@ set:
 |---|---|---|
 | `excl_sat` | `sat_total` (= ERW + Math) | `sat_total`, `sat_erw`, `sat_math` |
 | `excl_act` | `act_composite` | `act_composite`, `act_english`, `act_math` |
-| `excl_criterion` | `sat_act_above_criterion` | `sat_act_above_criterion` |
+| `excl_criterion` | `sat_act_above_criterion` | `sat_act_above_criterion`, `tsi_both` (TSI criteria can be met with the same SAT/ACT scores) |
 | `excl_participation` | `sat_act_participation` | `sat_act_participation` |
 | `excl_attendance` | `attendance_rate`, `chronic_absenteeism` (both from absence days) | `attendance_rate`, `chronic_absenteeism` |
 | `excl_dropout` | `dropout_9_12` | `dropout_9_12` |

@@ -86,6 +86,7 @@ Output: one scoring script and the "numbers to beat".
 
 Gate: baselines beat persistence on every target, or the reason is understood.
 Result: beat on ACT, college-ready, dropout, risk index (significant). SAT and retention: ahead but not significant. Attendance: no model beats persistence — see `DECISIONS.md` (2026-10-22). Numbers to beat: `results/selection.csv`.
+Added 2026-10-25: TSI (`tsi_both`) from TAPR CCMR files; persistence wins on validation, the selected model beats it on test by 2.6% (significant). Phase 3 numbers for the other targets unchanged (`DECISIONS.md`).
 
 ### Phase 4 — GPU environment (Lightning AI)
 Output: a cloud Studio that reproduces our data and runs a graph model.
@@ -96,7 +97,8 @@ Output: a cloud Studio that reproduces our data and runs a graph model.
 - [x] Studio: Python 3.13, torch from the CUDA wheel index, then both requirements files (steps below)
 - [x] Clone the repo, upload the raw data, rebuild and validate (Section 4): audit 89, data 65, graph 86 checks pass on the Studio
 - [x] Convert yearly CSVs to PyTorch Geometric snapshots: `src/graphs/to_pyg.py` → `data/graph/pyg/snapshots.pt`
-  (one `HeteroData` per year, fixed 1,670-campus order, 273 inputs, 60/60 self-checks incl. evaluation rows = Phase 3 rows)
+  (one `HeteroData` per year, fixed 1,670-campus order, 273 inputs, 60/60 self-checks incl. evaluation rows = Phase 3 rows;
+  since 2026-10-25 also the TSI target and its history: 8 targets, 288 inputs, 62/62)
 - [x] Smoke test on laptop CPU: `src/models/smoke_test.py` (SAGEConv per relation + GRU across years), ACT, 0.12 s/epoch
 - [x] Smoke test on the Studio GPU: ACT, 150 epochs in 5.1 s (0.03 s/epoch; Studio CPU 0.61, laptop 0.17);
   validation MAE 1.2052 at epoch 25 (laptop 1.2051), persistence 1.2936. Converter 46/46 there: the 14 Phase 3 row
@@ -105,14 +107,14 @@ Output: a cloud Studio that reproduces our data and runs a graph model.
 Studio steps (needs the account owner):
 1. New Studio (CPU is enough for steps 2–4); Python 3.13 (check `python --version`).
 2. `git clone https://github.com/MajinVegetaaa/TEA-STGNN.git && cd TEA-STGNN`
-3. Upload `data/raw/` (538 MB; not in git) to the same path, or upload `Dataset.zip` plus the TAPR and retention
-   folders and run `src/data/setup_raw.py`.
-4. `pip install -r requirements.txt`, then run the four rebuild-and-validate commands in the README (expect 89 / 65 / 86 checks).
+3. Upload `data/raw/` (not in git; incl. `07_tsi/` since 2026-10-25) to the same path, or upload `Dataset.zip` plus the TAPR,
+   retention and TSI folders and run `src/data/setup_raw.py`.
+4. `pip install -r requirements.txt`, then run the four rebuild-and-validate commands in the README (expect 113 / 69 / 86 checks; 89 / 65 / 86 before TSI was added on 2026-10-25).
    The rebuilt `edges_academic.csv` breaks one distance tie (2024, excl_criterion) differently from the laptop build
    (depends on the numpy build, see `DECISIONS.md`); for byte-identical Phase 3 inputs, upload the laptop's `data/graph/` too.
 5. Switch to a GPU; `pip install torch==2.12.1 --index-url https://download.pytorch.org/whl/cu130` (cu126 if
    `nvidia-smi` shows an older driver), then
-   `pip install -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html`; `python src/graphs/to_pyg.py` (60/60);
+   `pip install -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html`; `python src/graphs/to_pyg.py` (62/62, or 46/46 plus a SKIP line without `results/level/predictions.csv`);
    `python src/models/smoke_test.py --target act_composite --out /tmp/smoke`.
 
 Gate: validators pass in the cloud and one model trains. **Passed 2026-10-23.**

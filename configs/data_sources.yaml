@@ -46,6 +46,19 @@ retention:
   2023: {file: 04_retention/campus-download-ret-2223.xlsx}
   2024: {file: 04_retention/campus-download-ret-2324.xlsx}
 
+# TSI criteria (TAPR "CCMR, College Ready, and TSI Criteria", campus CGRAD1 columns CACR{R,M,B}yyR).
+# Same one-year lag as SAT/ACT: graduating class Y is taken from the (Y)-(Y+1) report. Reports up to 2022-23
+# also carry the previous class; those copies are identical (checked in src/data/audit_raw.py).
+# From the 2023-24 report on, reading is labelled "ELA" (same column code CACRR).
+tsi:
+  2018: {file: 01_sat_act/2018/CAMPPERF.dat, header_rows: 1}      # same TAPR 2018-19 postsecondary file as SAT/ACT
+  2019: {file: 07_tsi/2020.dat, header_rows: 1}
+  2020: {file: 07_tsi/2021.csv, header_rows: 1}
+  2021: {file: 07_tsi/2022.csv, header_rows: 1}
+  2022: {file: 07_tsi/2023.csv, header_rows: 1}
+  2023: {file: 07_tsi/2024.csv, header_rows: 2}
+  2024: {file: 07_tsi/2025.csv, header_rows: 2}
+
 directory: 05_school_directory/Directory.csv
 locations: 06_school_locations/Public_School_Locations_-_Current.csv
 

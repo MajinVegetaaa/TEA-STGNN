@@ -22,6 +22,7 @@ Years used are exactly those listed in `configs/data_sources.yaml` (2018–2024)
 | NCES Public School Locations | `06_school_locations/Public_School_Locations_-_Current.csv` (2024–25) | school | latitude, longitude, locale |
 | TAPR campus Profile (student membership) | `03_demographics_tapr/2019.dat`, `2020.dat`, `2021–2023.csv` | campus × year | enrollment, % econ. disadvantaged, EL, special ed, at-risk, race shares, mobility |
 | Grade-Level Retention | `04_retention/campus-download-ret-1920 … 2223.xlsx` (2324 not used) | campus × grade × year | retention rate (all grades) |
+| TAPR CCMR / TSI criteria (CGRAD1) | `07_tsi/2020.dat`, `2021–2025.csv` (named by report year); class 2018 from `01_sat_act/2018/CAMPPERF.dat` | campus × graduating class | % of graduates meeting TSI criteria: reading, math, both (`tsi_both` is a target) |
 
 Not used: state files (`SCAD`, `SDROP_ATT`; state benchmarks, not campus data), `Directory (1).csv` (same as
 `Directory.csv` plus site-address columns), the `.geojson` (same points as the CSV), and the earlier audit's
@@ -52,6 +53,16 @@ downloaded, and 2023-24 (year 2024) falls outside the panel. Rows used: `GRADE =
 as `_supp = 3`. Counts are written with thousands separators ("1,040") and are parsed as numbers. One `<0.1`
 rate per file is kept as missing.
 
+**TSI criteria, report `Y+1` → year `Y`** (added 2026-10-25, after Phase 3). Like SAT/ACT, a graduating class
+is published in the next TAPR report: the 2019-20 report (`07_tsi/2020.dat`) holds class 2019. The column codes
+carry the class (`CACRB19R` = class 2019, both subjects, rate), and `audit_raw.py` checks that the configured
+class is the newest one in each file. Reports up to 2022-23 also repeat the previous class; every repeated value
+equals the configured file (checked). Columns used: `CACRR`, `CACRM`, `CACRB` (reading, math, both; rates). The
+reading column is labelled "ELA" from the 2023-24 report on, with the same code. The published rate is used, not
+numerator ÷ denominator: the 2023-24 report publishes no TSI denominator, and for 282 campuses its rate implies a
+larger denominator than the CCMR graduates count (`CA0GP23D`). Masks: `.` (old files) or blank (new) = not
+reported, `-1` = small-group mask (stored as missing).
+
 ### Academic Risk Index (corrected version of last year's Eq. 1)
 
 `src/data/risk_index.py` produces `risk_index`, scored 0–100 with higher meaning riskier. It follows last year's
@@ -70,7 +81,7 @@ code (`phase2code_ST_LLM_WGHTS_NODROP.py`) where that code is sound, and fixes f
 | Component | Weight |
 |---|---|
 | SAT ERW, SAT Math, ACT English, ACT Math | 0.11 each |
-| College-ready % (stands in for TSI, which is not in our files) | 0.11 |
+| College-ready % (stands in for TSI; kept after TSI was added on 2026-10-25 so the frozen index doesn't change) | 0.11 |
 | Participation | 0.10 |
 | Dropout 9–12 | 0.11 |
 | Retention | 0.11 |
@@ -163,7 +174,7 @@ longer in the Directory.
 
 ## Step 3 — Temporal features (`temporal_features.csv`)
 
-For each of 11 target variables. **Every feature on row (campus, t) uses only years before t**, so the row's
+For each of 14 target variables (13 indicators incl. retention and risk index, plus `tsi_both`). **Every feature on row (campus, t) uses only years before t**, so the row's
 own value can be its target:
 
 | Feature | Definition | First year available |
@@ -181,10 +192,10 @@ if any input is missing. A self-test asserts `act_composite_lag1(t) == act_compo
 
 | File | Content |
 |---|---|
-| `master_school_year.csv` | 11,546 rows × 55 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns |
+| `master_school_year.csv` | 11,546 rows × 59 columns: IDs, year, flags, 13 indicators, retention (rate, count, denominator), risk index and its coverage, 13 demographic columns, 14 `_supp` flags, 4 source-file columns, then TSI reading / math / both and its source file (appended 2026-10-25) |
 | `risk_index_components.csv` | 11,546 rows: the 9 risk components (0–1, higher = riskier) and weight coverage |
 | `school_metadata.csv` | 1,670 campuses: names, district, county, ESC region, charter/magnet/virtual flags, grade range, enrollment (Oct 2025), NCES ID, lat/lon, locale, CBSA |
-| `temporal_features.csv` | 11,546 rows × 130 features (8 per target × 13 targets incl. retention and risk index; lag1 and change for each of 13 demographic columns) |
+| `temporal_features.csv` | 11,546 rows × 138 features (8 per target × 14 targets incl. retention, risk index and `tsi_both`; lag1 and change for each of 13 demographic columns) |
 | `subgroup_school_year.csv` | long table: campus, year, group, indicator, value, suppression, raw column, source file |
 | `data_dictionary.csv` | every column with description, raw source code and unit |
 | `reports/data_quality_report.csv` | every check and count printed by the script |
@@ -238,6 +249,11 @@ absenteeism, which TEA did not publish, and dropout 7–8).
 6. **"Above criterion" definition** may have changed across years: the mean falls from 31.6% (2019) to 25.0%
    (2023). Confirm against TEA's TAPR glossary before using it as a target.
 7. **COVID.** 2021 has fewer ACT results (1,160 vs ~1,365 in 2019–20). `covid_affected_year` flags 2020–21.
+8. **TSI shifts upward in the validation and test years.** The cohort's mean `tsi_both` is 43.6–46.5% for classes
+   2018–2022, then 51.3% (2023) and 57.9% (2024); year-to-year correlation per campus falls from 0.79–0.84 to 0.71,
+   and persistence error rises from ~10 to 14.4 points.
+   The cause is not verified (the reading column is relabelled "ELA" from the 2023-24 report). Level-version
+   models will underpredict 2023–2024; the relative / z-score target versions are meant for this.
 8. **Renamed campuses.** 43 campus-years have a file name that differs from the Directory name. On inspection
    these are renames or charter takeovers (e.g. Legacy H S → Midland Lee H S), not reused IDs (see
    `audit/name_mismatches.csv`).
