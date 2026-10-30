@@ -122,6 +122,26 @@ def main() -> int:
         check(f"retention {y} cells match its raw file (AG rows)", ok, "40 sampled")
     check("retention present for every year that has a file",
           all(m.loc[m.year == y, "retention_rate"].notna().mean() > 0.95 for y in YEARS if y in SRC["retention"]))
+    # TSI criteria (TAPR CGRAD1, class Y from the configured file), re-read from raw
+    mism = n = 0
+    for y in YEARS:
+        e = SRC["tsi"][y]
+        t = pd.read_csv(RAW / e["file"], dtype=str, keep_default_na=False, skiprows=SKIP(e))
+        t.index = t.CAMPUS.str.strip().str.lstrip("'").str.zfill(9)
+        for _, row in m[m.year == y].sample(25, random_state=y).iterrows():
+            for x, v in (("R", "tsi_reading"), ("M", "tsi_math"), ("B", "tsi_both")):
+                raw = t.at[row.campus_id, f"CACR{x}{str(y)[2:]}R"].strip() if row.campus_id in t.index else ""
+                exp = np.nan if raw in (".", "", "-1", "-2") else float(raw)      # -1/-2: TEA small-group masks
+                n += 1
+                mism += not ((np.isnan(exp) and np.isnan(row[v])) or exp == row[v])
+    check("TSI cells match raw TAPR files", mism == 0, f"{n - mism}/{n} match")
+    tsi = m[["tsi_reading", "tsi_math", "tsi_both"]]
+    check("TSI rates within [0, 100]", tsi.stack().between(0, 100).all())
+    check("TSI both <= min(reading, math)",
+          (m.tsi_both.dropna() <= tsi.loc[m.tsi_both.notna(), ["tsi_reading", "tsi_math"]].min(axis=1)).all())
+    check("TSI present for >= 90% of campus-years every year",
+          all(m.loc[m.year == y, "tsi_both"].notna().mean() >= 0.9 for y in YEARS),
+          " ".join(f"{y}:{m.loc[m.year == y, 'tsi_both'].notna().mean():.0%}" for y in YEARS))
     race = m[[c for c in m.columns if c.startswith("pct_") and c not in
               ("pct_econ_disadv", "pct_english_learner", "pct_special_ed", "pct_at_risk")]].sum(axis=1, min_count=7)
     check("race shares sum to 100 +/- 1", race.dropna().between(99, 101).all())

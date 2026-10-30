@@ -1,7 +1,7 @@
 # Raw data
 
 Original downloads, **never edited**. One numbered folder per source, with the original file names.
-Nothing here is in git. **Which file is used for which year is listed in `configs/data_sources.yaml`.** Set it up with `python3 src/data/setup_raw.py --zip Dataset.zip --tapr <folder> --retention <folder>`.
+Nothing here is in git. **Which file is used for which year is listed in `configs/data_sources.yaml`.** Set it up with `python3 src/data/setup_raw.py --zip Dataset.zip --tapr <folder> --retention <folder> --tsi <folder>`.
 
 | Folder | Source | Years | Used for |
 |---|---|---|---|
@@ -9,6 +9,7 @@ Nothing here is in git. **Which file is used for which year is listed in `config
 | `02_attendance_dropout/<year>/` | TEA campus attendance & dropout (CDROP_ATT; 2018 = CAMPGRAD.dat; 2023/2024 files named "2024/2025 Campus Attendance…") | 2017–2024 (2017 not used yet) | attendance, chronic absenteeism, dropout |
 | `03_demographics_tapr/` | TAPR campus student information, one file per report year (2024: "2024 Campus Student Information.csv") | 2017–2024 (2017 not used yet) | enrollment, % low-income, EL, special ed, at-risk, race, mobility |
 | `04_retention/` | TEA Grade-Level Retention, campus files | 2016-17 → 2023-24 (2016-17 not used yet) | retention rate |
+| `07_tsi/<report year>` | TAPR "CCMR, College Ready, and TSI Criteria" campus downloads (CGRAD1), named by report year: `2020.dat` = 2019-20 report. Class Y is read from report Y+1 (2018 from `01_sat_act/2018/CAMPPERF.dat`, the same TAPR file) | classes 2018–2024 (reports 2020–2025) | TSI reading, math, both subjects (`tsi_both` is a target) |
 | `05_school_directory/` | TEA AskTED directory (Oct 2025 snapshot) | — | which schools are high schools, district, ESC region, NCES ID |
 | `06_school_locations/` | NCES Public School Locations (2024–25) | — | latitude, longitude, urban/rural |
 | `unused/state_benchmarks/` | statewide totals (SCAD, SDROP_ATT) | 2019–2023 | not used (state, not campus, data) |

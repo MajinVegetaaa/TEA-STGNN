@@ -60,6 +60,15 @@ RACE_COLS = ["pct_african_american", "pct_hispanic", "pct_white", "pct_asian", "
 # Grade-level retention: file "(Y-1)(Y)" = students enrolled in school year (Y-1)-Y who were retained in grade
 # the following fall -> an outcome of our year Y.
 RET_FILES = {y: SRC["retention"][y]["file"] for y in YEARS if y in SRC["retention"]}
+# TSI criteria graduates (TAPR CGRAD1): class Y from the (Y)-(Y+1) report, like SAT/ACT. The published rate is
+# used, not numerator / denominator: in the 2023-24 report the TSI denominator is not published and the CCMR
+# graduates denominator differs from it for 282 campuses.
+TSI_FILES = {y: (SRC["tsi"][y]["file"], SKIP(SRC["tsi"][y])) for y in YEARS}
+TSI = {   # code letter in CACR{x}{yy}R -> (clean name, description)
+    "R": ("tsi_reading", "% of annual graduates meeting TSI criteria in reading (ELA from the 2023-24 report)"),
+    "M": ("tsi_math", "% of annual graduates meeting TSI criteria in mathematics"),
+    "B": ("tsi_both", "% of annual graduates meeting TSI criteria in both subjects"),
+}
 DIRECTORY = SRC["directory"]
 LOCATIONS = SRC["locations"]
 CHRONIC_FROM = 2020   # TEA first published chronic absenteeism for 2019-20
@@ -85,7 +94,7 @@ INDICATORS = {
 }
 TARGETS = ["sat_total", "sat_erw", "sat_math", "act_composite", "act_english", "act_math",
            "sat_act_above_criterion", "sat_act_participation", "dropout_9_12", "attendance_rate",
-           "chronic_absenteeism", "retention_rate", "risk_index"]
+           "chronic_absenteeism", "retention_rate", "risk_index", "tsi_both"]
 DEMOG_NAMES = [v[0] for v in DEMOGRAPHICS.values()]
 VALID_RANGE = {"sat_total": (400, 1600), "sat_erw": (200, 800), "sat_math": (200, 800),
                "act_composite": (1, 36), "act_english": (1, 36), "act_math": (1, 36), "act_science": (1, 36)}
@@ -295,6 +304,29 @@ def load_retention() -> pd.DataFrame:
     return pd.concat(rows, ignore_index=True)
 
 
+def load_tsi() -> pd.DataFrame:
+    rows = []
+    for y, (f, skip) in TSI_FILES.items():
+        # read here, not with read_campus_file: 2018 shares its file with SAT/ACT, whose checks are logged already
+        t = pd.read_csv(RAW / f, dtype=str, keep_default_na=False, skiprows=skip)
+        t["campus_id"] = norm_campus_id(t["CAMPUS"])
+        log("TSI raw rows", len(t), f)
+        log("TSI duplicate campus_id", int(t.campus_id.duplicated().sum()), f)
+        assert not t.campus_id.duplicated().any()
+        out = pd.DataFrame({"campus_id": t.campus_id.values, "year": y})
+        for x, (name, _) in TSI.items():
+            col = f"CACR{x}{y % 100:02d}R"
+            val, supp, bad = parse_value(t[col])
+            if bad:
+                log(f"TSI unparseable cells -> missing: {name}", bad, f, col)
+            if supp.any():
+                log(f"TSI suppressed cells -> missing: {name}", int((supp > 0).sum()), f, col)
+            out[name] = val.values
+        out["source_tsi"] = "data/raw/" + f
+        rows.append(out)
+    return pd.concat(rows, ignore_index=True)
+
+
 # ---------------------------------------------------------------------------------------------- cohort
 def define_cohort(d: pd.DataFrame, panel_all: pd.DataFrame) -> pd.DataFrame:
     """Texas public high schools serving grades 9-12. See DATA_PIPELINE.md, Step 1."""
@@ -480,11 +512,18 @@ def main() -> None:
     m = m.merge(dem, on=["campus_id", "year"], how="left", validate="one_to_one")
     m = m.merge(ret, on=["campus_id", "year"], how="left", validate="one_to_one")
     m["retention_rate_supp"] = m.retention_rate_supp.fillna(0).astype("int8")
+    m = m.merge(load_tsi(), on=["campus_id", "year"], how="left", validate="one_to_one")
     for y in YEARS:
         my = m[m.year == y]
         log("cohort rows matched to TAPR demographics", f"{int(my.source_demographics.notna().sum())}/{len(my)}", str(y))
         log("cohort rows matched to retention file", f"{int(my.source_retention.notna().sum())}/{len(my)}", str(y),
             "" if y in RET_FILES else "no retention file for this year")
+        log("cohort rows matched to TSI file", f"{int(my.source_tsi.notna().sum())}/{len(my)}", str(y))
+    tsi_names = [v[0] for v in TSI.values()]
+    for v in tsi_names:
+        log(f"out-of-range values: {v} [0,100]", int((~m[v].between(0, 100) & m[v].notna()).sum()), "master")
+    log("tsi_both > min(tsi_reading, tsi_math)", int((m.tsi_both > m[["tsi_reading", "tsi_math"]].min(axis=1)).sum()),
+        "master", "both subjects can't exceed either one")
     race_sum = m[RACE_COLS].sum(axis=1, min_count=len(RACE_COLS))
     log("race shares sum to 100 +/- 1", f"{int(race_sum.between(99, 101).sum())}/{int(race_sum.notna().sum())}", "master")
     for v in DEMOG_NAMES[1:] + ["retention_rate"]:
@@ -524,7 +563,8 @@ def main() -> None:
     order = (["campus_id", "year", "district_id", "esc_region", "covid_affected_year", "has_graduates_reported"]
              + [i[0] for i in INDICATORS.values()] + ["retention_rate", "retention_count", "retention_denominator",
                                                       "risk_index", "risk_index_coverage"]
-             + DEMOG_NAMES + supp_cols + ["source_ccad", "source_cdrop", "source_demographics", "source_retention"])
+             + DEMOG_NAMES + supp_cols + ["source_ccad", "source_cdrop", "source_demographics", "source_retention"]
+             + tsi_names + ["source_tsi"])      # added after Phase 3: appended so earlier columns keep their order
     m = m[order].sort_values(["campus_id", "year"]).reset_index(drop=True)
 
     # ---------------- per-year coverage and repetition checks
@@ -553,7 +593,7 @@ def main() -> None:
         log(f"missing % {v}", round(100 * m[v].isna().mean(), 2), "master")
         log(f"suppressed -1 count {v}", int((m[f"{v}_supp"] == 1).sum()), "master")
         log(f"suppressed -2 count {v}", int((m[f"{v}_supp"] == 2).sum()), "master")
-    for v in DEMOG_NAMES + ["retention_rate"]:
+    for v in DEMOG_NAMES + ["retention_rate"] + tsi_names:
         log(f"missing % {v}", round(100 * m[v].isna().mean(), 2), "master")
     log("missing % risk_index", round(100 * m.risk_index.isna().mean(), 2), "master")
     log("suppressed -1/-3 count retention_rate", int((m.retention_rate_supp > 0).sum()), "master")
@@ -619,6 +659,10 @@ def write_dictionary(m: pd.DataFrame, meta: pd.DataFrame, tf: pd.DataFrame) -> N
              ("master_school_year", "source_retention", "Raw retention file for this row", "", "path"),
              ("master_school_year", "source_ccad", "Raw college-admissions file for this row", "", "path"),
              ("master_school_year", "source_cdrop", "Raw attendance/dropout file for this row", "", "path")]
+    for x, (name, desc) in TSI.items():
+        rows.append(("master_school_year", name, f"{desc}; All Students" + ("; target" if name in TARGETS else ""),
+                     f"TAPR CCMR/TSI (CGRAD1): CACR{x}{{yy}}R", "percent"))
+    rows.append(("master_school_year", "source_tsi", "Raw TAPR CCMR/TSI file for this row", "", "path"))
     for c in meta.columns:
         rows.append(("school_metadata", c, "", "Directory.csv (Oct 2025)" if c not in
                      ("latitude", "longitude", "nces_locale_code", "nces_locale", "urbanicity", "cbsa_code", "cbsa_name", "geo_match")

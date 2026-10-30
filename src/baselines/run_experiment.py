@@ -43,7 +43,8 @@ TRAIN, VAL, TEST, SEEDS = SPLIT["train_years"], SPLIT["val_years"], SPLIT["test_
 ID = {"campus_id": str, "src_campus_id": str, "dst_campus_id": str, "district_id": str, "esc_region": str}
 
 TARGETS = ["act_composite", "sat_total", "sat_act_above_criterion", "dropout_9_12", "attendance_rate",
-           "retention_rate", "risk_index"]
+           "retention_rate", "risk_index", "tsi_both"]
+# tsi_both (added 2026-10-25) is not a context input, so the other targets' Phase 3 inputs are unchanged
 CONTEXT_VARS = ["sat_total", "act_composite", "sat_act_above_criterion", "sat_act_participation",
                 "attendance_rate", "dropout_9_12", "chronic_absenteeism"]
 DEMO_VARS = ["enrollment", "pct_econ_disadv", "pct_english_learner", "pct_special_ed", "pct_at_risk",

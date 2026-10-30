@@ -58,7 +58,7 @@ def main() -> int:
         "enrollment_oct2025" not in nodes.columns)
     cat = pd.read_csv(G / "node_feature_catalog.csv")
     same_year = set(master.columns) - {"campus_id", "year", "district_id", "esc_region", "covid_affected_year",
-                                       "source_ccad", "source_cdrop", "source_demographics", "source_retention"}
+                                       "source_ccad", "source_cdrop", "source_demographics", "source_retention", "source_tsi"}
     lab = cat.set_index("column").role
     ok_lab = all(lab[c].startswith("same-year observation") for c in same_year if c in lab)
     rec("every year-t observed column is labelled not-an-input", f"{len(same_year)} columns", ok_lab)
@@ -68,7 +68,7 @@ def main() -> int:
     # consistency with processed data
     mm = nodes.set_index(["campus_id", "year"])
     ma = master.set_index(["campus_id", "year"]).reindex(mm.index)
-    vals = [c for c in master.columns if c not in ("campus_id", "year", "source_ccad", "source_cdrop", "source_demographics", "source_retention")]
+    vals = [c for c in master.columns if c not in ("campus_id", "year", "source_ccad", "source_cdrop", "source_demographics", "source_retention", "source_tsi")]
     same = all(ma[c].equals(mm[c]) or np.allclose(ma[c].astype(float), mm[c].astype(float), equal_nan=True)
                if ma[c].dtype != object else ma[c].fillna("").equals(mm[c].fillna("")) for c in vals)
     rec("node indicator values identical to master_school_year", same, same)
@@ -157,6 +157,7 @@ def main() -> int:
               for r in sets.itertuples())
     no_overlap = all(not set(r.excluded_features.split()) & set(str(r.profile_features).split()) for r in sets.itertuples())
     fam = {"sat_erw": "sat_total", "sat_math": "sat_total", "act_english": "act_composite", "act_math": "act_composite", "retention_rate": "retention_rate",
+           "tsi_both": "sat_act_above_criterion",
            "chronic_absenteeism": "chronic_absenteeism"}
     self_excl = all((fam.get(r.target, r.target) in r.excluded_features.split()) for r in sets.itertuples())
     rec("every target's academic edge set excludes the target (or the total it is part of)", self_excl,

@@ -115,6 +115,36 @@ def main() -> int:
         r, n = copy_rate(a.loc[c, "CAMP_ALLR"].str.replace(",", ""), b.loc[c, "CAMP_ALLR"].str.replace(",", ""))
         rec("04_retention", f"{y - 1}->{y}: retention rate not copied", r < 0.2, f"{r:.1%} identical of {n}")
 
+    # TSI criteria (TAPR CGRAD1): class Y comes from the (Y)-(Y+1) report, so Y is the newest class in its codes.
+    # Older reports also carry the previous class: where that class is configured from another file, both must agree.
+    tsi = {y: read(RAW / SRC["tsi"][y]["file"], SKIP(SRC["tsi"][y])) for y in YEARS}
+    for t in tsi.values():
+        t.index = ids(t.CAMPUS)
+    for y, t in tsi.items():
+        cls = {int(m.group(1)) for c in t.columns if (m := re.fullmatch(r"CACRB(\d\d)R", c))}
+        rec("07_tsi", f"{y}: has TSI reading, math and both rates for class {y}",
+            all(f"CACR{x}{y % 100:02d}R" in t.columns for x in "RMB"), f"{SRC['tsi'][y]['file']}")
+        rec("07_tsi", f"{y}: newest class in the file is {y} (report {y}-{(y + 1) % 100:02d})", max(cls, default=0) == y % 100,
+            f"classes in codes {sorted(cls)}")
+        for c in cls - {y % 100}:
+            other = 2000 + c
+            if other not in tsi:
+                continue
+            o = tsi[other]
+            k = t.index.intersection(o.index)
+            same, n = True, 0
+            for x in "RMB":
+                a, b = (pd.to_numeric(d.loc[k, f"CACR{x}{c:02d}R"], errors="coerce") for d in (t, o))
+                same &= bool(((a == b) | (a.isna() & b.isna())).all())
+                n += int(a.notna().sum())
+            rec("07_tsi", f"{y}: its copy of class {other} (reading, math, both) equals the configured {other} file", same,
+                f"{n} rates compared")
+    for y in YEARS[1:]:
+        a, b = tsi[y - 1], tsi[y]
+        c = a.index.intersection(b.index)
+        r, n = copy_rate(a.loc[c, f"CACRB{(y - 1) % 100:02d}R"], b.loc[c, f"CACRB{y % 100:02d}R"])
+        rec("07_tsi", f"{y - 1}->{y}: TSI both-subjects rate not copied", r < 0.2, f"{r:.1%} identical of {n}")
+
     # directory and locations: right dataset
     d = read(RAW / SRC["directory"])
     rec("05_school_directory", "is the TEA school directory", {"School Number", "Grade Range", "Instruction Type",

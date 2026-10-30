@@ -16,3 +16,5 @@ results/**/predictions.csv
 __pycache__/
 .venv/
 wandb/
+# Teammates' midterm report (contains names and roll numbers): keep out of git
+Docs/minor_report_updated.docx

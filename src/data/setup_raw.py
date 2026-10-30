@@ -1,9 +1,9 @@
 """Put the raw data into the data/raw/ layout the pipeline expects (see data/raw/README.md).
 
-  python3 src/data/setup_raw.py --zip Dataset.zip [--tapr <folder>] [--retention <folder>]
+  python3 src/data/setup_raw.py --zip Dataset.zip [--tapr <folder>] [--retention <folder>] [--tsi <folder>]
 
 Extracts the TEA files from Dataset.zip (2019-2023) into the numbered source folders, copies the TAPR and
-retention downloads if their folders are given, then checks every file in configs/data_sources.yaml is present.
+retention and TSI downloads if their folders are given, then checks every file in configs/data_sources.yaml is present.
 Files for other years (2018, 2024) are downloaded separately and placed at the paths the config lists. File contents and
 names are never changed. Safe to re-run: existing files are left as they are.
 """
@@ -45,7 +45,7 @@ def required_files() -> list[Path]:
     """Every raw file listed in configs/data_sources.yaml for the years in use."""
     src = yaml.safe_load((ROOT / "configs" / "data_sources.yaml").read_text())
     req = [RAW / src["directory"], RAW / src["locations"]]
-    for source in ("sat_act", "attendance_dropout", "demographics", "retention"):
+    for source in ("sat_act", "attendance_dropout", "demographics", "retention", "tsi"):
         req += [RAW / src[source][y]["file"] for y in src["years"] if y in src[source]]
     return req
 
@@ -62,6 +62,7 @@ def main() -> int:
     ap.add_argument("--zip", type=Path, default=ROOT / "Dataset.zip")
     ap.add_argument("--tapr", type=Path, help="folder with the TAPR student-information files (names as in configs/data_sources.yaml)")
     ap.add_argument("--retention", type=Path, help="folder with campus-download-ret-*.xlsx")
+    ap.add_argument("--tsi", type=Path, help="folder with the TAPR CCMR/TSI files named by report year (2020.dat ... 2025.csv)")
     a = ap.parse_args()
 
     if a.zip.exists():
@@ -78,6 +79,8 @@ def main() -> int:
         copy_folder(a.tapr, RAW / "03_demographics_tapr")
     if a.retention:
         copy_folder(a.retention, RAW / "04_retention")
+    if a.tsi:
+        copy_folder(a.tsi, RAW / "07_tsi")
 
     missing = [p.relative_to(ROOT) for p in required_files() if not p.exists()]
     for p in missing:
