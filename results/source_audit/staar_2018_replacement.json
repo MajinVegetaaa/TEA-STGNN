@@ -1,0 +1,43 @@
+{
+  "file": "data/raw/13_staar_eoc/CSTAAR_ALL1 (1).xls",
+  "sha256": "13a2de22fa13a6fde345acd8f7e7e9392151efcb6ba63a82a3fdbd2ba080db2a",
+  "rows": 8759,
+  "columns": 253,
+  "embedded_years": [
+    2018
+  ],
+  "duplicate_campus": 0,
+  "invalid_ids": 0,
+  "cohort_matched": 1593,
+  "cohort_size": 1619,
+  "rates_over_100": 0,
+  "subject_codes_present": {
+    "AA1": false,
+    "AR1": false,
+    "AR2": false,
+    "ABI": false,
+    "AUS": false
+  },
+  "sample_columns": [
+    "CAMPUS",
+    "CD200A001218R",
+    "CD200A001318R",
+    "CD200A001S18R",
+    "CD200AC01218R",
+    "CD200AC01318R",
+    "CD200AC01S18R",
+    "CD200AM01218R",
+    "CD200AM01318R",
+    "CD200AM01S18R",
+    "CD200AR01218R",
+    "CD200AR01318R",
+    "CD200AR01S18R",
+    "CD200AS01218R",
+    "CD200AS01318R",
+    "CD200AS01S18R",
+    "CD200AW01218R",
+    "CD200AW01318R",
+    "CD200AW01S18R",
+    "CD300A001218R"
+  ]
+}

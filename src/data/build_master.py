@@ -16,6 +16,7 @@ See DATA_PIPELINE.md for every rule applied here.
 from __future__ import annotations
 
 import re
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +24,7 @@ import pandas as pd
 import yaml
 
 import risk_index
+import new_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data" / "raw"
@@ -373,16 +375,17 @@ def define_cohort(d: pd.DataFrame, panel_all: pd.DataFrame) -> pd.DataFrame:
 
 
 # --------------------------------------------------------------------------------------------- features
-def temporal_features(m: pd.DataFrame) -> pd.DataFrame:
+def temporal_features(m: pd.DataFrame, extra: list[str] | None = None) -> pd.DataFrame:
     """Every feature on row (campus, t) uses only years < t, so the row's own value is a valid target.
 
     Lags are taken from a full campus x year grid, so a missing year yields NaN (never the year before it).
     No imputation: a feature is NaN if any value it needs is missing.
     """
     grid = pd.MultiIndex.from_product([sorted(m.campus_id.unique()), YEARS], names=["campus_id", "year"])
-    g = m.set_index(["campus_id", "year"])[TARGETS].reindex(grid)
+    variables = TARGETS + (extra or [])
+    g = m.set_index(["campus_id", "year"])[variables].reindex(grid)
     feats = {}
-    for v in TARGETS:
+    for v in variables:
         wide = g[v].unstack("year")                     # campus x year
         lag = {k: wide.shift(k, axis=1) for k in (1, 2, 3)}
         feats[f"{v}_lag1"] = lag[1]
@@ -410,6 +413,13 @@ def temporal_features(m: pd.DataFrame) -> pd.DataFrame:
 
 # ------------------------------------------------------------------------------------------------- main
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--expanded-features", action="store_true",
+                        help="Only after validate_processed.py passes the master-data gate")
+    args = parser.parse_args()
+    if args.expanded_features:
+        from validate_additions import require_master_gate
+        require_master_gate()
     for d in (OUT, OUT / "audit", OUT / "reports"):
         d.mkdir(parents=True, exist_ok=True)
 
@@ -566,6 +576,9 @@ def main() -> None:
              + DEMOG_NAMES + supp_cols + ["source_ccad", "source_cdrop", "source_demographics", "source_retention"]
              + tsi_names + ["source_tsi"])      # added after Phase 3: appended so earlier columns keep their order
     m = m[order].sort_values(["campus_id", "year"]).reset_index(drop=True)
+    # Append only: the frozen cohort, column values, risk formula and ordering above stay unchanged.
+    m, coverage = new_sources.integrate(m, SRC)
+    coverage.to_csv(OUT / "reports" / "addition_coverage.csv", index=False)
 
     # ---------------- per-year coverage and repetition checks
     for y in YEARS:
@@ -608,7 +621,7 @@ def main() -> None:
         round(100 * m.loc[has_g, ind_cols[:9]].isna().to_numpy().mean(), 2), "master")
 
     # ---------------- temporal features
-    tf = temporal_features(m)
+    tf = temporal_features(m, new_sources.FEATURES if args.expanded_features else None)
     assert not tf.duplicated(["campus_id", "year"]).any()
     log("temporal feature rows", len(tf), "temporal")
     log("temporal feature columns", tf.shape[1] - 2, "temporal")
@@ -663,6 +676,8 @@ def write_dictionary(m: pd.DataFrame, meta: pd.DataFrame, tf: pd.DataFrame) -> N
         rows.append(("master_school_year", name, f"{desc}; All Students" + ("; target" if name in TARGETS else ""),
                      f"TAPR CCMR/TSI (CGRAD1): CACR{x}{{yy}}R", "percent"))
     rows.append(("master_school_year", "source_tsi", "Raw TAPR CCMR/TSI file for this row", "", "path"))
+    existing = {r[1] for r in rows if r[0] == "master_school_year"}
+    rows += new_sources.dictionary_rows(m, existing)
     for c in meta.columns:
         rows.append(("school_metadata", c, "", "Directory.csv (Oct 2025)" if c not in
                      ("latitude", "longitude", "nces_locale_code", "nces_locale", "urbanicity", "cbsa_code", "cbsa_name", "geo_match")

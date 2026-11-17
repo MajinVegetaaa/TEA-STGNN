@@ -7,6 +7,8 @@ No model is trained here.
 from __future__ import annotations
 
 from pathlib import Path
+import os
+EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
 
 import numpy as np
 import pandas as pd
@@ -14,7 +16,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 P = ROOT / "data" / "processed"
-OUT = ROOT / "data" / "graph"
+OUT = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
 ID = {"campus_id": str, "district_id": str, "esc_region": str, "county_id": str, "nces_school_id": str,
       "nces_locale_code": str, "cbsa_code": str}
 YEARS = [int(y) for y in yaml.safe_load((Path(__file__).resolve().parents[2] / "configs" / "data_sources.yaml").read_text())["years"]]
@@ -55,6 +57,9 @@ TARGET_EDGE_SET = {
     # TSI criteria can be met with the same SAT/ACT scores that make up the college-ready %, so TSI shares its family
     "tsi_both": "excl_criterion",
 }
+
+if EXPANDED:
+    TARGET_EDGE_SET["graduation_4yr"] = "excl_retention"
 
 EDGE_COLS = ["src_campus_id", "dst_campus_id", "src_year", "dst_year", "year", "edge_type", "weight",
              "directed", "distance", "method"]
@@ -223,13 +228,13 @@ def build() -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     master = pd.read_csv(P / "master_school_year.csv", dtype=ID)
     meta = pd.read_csv(P / "school_metadata.csv", dtype=ID)
-    tf = pd.read_csv(P / "temporal_features.csv", dtype=ID)
+    tf = pd.read_csv(P / ("expanded_temporal_features.csv" if EXPANDED else "temporal_features.csv"), dtype=ID)
 
     # ---------------- nodes: one row per campus-year, annual values + temporal features + static metadata
     meta_cols = ["campus_id"] + [c for c in STATIC_META if c not in ("district_id", "esc_region")]
     nodes = (master.merge(tf, on=["campus_id", "year"], how="left", validate="one_to_one")
                    .merge(meta[meta_cols], on="campus_id", how="left", validate="many_to_one"))
-    nodes = nodes.drop(columns=["source_ccad", "source_cdrop", "source_demographics", "source_retention", "source_tsi"]) \
+    nodes = nodes.drop(columns=[c for c in nodes if c.startswith("source_") or c.endswith(("_raw", "_status", "_method"))]) \
                  .sort_values(["year", "campus_id"])
     nodes.insert(2, "node_index", nodes.groupby("year").cumcount())     # 0..n-1 within each yearly snapshot
     nodes.to_csv(OUT / "nodes.csv", index=False)
@@ -238,10 +243,13 @@ def build() -> dict:
     annual = set(master.columns) - {"campus_id", "year", "district_id", "esc_region", "source_ccad", "source_cdrop",
                                     "source_demographics", "source_retention", "source_tsi"}
     demog = {v for v in master.columns if v.startswith("pct_")} | {"enrollment", "mobility_rate"}
+    original_temporal = set(pd.read_csv(P / "temporal_features.csv", nrows=0).columns)
     cat = []
     for c in nodes.columns:
         if c in ("campus_id", "year", "node_index"):
             kind, role = "key", "identifier"
+        elif EXPANDED and c in tf.columns and c not in original_temporal and not c.startswith("available_"):
+            kind, role = "history", "audit history only; publication eligibility not established"
         elif c in tf.columns:
             kind, role = "annual (derived from years < t)", "input feature (temporal)"
         elif c == "covid_affected_year":

@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+import os
+EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
 
 import numpy as np
 import pandas as pd
@@ -16,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_graph_data as B  # noqa: E402  (only used for parameters and the leakage rebuild)
 
 ROOT = Path(__file__).resolve().parents[2]
-G = ROOT / "data" / "graph"
+G = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
 P = ROOT / "data" / "processed"
 ID = B.ID | {"src_campus_id": str, "dst_campus_id": str}
 TYPES = ["district", "geographic", "academic", "demographic", "transition", "region", "temporal"]
@@ -38,7 +40,7 @@ def unit_vec(lat, lon):
 def main() -> int:
     master = pd.read_csv(P / "master_school_year.csv", dtype=ID)
     meta = pd.read_csv(P / "school_metadata.csv", dtype=ID)
-    tf = pd.read_csv(P / "temporal_features.csv", dtype=ID)
+    tf = pd.read_csv(P / ("expanded_temporal_features.csv" if EXPANDED else "temporal_features.csv"), dtype=ID)
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID)
     E = {t: pd.read_csv(G / f"edges_{t}.csv", dtype=ID) for t in TYPES}
 
@@ -68,9 +70,11 @@ def main() -> int:
     # consistency with processed data
     mm = nodes.set_index(["campus_id", "year"])
     ma = master.set_index(["campus_id", "year"]).reindex(mm.index)
-    vals = [c for c in master.columns if c not in ("campus_id", "year", "source_ccad", "source_cdrop", "source_demographics", "source_retention", "source_tsi")]
-    same = all(ma[c].equals(mm[c]) or np.allclose(ma[c].astype(float), mm[c].astype(float), equal_nan=True)
-               if ma[c].dtype != object else ma[c].fillna("").equals(mm[c].fillna("")) for c in vals)
+    vals = [c for c in master.columns if c not in ("campus_id", "year")
+            and not c.startswith("source_") and not c.endswith(("_raw", "_status", "_method"))]
+    same = set(vals).issubset(mm.columns) and all(
+        ma[c].equals(mm[c]) or np.allclose(ma[c].astype(float), mm[c].astype(float), equal_nan=True)
+        if ma[c].dtype != object else ma[c].fillna("").equals(mm[c].fillna("")) for c in vals)
     rec("node indicator values identical to master_school_year", same, same)
     tt = tf.set_index(["campus_id", "year"]).reindex(mm.index)
     same_tf = np.allclose(tt.to_numpy(float), mm[tt.columns].to_numpy(float), equal_nan=True)
@@ -159,7 +163,7 @@ def main() -> int:
     fam = {"sat_erw": "sat_total", "sat_math": "sat_total", "act_english": "act_composite", "act_math": "act_composite", "retention_rate": "retention_rate",
            "tsi_both": "sat_act_above_criterion",
            "chronic_absenteeism": "chronic_absenteeism"}
-    self_excl = all((fam.get(r.target, r.target) in r.excluded_features.split()) for r in sets.itertuples())
+    self_excl = all(fam.get(r.target, r.target) not in str(r.profile_features).split() for r in sets.itertuples())
     rec("every target's academic edge set excludes the target (or the total it is part of)", self_excl,
         self_excl and no_overlap and own, "academic", "; ".join(f"{r.target}->{r.edge_set}" for r in sets.itertuples()))
     rec(f"academic edge sets present every year {B.YEARS[1]}-{B.YEARS[-1]}",

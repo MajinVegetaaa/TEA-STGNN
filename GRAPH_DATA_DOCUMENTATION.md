@@ -220,3 +220,31 @@ future.
 | Normalisation statistics | Computed from the t−1 cross-section only. |
 | Static metadata from 2025 | District, region, coordinates, charter and grade range are a 2025 snapshot applied to all years. They are structural, not outcomes, but a campus that changed district or type would be misdescribed in early years. `enrollment_oct2025` is excluded from nodes. |
 | Cohort definition | It uses "reported graduates in ≥1 year of 2018–2024", which looks at the whole period. This decides which schools are in the study, not any feature value. |
+# Expanded graph and ten-target tensors (2026-11-18)
+
+The separate `data/graph_expanded/` graph uses the validated expanded master and
+publication-filtered temporal features. All seven edge files are byte-identical
+to the original graph: relations, similarity definitions and Risk Index are fixed.
+The original 13 graph artifacts remain preserved. The cohort remains 1,670 campuses
+in fixed sorted order, with seven yearly PyG snapshots and ten targets.
+
+Participation uses `academic_participation` (the `excl_participation` profile).
+Graduation uses `academic_retention`: this existing profile contains neither
+retention nor graduation and is the existing full academic indicator profile.
+New raw histories and provenance/status fields are audit data, not inputs. Only
+`available_*` histories enter as added inputs; no same-year outcomes are inputs.
+Publication policy and its retrospective limitations are in
+`configs/feature_availability.md`.
+
+Graph validation passes 86 checks; conversion passes 63 checks. PyG has 430 inputs
+after dropping 34 columns with no training observations, adding missing flags and
+static categorical indicators. Medians and numeric scaling use 2018–2022 only.
+The two new targets use observed target AND observed raw lag 1 for evaluation,
+matching baseline eligibility; target-only masks are available for training loss.
+Tests confirm the frozen campus ordering and both new-target masks for every year.
+
+Ten-epoch CPU training smoke tests succeeded for both new targets. Graduation
+validation MAE was 2.7975 versus persistence 2.1988 (1,534 rows); participation was
+13.7579 versus persistence 12.0506 (1,584 rows). These are wiring/training checks,
+not tuned GNN results or evidence of an improvement. The six baseline comparisons
+and their validation-locked selections are reported in `results/expanded/README.md`.

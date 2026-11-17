@@ -117,7 +117,32 @@ Studio steps (needs the account owner):
    `pip install -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html`; `python src/graphs/to_pyg.py` (62/62, or 46/46 plus a SKIP line without `results/level/predictions.csv`);
    `python src/models/smoke_test.py --target act_composite --out /tmp/smoke`.
 
-Gate: validators pass in the cloud and one model trains. **Passed 2026-10-23.**
+- [x] Google Colab (used while the Lightning account is pending), T4 runtime, Python 3.13.15, CUDA 13.0: audit 113, data 69,
+  graph 84 + the 2 known tie failures (laptop graph uploaded, see `DECISIONS.md`), converter 46/46 with 288 inputs;
+  smoke tests 0.03 s/epoch on cuda (ACT, TSI)
+
+Colab steps (every new session: the machine is wiped, only Drive persists):
+1. Runtime → Change runtime type → GPU; check `!python --version` and `!nvidia-smi` (cu126 instead of cu130 below if
+   its CUDA version is below 13.0).
+2. Upload `data_raw.zip` (zip of `data/raw/`) and `graph.zip` (zip of `data/graph/` without `pyg/`) to My Drive. Check each
+   with `!unzip -tq` before using it: an unfinished Drive upload gives "End-of-central-directory signature not found".
+3. Setup cell (repo is private: clone with a read-only token typed through `getpass`):
+   ```
+   from google.colab import drive; drive.mount('/content/drive')
+   from getpass import getpass; tok = getpass('GitHub token: ')
+   !git clone -q https://{tok}@github.com/MajinVegetaaa/TEA-STGNN.git /content/TEA-STGNN
+   %cd /content/TEA-STGNN
+   !unzip -q /content/drive/MyDrive/data_raw.zip -d data && unzip -q /content/drive/MyDrive/graph.zip -d data
+   !git checkout -- data/raw/README.md          # the zip carries a copy of this tracked file
+   !pip install -q torch==2.12.1 --index-url https://download.pytorch.org/whl/cu130
+   !pip install -q -r requirements.txt -r requirements-gpu.txt -f https://data.pyg.org/whl/torch-2.12.1+cu130.html
+   !python src/data/build_master.py > /dev/null && python src/graphs/to_pyg.py | tail -2
+   ```
+   Don't run `build_graph_data.py` (it would replace the laptop graph). Both installs are needed every session: the
+   first picks the CUDA build of torch, the second needs PyG's wheel page for torch_scatter / torch_sparse.
+4. Save anything worth keeping (predictions, checkpoints) to Drive; `/content` is lost when the session ends.
+
+Gate: validators pass in the cloud and one model trains. **Passed 2026-10-23** (Studio), **2026-10-30** (Colab).
 
 ### Phase 5 — Standard STGNN baselines (PPT slide 16)
 Output: prediction files for each model in the shared format.
@@ -264,3 +289,112 @@ Newest first. Add one line per decision: date, decision, who, why. Detailed tech
 - [ ] **MTGNN on slide 16:** Wu et al. (KDD 2020) or the student-level Multi-Topology GNN?
 - [ ] **More years:** add 2016–2018 to lengthen the history?
 - [ ] **Venue and timeline:** target venue, page limit, internal deadlines, authorship.
+
+## Source additions verified and staged — 2026-11-16
+
+User downloaded AP, staff and PEIMS actual financial files; organized into numbered raw folders
+and registered under `not_yet_used` in `configs/data_sources.yaml`.
+
+- [x] AP files for 2018–2024 downloaded; campus-by-student-group grain. AP only, not IB.
+- [x] PEIMS actual files for file years 2018–2024 downloaded; ZIP integrity checked.
+- [x] Staff 2024 downloaded; additional CSTAF file presumed 2023, with year confirmation pending.
+- [ ] Obtain staff 2018–2022 and confirm CSTAF report year.
+- [ ] Obtain IB campus files if the proposed AP/IB feature is intended to include IB.
+- [ ] Verify finance fiscal-year mapping, release timing, FIN_UNIT campus mapping and charter coverage.
+- [ ] Implement loaders, suppression handling, cohort joins and lagged features; rerun data/graph gates before model integration.
+- [ ] Discipline/DAEP remains unresolved; no discipline download was supplied in this batch.
+
+The source audit and SHA-256 inventory are reproducible with
+`python src/data/audit_new_downloads.py`. Existing model inputs and results are not expanded by staging these files.
+
+Audit outcome: AP campus coverage is about 67–70%, with unique campus/group keys; staff
+2024 covers the full model cohort. Finance files contain multiple FUNDYEAR values per
+archive (2018 file: 2010–2019; 2024 file: 2016–2025), so FUNDYEAR must not be
+used directly as the observation year. Detailed counts are in the source audit JSON.
+
+## PPT coverage review and integration preparation — 2026-11-16 (second download batch)
+
+Source: `Docs/TEA_STGNN_Architecture (1).pptx`, all 18 slide text layers reviewed,
+compared with the current master/metadata schemas, feature code, split configuration and
+chronological decisions (especially the additive TSI integration on 2026-10-25).
+This section supersedes the earlier download-gap checklist for staff and IB.
+
+| PPT requirement | Evidence / current status | Next step |
+|---|---|---|
+| SAT/ACT components, participation, TSI, dropout, retention (slides 5, 11, 14) | Present in master table | Preserve existing definitions and target masks |
+| Enrollment, poverty, EL, special education, race, location and campus type (slide 5) | Present in master or metadata | Preserve lagging and document static metadata snapshot dates |
+| AP/IB participation and performance (slides 2–3) | Seven AP and seven IB raw workbooks now present | All Students rows; preserve masks; keep AP and IB separate, do not sum overlapping students |
+| Teacher experience and student/teacher ratio (slide 3) | Seven staff files now present; core codes checked by audit | Normalize HTML/CSV formats and verify report-year provenance |
+| Finance: expenditure per student (slide 3) | Seven actual financial ZIPs present | Verify account filters, campus FIN_UNIT, denominator, charter coverage and release timing before deriving rates |
+| STAAR subject performance (slides 3, 17) | Not in current master; no dedicated staged source | Source and define comparable high-school EOC measures if included in scope |
+| Graduation rate (slides 3, 17) | Not in current master; dropout is not graduation | Select annual vs four-year cohort definition and audit source availability |
+| Accountability domain scores/ratings (slides 3–4, 13, 17) | Not in current master; not supplied in new batch | Verify raw reference fields and year comparability; no assumption that all rating years exist |
+| Discipline indicators (slides 2–3) | No new discipline source supplied; prior TAPR selector claim was unsupported | Check actual raw fields and valid downloadable campus series |
+| Educator certification, RDA, FIRST (slide 2 source catalogue) | Not verified as available model fields | Catalogue items; decide whether required beyond explicit node-feature specification |
+| Moving average, change, trend (slide 5) | Implemented using earlier years only | Extend explicitly to approved new features |
+| Acceleration and variance (slide 5) | Not implemented in temporal_features | Proposed feature additions, not missing downloads |
+| Campus–district–region node hierarchy (slides 6, 15) | Current converter uses campus nodes with district/region relations | Architecture extension; keep distinct from dataset completeness |
+| Transition/student-flow edges (slides 4, 7) | Still awaiting feeder data per decisions | Remains blocked by source availability |
+| District ranking, future accountability and other targets (slides 13, 17) | Broader than the agreed current target set | Resolve target scope before changing model heads |
+
+### Existing workflow to retain for the integration plan
+
+1. Freeze reference outputs, cohort and baseline metrics; preserve original raw bytes and register sources.
+2. Audit raw inputs in `src/data/audit_raw.py`: report year, actual grain, campus keys, suppression,
+   ranges, distinct years and coverage. Resolve staff year provenance and finance mapping first.
+3. Add source-specific loaders to `src/data/build_master.py`; left-join on campus/year with
+   explicit uniqueness checks. Keep the 2018–2024 panel and cohort; retain missingness and source provenance.
+4. Extend `src/data/validate_processed.py`, including independent source-cell checks and
+   regression checks that all existing columns retain their values. Run build and validation.
+5. Add only past-year history features. Account for publication lag as well as observation year.
+   Fit imputation/scaling on train 2018–2022; validate on 2023 and test on 2024 (`configs/split.yaml`).
+6. Update graph node feature catalog in `src/graphs/build_graph_data.py`; run
+   `src/graphs/validate_graph.py`. Any new similarity relation is an explicit experiment,
+   not an automatic consequence of adding a raw field.
+7. Update `src/graphs/to_pyg.py`; verify feature roles, masks, fixed node ordering and leakage checks.
+   Run `src/models/smoke_test.py` using the established environment.
+8. Evaluate the expanded features against the frozen baselines with the same split/seeds and
+   comparable evaluation rows; select on validation only. Preserve the original results as reference.
+9. Update pipeline, graph documentation, handoff and decision log with actual gate results.
+
+Current action is verification and preparation. Integration implementation and model retraining
+are the next phase. Older narrative sections in this plan/handoff contain stale counts and dates;
+current configuration/code and the latest dated decisions control this review.
+
+### Graduation/STAAR download update — 2026-11-16
+
+Supersedes the earlier statement that these sources have not been supplied:
+seven four-year graduation workbooks (2018–2024) and six named STAAR EOC files arrived.
+However, the file labelled 2018 STAAR is byte-identical to the 2019 file and contains
+only 2019 rate columns. Valid staged STAAR years: 2019, 2021, 2022, 2023, 2024.
+2020 is intentionally absent; actual 2018 data must be downloaded again.
+Sources are registered under `not_yet_used`; the mislabeled file is under `rejected_downloads`.
+Before graduation integration, choose a consistent state-accountability calculation variant
+and verify observation/release-year mapping. These are download checks, not completed model integration.
+
+STAAR replacement check: `CSTAAR_ALL1 (1).xls` contains 2018 data (8,759 unique
+campuses; 1,593/1,619 model-campus matches), but is an all-grades table without
+the EOC subject codes AA1/AR1/AR2/ABI/AUS. `CSTAAR_ALL1.xls` is all-grades 2019.
+Both retained as supplemental sources; 2018 EOC remains missing.
+
+
+STAAR source resolution: 2018 advanced TAPR campus EOC `CAMPSTAAR5.dat`
+verified (8,759 unique campus records, 2,955 columns, year-coded 2018 EOC
+numerator/denominator fields). Usable years now 2018, 2019, 2021–2024;
+2020 is the only gap. Raw files grouped into year folders; all-grades and
+mislabeled files moved to `reference_only/`. 2018 rates require a documented
+numerator/denominator transformation and suppression handling.
+
+### Master-data implementation — 2026-11-18
+
+The approved first milestone is complete: 179 raw-source checks, 115 independent processed checks and 11 regression tests pass. The master retains 11,546 rows, 1,670 campuses and all 59 original columns unchanged, with 97 appended value, count, status and provenance columns. See DATA_PIPELINE.md for fields, coverage, commands and receipts.
+
+Correction to the preceding source-resolution entry: CAMPSTAAR5 has no All Students fields. CAMPSTAAR2 was downloaded from TEA, verified, registered and integrated using published rates. The original CAMPSTAAR5 remains staged and unmodified.
+
+Continuation: the cutoff assumption and publication mapping are recorded in
+`configs/feature_availability.md`. Expanded calendar histories, unchanged graph
+relations and ten-target baseline/PyG wiring are implemented. Graph validation
+passes 86 checks, PyG conversion 63, and both new targets pass training smoke tests.
+The six approved baseline comparisons use the original split/seeds and validation
+selection locks; final outcomes are recorded in `results/expanded/README.md`.
+Original graph and baseline files remain separate and preserved.

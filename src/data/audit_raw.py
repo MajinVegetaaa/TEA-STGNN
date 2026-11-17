@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import yaml
+import new_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data" / "raw"
@@ -50,8 +51,8 @@ def copy_rate(a: pd.Series, b: pd.Series) -> tuple[float, int]:
 
 
 def main() -> int:
-    # 1. byte-identical files anywhere in data/raw (excluding unused/)
-    files = [p for p in RAW.rglob("*") if p.is_file() and "unused" not in p.parts and p.suffix != ".md"
+    # 1. byte-identical files, except explicitly staged reference-only/unused copies and dictionaries.
+    files = [p for p in RAW.rglob("*") if p.is_file() and not {"unused", "reference_only", "source_definitions"}.intersection(p.parts) and p.suffix != ".md"
              and not p.name.startswith(".")]
     digest = {}
     for p in files:
@@ -154,7 +155,46 @@ def main() -> int:
     rec("06_school_locations", "is NCES school locations with Texas schools", (loc.STATE == "TX").sum() > 9000,
         f"{int((loc.STATE == 'TX').sum())} TX schools; school year {loc.SCHOOLYEAR.mode().iloc[0]}")
 
+    # Registered additions use their workbook titles, exact campus rosters and coded assessment years.
+    source_manifest = []
+    for source in ("staff_tapr", "ap", "ib", "graduation_4yr", "staar_eoc"):
+        for year, entry in SRC.get(source, {}).items():
+            try:
+                table = new_sources.selected_table(source, year, entry)
+                evidence = new_sources.verify_year(source, year, entry, table, SRC)
+                source_manifest.append({"source": source, "year": year, "file": entry["file"],
+                                        "sha256": hashlib.sha256((RAW / entry["file"]).read_bytes()).hexdigest(),
+                                        "rows_after_selection": len(table), "year_evidence": evidence,
+                                        "definition_file": entry.get("definition_file", entry["file"])})
+                rec(source, f"{year}: source year, population and unique campus keys", True, evidence)
+                if source == "staar_eoc":
+                    from lxml import html
+                    if year == 2024:
+                        import csv
+                        with (RAW / entry["file"]).open() as stream:
+                            reader = csv.reader(stream)
+                            labels = next(reader)
+                            codes = next(reader)
+                        definitions = dict(zip(codes, labels))
+                    else:
+                        tables = html.parse(str(RAW / entry["definition_file"])).xpath("//tr")
+                        definitions = {}
+                        for row in tables:
+                            cells = [" ".join(c.text_content().split()) for c in row.xpath("./td")]
+                            if len(cells) == 4:
+                                definitions[cells[0]] = cells[-1]
+                    for subject, code in new_sources.SUBJECTS.items():
+                        col = f"CDA00{code}12{year%100:02d}R"
+                        label = definitions.get(col, "")
+                        rec(source, f"{year}/{subject}: dictionary confirms All Students EOC Meets",
+                            all(word.casefold() in label.casefold() for word in (str(year), "Meets", "All Students", "EOC")), label)
+            except (ValueError, KeyError, OSError) as exc:
+                rec(source, f"{year}: verified source", False, str(exc))
+    rec("staar_eoc", "2020 is intentionally absent", 2020 not in SRC.get("staar_eoc", {}))
+    rec("finance", "finance remains staged", "finance_peims" not in SRC)
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(source_manifest).to_csv(OUT.parent / "addition_sources.csv", index=False)
     rep = pd.DataFrame(rows)
     rep.to_csv(OUT, index=False)
     print(f"\n{(rep.result == 'PASS').sum()} pass, {(rep.result == 'FAIL').sum()} fail, {(rep.result == 'INFO').sum()} info")

@@ -1,0 +1,285 @@
+PASS [all] node keys == master keys: 11546
+PASS [all] duplicate nodes (campus_id, year): 0
+PASS [all] invalid node campus_id (not 9 digits): 0
+PASS [all] node campuses all in school_metadata: 1670
+PASS [all] node_index is 0..n-1 within each year: True
+[2018] nodes: 1619
+[2019] nodes: 1630
+[2020] nodes: 1644
+[2021] nodes: 1654
+[2022] nodes: 1665
+[2023] nodes: 1668
+[2024] nodes: 1666
+PASS [all] post-period enrollment_oct2025 excluded from nodes: True
+PASS [all] every year-t observed column is labelled not-an-input: 146 columns
+PASS [all] input-labelled columns never come from year-t outcome files: none
+PASS [all] node indicator values identical to master_school_year: True
+PASS [all] node temporal features identical to temporal_features: True
+PASS [all] node coordinates identical to school_metadata: True
+PASS [all] nodes missing coordinates: 0
+[all] campuses sharing identical coordinates with another campus: 17 (co-located campuses; geographic distance 0, weight 1)
+[district] edges: 27987
+[district 2018] edges: 3789
+[district 2019] edges: 3877
+[district 2020] edges: 3973
+[district 2021] edges: 4030
+[district 2022] edges: 4101
+[district 2023] edges: 4110
+[district 2024] edges: 4107
+PASS [district] invalid campus IDs: 0
+PASS [district] edge endpoints that are not nodes: 0
+PASS [district] missing weights: 0
+PASS [district] weights in (0, 1]: True
+PASS [district] duplicate edges: 0
+PASS [district] self-loops: 0
+PASS [district] undirected pairs stored once (src < dst): True
+PASS [district] edges link nodes of the same year: True
+[geographic] edges: 36167
+[geographic 2018] edges: 5082
+[geographic 2019] edges: 5110
+[geographic 2020] edges: 5161
+[geographic 2021] edges: 5181
+[geographic 2022] edges: 5210
+[geographic 2023] edges: 5214
+[geographic 2024] edges: 5209
+PASS [geographic] invalid campus IDs: 0
+PASS [geographic] edge endpoints that are not nodes: 0
+PASS [geographic] missing weights: 0
+PASS [geographic] weights in (0, 1]: True
+PASS [geographic] duplicate edges: 0
+PASS [geographic] self-loops: 0
+PASS [geographic] undirected pairs stored once (src < dst): True
+PASS [geographic] edges link nodes of the same year: True
+[academic] edges: 430899
+[academic 2019] edges: 67736
+[academic 2020] edges: 69365
+[academic 2021] edges: 72561
+[academic 2022] edges: 72238
+[academic 2023] edges: 73316
+[academic 2024] edges: 75683
+PASS [academic] invalid campus IDs: 0
+PASS [academic] edge endpoints that are not nodes: 0
+PASS [academic] missing weights: 0
+PASS [academic] weights in (0, 1]: True
+PASS [academic] duplicate edges: 0
+PASS [academic] self-loops: 0
+PASS [academic] undirected pairs stored once (src < dst): True
+PASS [academic] edges link nodes of the same year: True
+[demographic] edges: 69882
+[demographic 2019] edges: 11411
+[demographic 2020] edges: 11572
+[demographic 2021] edges: 11574
+[demographic 2022] edges: 11723
+[demographic 2023] edges: 11765
+[demographic 2024] edges: 11837
+PASS [demographic] invalid campus IDs: 0
+PASS [demographic] edge endpoints that are not nodes: 0
+PASS [demographic] missing weights: 0
+PASS [demographic] weights in (0, 1]: True
+PASS [demographic] duplicate edges: 0
+PASS [demographic] self-loops: 0
+PASS [demographic] undirected pairs stored once (src < dst): True
+PASS [demographic] edges link nodes of the same year: True
+[transition] edges: 0
+[transition] edge type available: False (no edges built: required data unavailable)
+[region] edges: 675500
+[region 2018] edges: 92193
+[region 2019] edges: 93798
+[region 2020] edges: 95753
+[region 2021] edges: 97065
+[region 2022] edges: 98753
+[region 2023] edges: 99077
+[region 2024] edges: 98861
+PASS [region] invalid campus IDs: 0
+PASS [region] edge endpoints that are not nodes: 0
+PASS [region] missing weights: 0
+PASS [region] weights in (0, 1]: True
+PASS [region] duplicate edges: 0
+PASS [region] self-loops: 0
+PASS [region] undirected pairs stored once (src < dst): True
+PASS [region] edges link nodes of the same year: True
+[temporal] edges: 9876
+[temporal 2019] edges: 1619
+[temporal 2020] edges: 1630
+[temporal 2021] edges: 1644
+[temporal 2022] edges: 1653
+[temporal 2023] edges: 1664
+[temporal 2024] edges: 1666
+PASS [temporal] invalid campus IDs: 0
+PASS [temporal] edge endpoints that are not nodes: 0
+PASS [temporal] missing weights: 0
+PASS [temporal] weights in (0, 1]: True
+PASS [temporal] duplicate edges: 0
+PASS [district] both endpoints share district_id: True
+PASS [district] edge count == sum C(n,2) per group: True ({2018: 3789, 2019: 3877, 2020: 3973, 2021: 4030, 2022: 4101, 2023: 4110, 2024: 4107})
+PASS [region] both endpoints share esc_region: True
+PASS [region] edge count == sum C(n,2) per group: True ({2018: 92193, 2019: 93798, 2020: 95753, 2021: 97065, 2022: 98753, 2023: 99077, 2024: 98861})
+PASS [geographic] geographic distance matches independent great-circle (max abs km error): 0.0001
+PASS [geographic] geographic weight == exp(-km/tau): 0.0
+PASS [geographic] geographic distance <= 100 km: 98.48
+PASS [geographic] virtual/hybrid campuses in geographic edges: 0
+PASS [geographic] missing k-nearest geographic links: 0 (ties at equal distance may differ)
+PASS [academic] academic edges in 2018 (no prior year): 0
+PASS [academic] every target's academic edge set excludes the target (or the total it is part of): True (sat_total->excl_sat; sat_erw->excl_sat; sat_math->excl_sat; act_composite->excl_act; act_english->excl_act; act_math->excl_act; sat_act_above_criterion->excl_criterion; sat_act_participation->excl_participation; attendance_rate->excl_attendance; chronic_absenteeism->excl_attendance; dropout_9_12->excl_dropout; retention_rate->excl_retention; tsi_both->excl_criterion; graduation_4yr->excl_retention)
+PASS [academic] academic edge sets present every year 2019-2024: True
+[academic excl_act 2019] edges: 9634
+[academic excl_act 2020] edges: 9902
+[academic excl_act 2021] edges: 10365
+[academic excl_act 2022] edges: 10426
+[academic excl_act 2023] edges: 10500
+[academic excl_act 2024] edges: 10802
+[academic excl_attendance 2019] edges: 9572
+[academic excl_attendance 2020] edges: 9829
+[academic excl_attendance 2021] edges: 10042
+[academic excl_attendance 2022] edges: 9891
+[academic excl_attendance 2023] edges: 9996
+[academic excl_attendance 2024] edges: 10412
+[academic excl_criterion 2019] edges: 9695
+[academic excl_criterion 2020] edges: 9802
+[academic excl_criterion 2021] edges: 10628
+[academic excl_criterion 2022] edges: 10733
+[academic excl_criterion 2023] edges: 10899
+[academic excl_criterion 2024] edges: 11249
+[academic excl_dropout 2019] edges: 9599
+[academic excl_dropout 2020] edges: 9847
+[academic excl_dropout 2021] edges: 10153
+[academic excl_dropout 2022] edges: 10006
+[academic excl_dropout 2023] edges: 10124
+[academic excl_dropout 2024] edges: 10516
+[academic excl_participation 2019] edges: 9761
+[academic excl_participation 2020] edges: 9971
+[academic excl_participation 2021] edges: 10434
+[academic excl_participation 2022] edges: 10154
+[academic excl_participation 2023] edges: 10498
+[academic excl_participation 2024] edges: 10758
+[academic excl_retention 2019] edges: 9837
+[academic excl_retention 2020] edges: 10072
+[academic excl_retention 2021] edges: 10574
+[academic excl_retention 2022] edges: 10594
+[academic excl_retention 2023] edges: 10699
+[academic excl_retention 2024] edges: 11003
+[academic excl_sat 2019] edges: 9638
+[academic excl_sat 2020] edges: 9942
+[academic excl_sat 2021] edges: 10365
+[academic excl_sat 2022] edges: 10434
+[academic excl_sat 2023] edges: 10600
+[academic excl_sat 2024] edges: 10943
+PASS [academic] academic distance matches loop recomputation over the set's own features (600 sampled edges): 600/600
+PASS [academic] academic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per set and year: True
+PASS [academic] leakage test: scrambling year-t values leaves year-t academic edges unchanged: True
+PASS [academic] prediction-time target excluded from academic similarity: True (year-t values never used (shuffle test) and the predicted family is dropped from each set)
+PASS [demographic] demographic edges in 2018 (no prior year): 0
+PASS [demographic] demographic distance matches loop recomputation (400 sampled edges): 400/400
+PASS [demographic] demographic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per year: True
+PASS [demographic] leakage test: scrambling year-t demographics leaves year-t demographic edges unchanged: True
+PASS [temporal] temporal edges: same campus, consecutive years, directed forward: True
+PASS [temporal] temporal edge count == consecutive campus-year pairs: 9876 vs 9876
+[temporal] campuses with a gap year (no edge bridges the gap): 0
+[2018] isolated nodes in district layer: 901
+[2018] isolated nodes in geographic layer: 4
+[2018] isolated nodes in academic layer: 1619
+[2018] isolated nodes in region layer: 0
+[2018] isolated nodes in demographic layer: 1619
+[2018] nodes with no incoming temporal edge (no t-1 row): 1619
+[2018] nodes with no outgoing temporal edge (no t+1 row): 0
+PASS [2018] isolated nodes across all spatial edge types: 0
+[2018] nodes without academic edges in excl_sat (no usable t-1 profile): 1619
+[2018] nodes without academic edges in excl_act (no usable t-1 profile): 1619
+[2018] nodes without academic edges in excl_criterion (no usable t-1 profile): 1619
+[2018] nodes without academic edges in excl_participation (no usable t-1 profile): 1619
+[2018] nodes without academic edges in excl_attendance (no usable t-1 profile): 1619
+[2018] nodes without academic edges in excl_dropout (no usable t-1 profile): 1619
+[2018] nodes without academic edges in excl_retention (no usable t-1 profile): 1619
+[2019] isolated nodes in district layer: 903
+[2019] isolated nodes in geographic layer: 5
+[2019] isolated nodes in academic layer: 177
+[2019] isolated nodes in region layer: 0
+[2019] isolated nodes in demographic layer: 37
+[2019] nodes with no incoming temporal edge (no t-1 row): 11
+[2019] nodes with no outgoing temporal edge (no t+1 row): 0
+PASS [2019] isolated nodes across all spatial edge types: 0
+[2019] nodes without academic edges in excl_sat (no usable t-1 profile): 179
+[2019] nodes without academic edges in excl_act (no usable t-1 profile): 179
+[2019] nodes without academic edges in excl_criterion (no usable t-1 profile): 184
+[2019] nodes without academic edges in excl_participation (no usable t-1 profile): 181
+[2019] nodes without academic edges in excl_attendance (no usable t-1 profile): 184
+[2019] nodes without academic edges in excl_dropout (no usable t-1 profile): 183
+[2019] nodes without academic edges in excl_retention (no usable t-1 profile): 177
+[2020] isolated nodes in district layer: 902
+[2020] isolated nodes in geographic layer: 5
+[2020] isolated nodes in academic layer: 151
+[2020] isolated nodes in region layer: 0
+[2020] isolated nodes in demographic layer: 25
+[2020] nodes with no incoming temporal edge (no t-1 row): 14
+[2020] nodes with no outgoing temporal edge (no t+1 row): 0
+PASS [2020] isolated nodes across all spatial edge types: 0
+[2020] nodes without academic edges in excl_sat (no usable t-1 profile): 154
+[2020] nodes without academic edges in excl_act (no usable t-1 profile): 152
+[2020] nodes without academic edges in excl_criterion (no usable t-1 profile): 166
+[2020] nodes without academic edges in excl_participation (no usable t-1 profile): 162
+[2020] nodes without academic edges in excl_attendance (no usable t-1 profile): 166
+[2020] nodes without academic edges in excl_dropout (no usable t-1 profile): 166
+[2020] nodes without academic edges in excl_retention (no usable t-1 profile): 151
+[2021] isolated nodes in district layer: 905
+[2021] isolated nodes in geographic layer: 6
+[2021] isolated nodes in academic layer: 111
+[2021] isolated nodes in region layer: 0
+[2021] isolated nodes in demographic layer: 24
+[2021] nodes with no incoming temporal edge (no t-1 row): 10
+[2021] nodes with no outgoing temporal edge (no t+1 row): 1
+PASS [2021] isolated nodes across all spatial edge types: 0
+[2021] nodes without academic edges in excl_sat (no usable t-1 profile): 111
+[2021] nodes without academic edges in excl_act (no usable t-1 profile): 111
+[2021] nodes without academic edges in excl_criterion (no usable t-1 profile): 111
+[2021] nodes without academic edges in excl_participation (no usable t-1 profile): 134
+[2021] nodes without academic edges in excl_attendance (no usable t-1 profile): 139
+[2021] nodes without academic edges in excl_dropout (no usable t-1 profile): 134
+[2021] nodes without academic edges in excl_retention (no usable t-1 profile): 111
+[2022] isolated nodes in district layer: 903
+[2022] isolated nodes in geographic layer: 8
+[2022] isolated nodes in academic layer: 101
+[2022] isolated nodes in region layer: 0
+[2022] isolated nodes in demographic layer: 22
+[2022] nodes with no incoming temporal edge (no t-1 row): 12
+[2022] nodes with no outgoing temporal edge (no t+1 row): 1
+PASS [2022] isolated nodes across all spatial edge types: 0
+[2022] nodes without academic edges in excl_sat (no usable t-1 profile): 101
+[2022] nodes without academic edges in excl_act (no usable t-1 profile): 101
+[2022] nodes without academic edges in excl_criterion (no usable t-1 profile): 102
+[2022] nodes without academic edges in excl_participation (no usable t-1 profile): 152
+[2022] nodes without academic edges in excl_attendance (no usable t-1 profile): 162
+[2022] nodes without academic edges in excl_dropout (no usable t-1 profile): 153
+[2022] nodes without academic edges in excl_retention (no usable t-1 profile): 101
+[2023] isolated nodes in district layer: 903
+[2023] isolated nodes in geographic layer: 9
+[2023] isolated nodes in academic layer: 76
+[2023] isolated nodes in region layer: 0
+[2023] isolated nodes in demographic layer: 16
+[2023] nodes with no incoming temporal edge (no t-1 row): 4
+[2023] nodes with no outgoing temporal edge (no t+1 row): 2
+PASS [2023] isolated nodes across all spatial edge types: 0
+[2023] nodes without academic edges in excl_sat (no usable t-1 profile): 76
+[2023] nodes without academic edges in excl_act (no usable t-1 profile): 76
+[2023] nodes without academic edges in excl_criterion (no usable t-1 profile): 76
+[2023] nodes without academic edges in excl_participation (no usable t-1 profile): 124
+[2023] nodes without academic edges in excl_attendance (no usable t-1 profile): 137
+[2023] nodes without academic edges in excl_dropout (no usable t-1 profile): 124
+[2023] nodes without academic edges in excl_retention (no usable t-1 profile): 76
+[2024] isolated nodes in district layer: 902
+[2024] isolated nodes in geographic layer: 9
+[2024] isolated nodes in academic layer: 46
+[2024] isolated nodes in region layer: 0
+[2024] isolated nodes in demographic layer: 4
+[2024] nodes with no incoming temporal edge (no t-1 row): 0
+[2024] nodes with no outgoing temporal edge (no t+1 row): 1666
+PASS [2024] isolated nodes across all spatial edge types: 0
+[2024] nodes without academic edges in excl_sat (no usable t-1 profile): 46
+[2024] nodes without academic edges in excl_act (no usable t-1 profile): 46
+[2024] nodes without academic edges in excl_criterion (no usable t-1 profile): 46
+[2024] nodes without academic edges in excl_participation (no usable t-1 profile): 91
+[2024] nodes without academic edges in excl_attendance (no usable t-1 profile): 99
+[2024] nodes without academic edges in excl_dropout (no usable t-1 profile): 91
+[2024] nodes without academic edges in excl_retention (no usable t-1 profile): 46
+[config] graph parameters status: pending_professor_review (configs/graph.yaml; flagged for professor review (Q10))
+
+86 passed, 0 failed, 197 informational

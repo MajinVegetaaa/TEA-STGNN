@@ -1,0 +1,17 @@
+# Forecast cutoff: August 1 of Y-1 for target school-year end Y.
+# Publication bounds apply to added contextual inputs. The frozen original
+# inputs/persistence remain retrospective comparators, not deployable forecasts.
+# Report publication establishes indicator availability, not historical revisions
+# of today's downloads. No claim of an archived-vintage backtest is made.
+cutoff_month_day: '08-01'
+groups:
+  staff: {minimum_lag: 2}
+  staar: {minimum_lag: 2}
+  ap_ib: {minimum_lag: 3}
+  graduation: {minimum_lag: 3}
+# Missing publication entries are excluded, not inferred from neighboring years.
+publication_bounds:
+  staff: {2018: '2019-07-31', 2019: '2020-07-31', 2020: '2021-07-31', 2021: '2022-07-31', 2022: '2023-07-31', 2023: '2024-07-31', 2024: '2025-07-31'}
+  staar: {2018: '2019-07-31', 2019: '2020-07-31', 2021: '2022-07-31', 2022: '2023-07-31', 2023: '2024-07-31', 2024: '2025-07-31'}
+  ap_ib: {2018: '2019-12-31', 2019: '2020-10-31', 2020: '2021-09-30', 2021: '2022-07-31', 2022: '2023-08-31', 2023: '2025-02-28', 2024: '2025-12-31'}
+  graduation: {2018: '2019-09-30', 2019: '2020-12-31', 2020: '2021-08-31', 2021: '2022-10-31', 2022: '2023-08-31', 2023: '2024-08-31', 2024: '2025-10-31'}

@@ -11,6 +11,7 @@ Runs on the GPU when one is available (--device to override). Writes predictions
 from __future__ import annotations
 
 import argparse
+import os
 import time
 from pathlib import Path
 
@@ -20,7 +21,7 @@ from torch import nn
 from torch_geometric.nn import HeteroConv, SAGEConv
 
 ROOT = Path(__file__).resolve().parents[2]
-SNAP = ROOT / "data" / "graph" / "pyg" / "snapshots.pt"
+SNAP = ROOT / "data" / ("graph_expanded" if os.environ.get("TEA_EXPANDED") == "1" else "graph") / "pyg" / "snapshots.pt"
 LAYERS = ["district", "geographic", "demographic", "region"]
 
 

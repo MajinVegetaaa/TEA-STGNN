@@ -13,6 +13,10 @@ Never edit by hand; rebuild instead. Always read ID columns as text (`dtype=str`
 | `data_dictionary.csv` | column | meaning, raw source code and unit of every column above |
 | `reports/data_quality_report.csv` | check | every count and check printed while building |
 | `reports/processed_validation.csv` | check | the independent validator's pass/fail results |
+| `reports/addition_sources.csv` | source × year | verified year evidence, original filename and SHA-256 |
+| `reports/addition_coverage.csv` | field × year | matched campuses, observed values and missing/suppression statuses |
+| `reports/addition_source_cells.csv` | selected source cell | reproducible examples from independent source-to-master checks |
+| `reports/master_data_gate.json` | validation run | pass/fail and input/output hashes; stale passes cannot authorize expansion |
 | `audit/excluded_not_in_directory.csv` | school | campuses with graduates that are missing from the 2025 directory (excluded) |
 | `audit/name_mismatches.csv` | school × year | campus names that differ between a yearly file and the directory (renames) |
 | `audit/geo_rejected_matches.csv` | school | coordinate matches rejected as unreliable (currently none) |

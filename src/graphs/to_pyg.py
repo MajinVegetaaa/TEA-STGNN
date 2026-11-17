@@ -17,6 +17,8 @@ Writes data/graph/pyg/snapshots.pt. Run from the repo root:  python3 src/graphs/
 from __future__ import annotations
 
 from pathlib import Path
+import os
+EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
 
 import numpy as np
 import pandas as pd
@@ -25,13 +27,13 @@ import yaml
 from torch_geometric.data import HeteroData
 
 ROOT = Path(__file__).resolve().parents[2]
-G = ROOT / "data" / "graph"
+G = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
 OUT = G / "pyg" / "snapshots.pt"
 SPLIT = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())
 ID = {"campus_id": str, "src_campus_id": str, "dst_campus_id": str, "district_id": str, "esc_region": str}
 
 TARGETS = ["act_composite", "sat_total", "sat_act_above_criterion", "dropout_9_12", "attendance_rate",
-           "retention_rate", "risk_index", "tsi_both"]
+           "retention_rate", "risk_index", "tsi_both"] + (["sat_act_participation", "graduation_4yr"] if EXPANDED else [])
 LAYERS = ["district", "geographic", "demographic", "region", "academic"]
 STATIC_NUM = ["is_charter", "is_magnet", "is_virtual_or_hybrid", "is_residential_facility", "serves_full_9_12",
               "latitude", "longitude"]
@@ -136,6 +138,7 @@ def check(snaps, nodes, edges, campuses, names) -> None:
     rec = lambda name, cond, detail="": (ok.append(bool(cond)), print(f"{'PASS' if cond else 'FAIL'}  {name}  {detail}"))
     rec("one fixed campus order (cohort size)", len(campuses) == nodes.campus_id.nunique(), str(len(campuses)))
     rec("no NaN in inputs", all(not torch.isnan(s["campus"].x).any() for s in snaps))
+    rec("all target evaluation masks equal observed target and lag", all(torch.equal(s["campus"].eval_mask, s["campus"].y_mask & ~torch.isnan(s["campus"].y_lag1)) for s in snaps))
     rec("no same-year target in inputs", not set(TARGETS) & set(names))
     for s in snaps:
         y = s.year
@@ -153,12 +156,14 @@ def check(snaps, nodes, edges, campuses, names) -> None:
         for j, t in enumerate(TARGETS):
             a, b = float(s["campus"].y[pos[r.campus_id], j]), nd.at[(r.campus_id, r.year), t]
             err += not ((np.isnan(a) and pd.isna(b)) or abs(a - b) < 1e-3)
-    rec("y round-trips against nodes.csv (300 sampled rows x 7 targets)", err == 0, f"{err} mismatches")
+    rec(f"y round-trips against nodes.csv (300 sampled rows x {len(TARGETS)} targets)", err == 0, f"{err} mismatches")
     pred = ROOT / "results" / "level" / "predictions.csv"
     if pred.exists():
         p = pd.read_csv(pred, dtype={"campus_id": str}, usecols=["model", "seed", "campus_id", "year", "target"])
         p = p[(p.model == "persistence (last year's value)") & (p.seed == 0)]
         for t in TARGETS:
+            if t not in set(p.target):
+                continue
             for y in SPLIT["val_years"] + SPLIT["test_years"]:
                 s = snaps[[x.year for x in snaps].index(y)]
                 m = s["campus"].eval_mask[:, TARGETS.index(t)]

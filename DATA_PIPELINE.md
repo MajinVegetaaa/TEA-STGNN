@@ -261,3 +261,126 @@ absenteeism, which TEA did not publish, and dropout 7–8).
    from history has at most 4 prior years.
 10. **Earlier audit errors** (corrected here): ACT `CAC` is ACT *Science*, not composite (composite is
     `CAA`). The "~1,966 high schools" figure came from the old file, which includes alternative campuses.
+# November 2026 additive master-data milestone
+
+The approved integration's master-data gate passed on 2026-11-17: **179/179 raw
+audit checks and 115/115 processed-data checks**. The master remains **11,546
+campus-years, 1,670 campuses, 2018–2024**; all **59 pre-existing columns** match
+the frozen master exactly. It now has 156 columns: 17 new substantive indicators,
+12 supporting count/denominator fields, raw tokens, status fields and provenance.
+The Risk Index formula and existing temporal features are unchanged.
+
+`src/data/new_sources.py` is a loader module called by the existing
+`build_master.py`, not a separate modeling pipeline. Every addition is a validated
+campus/year left join. `audit_raw.py` verifies all 34 new source-years, and
+`validate_processed.py` calls the independent `validate_additions.py` checks.
+
+| Source | Included fields and selection |
+|---|---|
+| Staff | `teacher_experience`, `teacher_tenure`, `teacher_salary`, `student_teacher_ratio`, `teacher_fte`; exact unique statewide campus-roster match to independently dated demographics verifies every year |
+| AP / IB | Separate `{ap,ib}_participation`, `{ap,ib}_examinees_above_criterion`, `{ap,ib}_exams_above_criterion`; `Group=All Students`, grades 11–12; AP criterion ≥3, IB ≥4 |
+| Graduation | `graduation_4yr`, `graduation_count`, `graduation_cohort`; `CALC_FOR_STATE_ACCT=No`, All Students, federal calculation without state statutory exclusions; one row per campus/year |
+| STAAR | `staar_{algebra1,english1,english2,biology,us_history}_meets`; All Students EOC Meets Grade Level; matching numerator/denominator columns retained when published |
+
+The supplied 2018 `CAMPSTAAR5.dat` has additional groups only, with no All Students
+fields. It is preserved and staged. The correct **`CAMPSTAAR2.dat` was downloaded
+from TEA**, verified and registered instead. Its published 2018 rates are used;
+no reconstruction was necessary. Download parameters, checksum and dictionaries
+are recorded in `data/raw/source_definitions/README.md`. The dictionaries confirm
+the same five EOC subject definitions across included years; `AA0` (which includes
+accelerated testers) is excluded. 2020 is missing throughout, and the spring 2023
+[STAAR redesign](https://tea.texas.gov/assessment-and-accountability/assessment-initiatives/staar-redesign)
+remains a comparability caveat.
+
+Every new numeric field retains `_raw` and `_status`. Explicit masks remain
+missing. AP/IB blank percentages are `undefined_or_suppressed`, because the
+workbooks do not distinguish those reasons. Unmatched campuses are
+`source_absent`, never zero. Published rates take precedence even when blank or
+suppressed. Derivation is allowed only when the entire rate column is absent,
+with matching unsuppressed counts and a positive denominator. Finance stays staged.
+
+Observed campus counts (source absence and masks excluded):
+
+| Year | Teacher experience | AP participation | IB participation | Graduation | STAAR Algebra I |
+|---|---:|---:|---:|---:|---:|
+| 2018 | 1,588 | 1,130 | 57 | 1,427 | 1,305 |
+| 2019 | 1,614 | 1,143 | 62 | 1,447 | 1,588 |
+| 2020 | 1,628 | 1,103 | 70 | 1,475 | 0 |
+| 2021 | 1,640 | 1,122 | 74 | 1,506 | 1,621 |
+| 2022 | 1,646 | 1,126 | 73 | 1,541 | 1,634 |
+| 2023 | 1,657 | 1,132 | 72 | 1,561 | 1,645 |
+| 2024 | 1,659 | 1,117 | 71 | 1,579 | 1,647 |
+
+Full coverage, all-cell source checks, selected source examples and the gate
+receipt are in `data/processed/reports/addition_*.csv` and
+`master_data_gate.json`. The gate hashes its inputs and outputs; a failed or stale
+receipt cannot authorize expanded feature generation. Eleven regression tests
+cover masks, duplicate joins, wrong groups, rate derivation, calendar gaps and
+gate invalidation (`python3 -m unittest discover -s tests -v`).
+
+Rebuild sequence (Python environment with `requirements.txt` installed):
+
+```sh
+# Run once before the first expanded rebuild; refuses to overwrite a snapshot.
+python3 src/data/freeze_outputs.py
+python3 src/data/audit_raw.py
+python3 src/data/build_master.py
+python3 src/data/validate_processed.py
+python3 src/data/validate_additions.py  # verifies that the passing gate is current
+```
+
+The snapshot is `results/frozen/pre_expansion/`: 100 checksum-verified files
+covering processed data, graph/PyG artifacts, feature catalogs, baseline results,
+configs, code and documentation. It is local and gitignored. Preserve it when
+handing off data; do not rerun the freeze command over it.
+
+## Expanded histories and model inputs (2026-11-18)
+
+The master gate now feeds `src/data/prepare_expanded_features.py`. It preserves
+all original temporal values, adds raw calendar histories for audit, and writes
+102 separately publication-filtered inputs to `expanded_temporal_features.csv`
+(11,546 rows, 378 columns). Calendar gaps remain missing; rolling statistics need
+all three observations. The forecast-cutoff assumption, release evidence and
+revision limitations are recorded in `configs/feature_availability.md` and YAML.
+
+The assumed cutoff is August 1 before the target school year. Added staff/STAAR
+inputs start at lag 2 and AP/IB/graduation at lag 3, subject to source-year release
+checks. Original inputs and persistence remain retrospective comparators. Do not
+interpret the complete experiment as a deployment-time or archived-vintage test.
+Graduation's own histories are filtered too; its unfiltered lag 1 is used only
+for the shared evaluation eligibility rule and persistence benchmark.
+
+Expanded artifacts use `data/graph_expanded/` and `results/expanded/`; the original
+graph and baseline results remain unchanged. Training-only medians, missing flags
+and KNN scaling apply to every expanded comparison, including existing inputs.
+Consequently, comparisons within the six new runs isolate input-set differences;
+comparisons to frozen results also include the preprocessing change and fixed
+level target representation. There is no new Risk Index formula or edge definition.
+
+Reproduction after the master gate:
+
+```sh
+python src/data/prepare_expanded_features.py
+TEA_EXPANDED=1 python src/graphs/build_graph_data.py
+TEA_EXPANDED=1 python src/graphs/validate_graph.py
+TEA_EXPANDED=1 python src/graphs/to_pyg.py
+TEA_EXPANDED=1 python -m unittest discover -s tests -v
+python src/baselines/run_expansion.py
+python src/eval/validate_expansion.py
+python src/eval/compare_expansion.py
+python src/eval/report_expansion.py
+```
+
+Use an environment with the project's requirements and PyTorch Geometric.
+The local `.venv-expanded` provides PyG for conversion, tests and smoke training.
+The experiment runner reuses the existing baseline implementation, model grids
+and seeds. It locks models within each input set and the overall winning input
+set per target using 2023 only, before predicting 2024. `selection_locked.csv`
+and `feature_selection_locked.csv` preserve those choices. All comparisons use
+2018–2022 training, 2023 validation, 2024 test and seeds 0–4; target mode is level.
+Deterministic LR/KNN and HGB predictions are reused across seeds; HGB reuse is
+restricted to fewer than 10,000 training rows (no automatic early stopping or
+binning subsample), with a seed-equivalence check before caching. Stochastic
+forests/XGBoost still run each seed. No model family or grid is reduced.
+
+See `results/expanded/README.md` for the final validation and accuracy report.

@@ -24,6 +24,8 @@ from __future__ import annotations
 import argparse
 import itertools
 from pathlib import Path
+import os
+EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
 
 import numpy as np
 import pandas as pd
@@ -36,20 +38,28 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parents[2]
-G = ROOT / "data" / "graph"
+G = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
 RES = ROOT / "results"
 SPLIT = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())
 TRAIN, VAL, TEST, SEEDS = SPLIT["train_years"], SPLIT["val_years"], SPLIT["test_years"], SPLIT["seeds"]
 ID = {"campus_id": str, "src_campus_id": str, "dst_campus_id": str, "district_id": str, "esc_region": str}
 
 TARGETS = ["act_composite", "sat_total", "sat_act_above_criterion", "dropout_9_12", "attendance_rate",
-           "retention_rate", "risk_index", "tsi_both"]
+           "retention_rate", "risk_index", "tsi_both"] + (["sat_act_participation", "graduation_4yr"] if EXPANDED else [])
 # tsi_both (added 2026-10-25) is not a context input, so the other targets' Phase 3 inputs are unchanged
 CONTEXT_VARS = ["sat_total", "act_composite", "sat_act_above_criterion", "sat_act_participation",
                 "attendance_rate", "dropout_9_12", "chronic_absenteeism"]
 DEMO_VARS = ["enrollment", "pct_econ_disadv", "pct_english_learner", "pct_special_ed", "pct_at_risk",
              "pct_african_american", "pct_hispanic", "pct_white", "pct_asian", "pct_american_indian",
              "pct_pacific_islander", "pct_two_or_more", "mobility_rate"]   # previous year's student make-up
+INPUT_SET = "existing"
+ADDITION_GROUPS = {
+    "staff": ["teacher_", "student_teacher_"],
+    "ap_ib": ["ap_", "ib_"],
+    "staar": ["staar_"],
+    "graduation": ["graduation_4yr_"],
+}
+
 LAYERS = ["district", "geographic", "academic", "demographic", "region"]
 
 
@@ -96,10 +106,25 @@ def feature_table(nodes: pd.DataFrame, edges: dict, target: str, edge_set: str |
     for u in ["City", "Suburb", "Town", "Rural"]:
         df[f"urb_{u}"] = (df.urbanicity == u).astype(int)
     ctx += ["covid_affected_year", "is_charter"] + [f"urb_{u}" for u in ["City", "Suburb", "Town", "Rural"]]
-    nb = neighbour_features(nodes, edges, t, edge_set)
+    if EXPANDED and INPUT_SET != "existing":
+        prefixes = [p for k, ps in ADDITION_GROUPS.items() if INPUT_SET in (k, "all") for p in ps]
+        added = [c for c in nodes if any(c.startswith("available_" + p) for p in prefixes)]
+        for c in added:
+            df[c] = nodes[c]
+        ctx += added
+    neighbour_nodes = nodes
+    if EXPANDED and t == "graduation_4yr":
+        neighbour_nodes = nodes.copy()
+        df[f"{t}_lag1"] = nodes[f"available_{t}_lag3"]
+        df[f"{t}_lag2"] = nodes[f"available_{t}_lag4"]
+        df[f"{t}_change_lag1"] = nodes[f"available_{t}_change"]
+        df[f"{t}_n_prior_obs"] = nodes[[f"available_{t}_lag{k}" for k in (3,4,5)]].notna().sum(axis=1)
+        neighbour_nodes[f"{t}_lag1"] = df[f"{t}_lag1"]
+        neighbour_nodes[f"{t}_change_lag1"] = df[f"{t}_change_lag1"]
+    nb = neighbour_features(neighbour_nodes, edges, t, edge_set)
     df = df.merge(nb, on=["campus_id", "year"], how="left", validate="one_to_one")
     graph = [c for c in nb.columns if c.startswith("nbr_")]
-    df["_raw_lag1"] = df[f"{t}_lag1"]                 # persistence always uses the raw previous value
+    df["_raw_lag1"] = nodes[f"{t}_lag1"].to_numpy()                 # persistence always uses the raw previous value
     df["_y_fit"], df["_offset"], df["_scale"] = df[t], 0.0, 1.0
     return df, {"own": own, "ctx": ctx, "graph": graph}
 
@@ -152,7 +177,7 @@ def make(kind: str, params: dict, seed: int):
     if kind == "xgb":
         return XGBRegressor(n_estimators=200, random_state=seed, n_jobs=-1, tree_method="hist", **params)
     if kind == "knn":
-        return make_pipeline(StandardScaler(), KNeighborsRegressor(**params))
+        return KNeighborsRegressor(**params) if EXPANDED else make_pipeline(StandardScaler(), KNeighborsRegressor(**params))
     if kind == "lr":
         return LinearRegression()
     raise ValueError(kind)
@@ -197,7 +222,20 @@ def mae(y, p):
 
 
 def fit_predict(kind, params, seed, Xtr, ytr, Xte, target):
-    if kind in ("lr", "knn"):
+    if EXPANDED:
+        # Fixed training window governs preprocessing even for the final train+val refit.
+        fit = Xtr.loc[Xtr.index.intersection(PREPROCESS_INDEX)]
+        keep = fit.columns[fit.notna().any()]
+        med = fit[keep].median()
+        train_missing = Xtr[keep].isna().astype(float).add_suffix("_missing")
+        test_missing = Xte[keep].isna().astype(float).add_suffix("_missing")
+        Xtr = pd.concat([Xtr[keep].fillna(med), train_missing], axis=1)
+        Xte = pd.concat([Xte[keep].fillna(med), test_missing], axis=1)
+    if EXPANDED and kind == "knn":
+        fit = Xtr.loc[Xtr.index.intersection(PREPROCESS_INDEX)]
+        scaler = StandardScaler().fit(fit)
+        return make(kind, params, seed).fit(scaler.transform(Xtr), ytr).predict(scaler.transform(Xte))
+    if kind in ("lr", "knn") and not EXPANDED:
         Xtr, Xte = impute_for_linear(Xtr, target), impute_for_linear(Xte, target)
         med = Xtr.median()
         Xtr, Xte = Xtr.fillna(med), Xte.fillna(med)
@@ -210,9 +248,17 @@ def main() -> None:
     ap.add_argument("--mode", choices=["level", "relative", "zscore"], default="zscore")
     ap.add_argument("--targets", nargs="*", default=TARGETS, help="subset of targets (smoke tests)")
     ap.add_argument("--out", default=None, help="output folder name under results/ (default: the mode)")
+    ap.add_argument("--input-set", choices=["existing", "staff", "ap_ib", "staar", "graduation", "all"], default="existing")
+    ap.add_argument("--validation-only", action="store_true")
     args = ap.parse_args()
+    if EXPANDED and (args.mode != "level" or not args.validation_only):
+        ap.error("Expanded runs require --mode level --validation-only; use run_expansion.py for locked test evaluation")
+    global INPUT_SET, PREPROCESS_INDEX
+    INPUT_SET = args.input_set
+    if INPUT_SET != "existing" and not EXPANDED:
+        ap.error("Added input sets require TEA_EXPANDED=1")
     mode = args.mode
-    out_dir = RES / (args.out or mode)
+    out_dir = RES / (args.out or (f"expanded/{INPUT_SET}/{mode}" if EXPANDED else mode))
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"target mode: {mode} -> {out_dir}")
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID)
@@ -227,10 +273,11 @@ def main() -> None:
         rows = df[df[target].notna() & df["_raw_lag1"].notna()]
         tr, va, te = (rows[rows.year.isin(y)] for y in (TRAIN, VAL, TEST))
         trva = rows[rows.year.isin(TRAIN + VAL)]
+        PREPROCESS_INDEX = tr.index
         print(f"\n== {target}: train {len(tr)} (years {sorted(tr.year.unique())}), val {len(va)}, test {len(te)}")
 
         # persistence: next year = this year
-        for split_df, split in ((va, "val"), (te, "test")):
+        for split_df, split in ([(va, "val")] if args.validation_only else [(va, "val"), (te, "test")]):
             for s in SEEDS:
                 preds.append(pd.DataFrame({"model": "persistence (last year's value)", "seed": s,
                                            "campus_id": split_df.campus_id, "year": split_df.year,
@@ -251,13 +298,13 @@ def main() -> None:
             seeds = SEEDS if kind in ("rf", "gb", "xgb") else [SEEDS[0]]
             for s in seeds:
                 pv = fit_predict(kind, best, s, tr[X], tr["_y_fit"], va[X], target) * va["_scale"].to_numpy() + va["_offset"].to_numpy()
-                pt = fit_predict(kind, best, s, trva[X], trva["_y_fit"], te[X], target) * te["_scale"].to_numpy() + te["_offset"].to_numpy()
-                for split_df, p, split in ((va, pv, "val"), (te, pt, "test")):
+                pt = None if args.validation_only else fit_predict(kind, best, s, trva[X], trva["_y_fit"], te[X], target) * te["_scale"].to_numpy() + te["_offset"].to_numpy()
+                for split_df, p, split in ([(va, pv, "val")] if args.validation_only else [(va, pv, "val"), (te, pt, "test")]):
                     preds.append(pd.DataFrame({"model": name, "seed": s, "campus_id": split_df.campus_id,
                                                "year": split_df.year, "target": target,
                                                "y_true": split_df[target], "y_pred": p, "split": split}))
             if kind not in ("rf", "gb", "xgb"):          # deterministic: copy seed 0 so every model has 5 seeds
-                last = [d for d in preds[-2:]]
+                last = [d for d in preds[-(1 if args.validation_only else 2):]]
                 for s in SEEDS[1:]:
                     preds += [d.assign(seed=s) for d in last]
             print(f"  {name:45s} best {best} val MAE {best_mae:.3f}", flush=True)

@@ -1,0 +1,5 @@
+epoch   0  train loss 1.0409  val MAE 4.3885
+epoch   9  train loss 0.5400  val MAE 2.7975
+
+graduation_4yr, validation 2023, n=1534:  GNN MAE 2.7975   persistence 2.1988   last year's statewide mean 4.6690
+training time 4.0s for 10 epochs on cpu (0.40s/epoch)

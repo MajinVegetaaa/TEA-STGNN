@@ -1,0 +1,283 @@
+[
+  {
+    "file": "12_graduation/campus-data-download-4yr-2018-v2.xlsx",
+    "filename_year": 2018,
+    "sha256": "49d9ec520583a5fff140cd9c1d5b1aaeba93ea394b96dad9775cdcffedd51f1e",
+    "data_sheet": "Comp_2018_4yr",
+    "rows": 3563,
+    "columns": 333,
+    "invalid_ids": 0,
+    "cohort_size": 1619,
+    "cohort_matched": 1427,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1780,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [],
+    "identical_other_files": []
+  },
+  {
+    "file": "12_graduation/campus-data-download-4yr-2019.xlsx",
+    "filename_year": 2019,
+    "sha256": "91ea57d3539ca30cd7e6272afe0176b0bc6ddc826b24b32a23cefbd38779872c",
+    "data_sheet": "Comp_2019_4yr",
+    "rows": 3588,
+    "columns": 333,
+    "invalid_ids": 0,
+    "cohort_size": 1630,
+    "cohort_matched": 1447,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1792,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [],
+    "identical_other_files": []
+  },
+  {
+    "file": "12_graduation/campus-data-download-4yr-2020.xlsx",
+    "filename_year": 2020,
+    "sha256": "d1ffc6823128d05b9c8d81787a8170458b0890945a32756662f01ce46a8b414d",
+    "data_sheet": "Comp_2020_4yr",
+    "rows": 3612,
+    "columns": 345,
+    "invalid_ids": 0,
+    "cohort_size": 1644,
+    "cohort_matched": 1482,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1804,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [
+      "-1"
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "12_graduation/campus-data-download-4yr-2021.xlsx",
+    "filename_year": 2021,
+    "sha256": "b8bf3b6323bd12157ee2c36d2bb1d9cee305fbefde541da3ba7b3dac2cd8129a",
+    "data_sheet": "Comp_2021_4yr",
+    "rows": 3712,
+    "columns": 369,
+    "invalid_ids": 0,
+    "cohort_size": 1654,
+    "cohort_matched": 1517,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1853,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [
+      "-1"
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "12_graduation/campus-data-download-4yr-2022-1.xlsx",
+    "filename_year": 2022,
+    "sha256": "27f0baf0f31615e11821ff2dd2da1f7d552068ffb291525802a825637a29b400",
+    "data_sheet": "Comp_2022_4yr",
+    "rows": 3773,
+    "columns": 604,
+    "invalid_ids": 0,
+    "cohort_size": 1665,
+    "cohort_matched": 1548,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1884,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [
+      "-1"
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "12_graduation/campus-data-download-4yr-2023.xlsx",
+    "filename_year": 2023,
+    "sha256": "0ac09ab45a29034c058b83f0417f08f4d60ccff34ddd65198db7fce041bf6d62",
+    "data_sheet": "Comp_2023_4yr",
+    "rows": 3804,
+    "columns": 604,
+    "invalid_ids": 0,
+    "cohort_size": 1668,
+    "cohort_matched": 1571,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1898,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [
+      "-1"
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "12_graduation/campus-data-download-4yr-2024.xlsx",
+    "filename_year": 2024,
+    "sha256": "8fbdd49f574630683e4a199cfde1a20a14509cab7670e2bd9656bf27d6b8c7c7",
+    "data_sheet": "Comp_2024_4yr",
+    "rows": 3836,
+    "columns": 604,
+    "invalid_ids": 0,
+    "cohort_size": 1666,
+    "cohort_matched": 1594,
+    "calculation_variants": [
+      "No",
+      "Yes"
+    ],
+    "duplicate_full_keys": 0,
+    "duplicate_campus_rows": 1915,
+    "required_fields_present": true,
+    "graduation_rates_outside_range_excluding_negative_masks": 0,
+    "graduation_rate_tokens": [
+      "-1"
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "13_staar_eoc/staar_eoc_2018.xls",
+    "filename_year": 2018,
+    "sha256": "b20624d29d1070fe52d7c278cdff19db05f44ba3afdbb7c1b8a54c437fe69f00",
+    "rows": 8838,
+    "columns": 271,
+    "invalid_ids": 0,
+    "cohort_size": 1619,
+    "cohort_matched": 1619,
+    "embedded_rate_years": [
+      2019
+    ],
+    "filename_year_present": false,
+    "duplicate_campus_rows": 0,
+    "numeric_rates_over_100": 0,
+    "negative_tokens": [
+      -1.0
+    ],
+    "identical_other_files": [
+      "13_staar_eoc/staar_eoc_2019.xls"
+    ]
+  },
+  {
+    "file": "13_staar_eoc/staar_eoc_2019.xls",
+    "filename_year": 2019,
+    "sha256": "b20624d29d1070fe52d7c278cdff19db05f44ba3afdbb7c1b8a54c437fe69f00",
+    "rows": 8838,
+    "columns": 271,
+    "invalid_ids": 0,
+    "cohort_size": 1630,
+    "cohort_matched": 1619,
+    "embedded_rate_years": [
+      2019
+    ],
+    "filename_year_present": true,
+    "duplicate_campus_rows": 0,
+    "numeric_rates_over_100": 0,
+    "negative_tokens": [
+      -1.0
+    ],
+    "identical_other_files": [
+      "13_staar_eoc/staar_eoc_2018.xls"
+    ]
+  },
+  {
+    "file": "13_staar_eoc/staar_eoc_2021.csv",
+    "filename_year": 2021,
+    "sha256": "56e5ba71f0b820fcbfc4e518595c697abc011b19e0c5e4c57b4b604794bb1521",
+    "rows": 8840,
+    "columns": 328,
+    "invalid_ids": 0,
+    "cohort_size": 1654,
+    "cohort_matched": 1644,
+    "embedded_rate_years": [
+      2021
+    ],
+    "filename_year_present": true,
+    "duplicate_campus_rows": 0,
+    "numeric_rates_over_100": 0,
+    "negative_tokens": [
+      -1.0
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "13_staar_eoc/staar_eoc_2022.csv",
+    "filename_year": 2022,
+    "sha256": "62aaf4b4ecf42441240247adfcab3e9c9c58698ef5b8bacb6779d5f68b94774b",
+    "rows": 8966,
+    "columns": 327,
+    "invalid_ids": 0,
+    "cohort_size": 1665,
+    "cohort_matched": 1653,
+    "embedded_rate_years": [
+      2022
+    ],
+    "filename_year_present": true,
+    "duplicate_campus_rows": 0,
+    "numeric_rates_over_100": 0,
+    "negative_tokens": [
+      -1.0
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "13_staar_eoc/staar_eoc_2023.csv",
+    "filename_year": 2023,
+    "sha256": "f602787cfa05e569dba9ce1a22cc655af59473a6679c928a26692a57e552ae92",
+    "rows": 9044,
+    "columns": 326,
+    "invalid_ids": 0,
+    "cohort_size": 1668,
+    "cohort_matched": 1664,
+    "embedded_rate_years": [
+      2023
+    ],
+    "filename_year_present": true,
+    "duplicate_campus_rows": 0,
+    "numeric_rates_over_100": 0,
+    "negative_tokens": [
+      -1.0
+    ],
+    "identical_other_files": []
+  },
+  {
+    "file": "13_staar_eoc/staar_eoc_2024.csv",
+    "filename_year": 2024,
+    "sha256": "8470f7338dbd61f038b77055d56a1a6c63b8ac6a0f45f9dae3db0bd84949e9b3",
+    "rows": 9082,
+    "columns": 1096,
+    "invalid_ids": 0,
+    "cohort_size": 1666,
+    "cohort_matched": 1666,
+    "embedded_rate_years": [
+      2024
+    ],
+    "filename_year_present": true,
+    "duplicate_campus_rows": 0,
+    "numeric_rates_over_100": 0,
+    "negative_tokens": [
+      -1.0
+    ],
+    "identical_other_files": []
+  }
+]

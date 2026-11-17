@@ -211,3 +211,39 @@ python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
 validation and can be used for baselines and graph models. Still incomplete: transition edges (need feeder
 data the PPT doesn't list) and 2019 retention (needs the 2018-19 file). Risk Index weights await the professor's
 review.
+# Integration handoff — 2026-11-17
+
+The master-data milestone is implemented and independently validated: **179 raw
+audit checks, 115 processed-data checks, and 11 regression tests pass**.
+`master_school_year.csv` now includes verified staff, separate AP/IB, federal
+four-year graduation and five All Students STAAR EOC Meets fields, along with
+source tokens, statuses and supporting counts. The existing 11,546-row panel and
+all 59 original columns are identical to the frozen version. Finance remains staged.
+
+2018 STAAR required a correction: `CAMPSTAAR5.dat` lacks All Students fields.
+The correct `CAMPSTAAR2.dat` was downloaded, verified and registered; the original
+is preserved. See `data/raw/source_definitions/README.md` for reproducible source
+evidence and `DATA_PIPELINE.md` for the selection rules and coverage table.
+
+Keep `results/frozen/pre_expansion/` (100 files with SHA-256 manifest) with the
+handoff. Reports are in `data/processed/reports/`: `addition_sources.csv`,
+`addition_coverage.csv`, `addition_source_cells.csv`, `raw_audit.csv`,
+`processed_validation.csv`, and `master_data_gate.json`. The new data and snapshots
+are gitignored, as are the existing large data artifacts; code and documentation
+alone do not include them.
+
+The continuation has built expanded calendar features, graph nodes and ten-target
+PyG tensors in separate `data/graph_expanded/` artifacts. Graph validation passes
+86 checks, conversion 63, and both new targets pass training smoke tests. The
+cutoff assumption and publication evidence are in `configs/feature_availability.md`;
+original inputs/persistence are retrospective, and downloaded revisions are not
+historical vintages. Preserve that qualification in presentations.
+
+Use `src/baselines/run_expansion.py` for the six approved comparisons. It fixes
+level target mode and locks 2023 model/input selection before 2024 evaluation.
+The results, coverage, paired original-eight comparisons and validation receipt
+are documented in `results/expanded/README.md`. Preserve local prediction files,
+expanded graph/PyG artifacts, source downloads and the frozen snapshot with the
+handoff; these large artifacts are gitignored. Reproduction commands are in
+`DATA_PIPELINE.md`. Finance remains staged and graph defaults retain their existing
+professor-review status.

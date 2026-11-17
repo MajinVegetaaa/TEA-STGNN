@@ -1,0 +1,67 @@
+dropped 34 inputs with no training-year values: chronic_absenteeism_lag3, chronic_absenteeism_ma3, chronic_absenteeism_trend3, available_ap_participation_lag5, available_ap_participation_ma3, available_ap_participation_trend3, available_ap_examinees_above_criterion_lag5, available_ap_examinees_above_criterion_ma3, available_ap_examinees_above_criterion_trend3, available_ap_exams_above_criterion_lag5, available_ap_exams_above_criterion_ma3, available_ap_exams_above_criterion_trend3, available_ib_participation_lag5, available_ib_participation_ma3, available_ib_participation_trend3, available_ib_examinees_above_criterion_lag5, available_ib_examinees_above_criterion_ma3, available_ib_examinees_above_criterion_trend3, available_ib_exams_above_criterion_lag5, available_ib_exams_above_criterion_ma3, available_ib_exams_above_criterion_trend3, available_staar_algebra1_meets_ma3, available_staar_algebra1_meets_trend3, available_staar_english1_meets_ma3, available_staar_english1_meets_trend3, available_staar_english2_meets_ma3, available_staar_english2_meets_trend3, available_staar_biology_meets_ma3, available_staar_biology_meets_trend3, available_staar_us_history_meets_ma3, available_staar_us_history_meets_trend3, available_graduation_4yr_lag5, available_graduation_4yr_ma3, available_graduation_4yr_trend3
+PASS  one fixed campus order (cohort size)  1670
+PASS  no NaN in inputs  
+PASS  all target evaluation masks equal observed target and lag  
+PASS  no same-year target in inputs  
+PASS  2018: present nodes = rows in nodes.csv  
+PASS  2018: district edges = 2 x CSV rows  7578 vs 2x3789
+PASS  2018: geographic edges = 2 x CSV rows  10164 vs 2x5082
+PASS  2018: demographic edges = 2 x CSV rows  0 vs 2x0
+PASS  2018: region edges = 2 x CSV rows  184386 vs 2x92193
+PASS  2018: academic edges = 2 x CSV rows  0 vs 2x0
+PASS  2019: present nodes = rows in nodes.csv  
+PASS  2019: district edges = 2 x CSV rows  7754 vs 2x3877
+PASS  2019: geographic edges = 2 x CSV rows  10220 vs 2x5110
+PASS  2019: demographic edges = 2 x CSV rows  22822 vs 2x11411
+PASS  2019: region edges = 2 x CSV rows  187596 vs 2x93798
+PASS  2019: academic edges = 2 x CSV rows  135472 vs 2x67736
+PASS  2020: present nodes = rows in nodes.csv  
+PASS  2020: district edges = 2 x CSV rows  7946 vs 2x3973
+PASS  2020: geographic edges = 2 x CSV rows  10322 vs 2x5161
+PASS  2020: demographic edges = 2 x CSV rows  23144 vs 2x11572
+PASS  2020: region edges = 2 x CSV rows  191506 vs 2x95753
+PASS  2020: academic edges = 2 x CSV rows  138730 vs 2x69365
+PASS  2021: present nodes = rows in nodes.csv  
+PASS  2021: district edges = 2 x CSV rows  8060 vs 2x4030
+PASS  2021: geographic edges = 2 x CSV rows  10362 vs 2x5181
+PASS  2021: demographic edges = 2 x CSV rows  23148 vs 2x11574
+PASS  2021: region edges = 2 x CSV rows  194130 vs 2x97065
+PASS  2021: academic edges = 2 x CSV rows  145122 vs 2x72561
+PASS  2022: present nodes = rows in nodes.csv  
+PASS  2022: district edges = 2 x CSV rows  8202 vs 2x4101
+PASS  2022: geographic edges = 2 x CSV rows  10420 vs 2x5210
+PASS  2022: demographic edges = 2 x CSV rows  23446 vs 2x11723
+PASS  2022: region edges = 2 x CSV rows  197506 vs 2x98753
+PASS  2022: academic edges = 2 x CSV rows  144476 vs 2x72238
+PASS  2023: present nodes = rows in nodes.csv  
+PASS  2023: district edges = 2 x CSV rows  8220 vs 2x4110
+PASS  2023: geographic edges = 2 x CSV rows  10428 vs 2x5214
+PASS  2023: demographic edges = 2 x CSV rows  23530 vs 2x11765
+PASS  2023: region edges = 2 x CSV rows  198154 vs 2x99077
+PASS  2023: academic edges = 2 x CSV rows  146632 vs 2x73316
+PASS  2024: present nodes = rows in nodes.csv  
+PASS  2024: district edges = 2 x CSV rows  8214 vs 2x4107
+PASS  2024: geographic edges = 2 x CSV rows  10418 vs 2x5209
+PASS  2024: demographic edges = 2 x CSV rows  23674 vs 2x11837
+PASS  2024: region edges = 2 x CSV rows  197722 vs 2x98861
+PASS  2024: academic edges = 2 x CSV rows  151366 vs 2x75683
+PASS  y round-trips against nodes.csv (300 sampled rows x 7 targets)  0 mismatches
+PASS  eval rows = Phase 3 rows: act_composite 2023  1074 vs 1074
+PASS  eval rows = Phase 3 rows: act_composite 2024  1079 vs 1079
+PASS  eval rows = Phase 3 rows: sat_total 2023  1242 vs 1242
+PASS  eval rows = Phase 3 rows: sat_total 2024  1260 vs 1260
+PASS  eval rows = Phase 3 rows: sat_act_above_criterion 2023  1520 vs 1520
+PASS  eval rows = Phase 3 rows: sat_act_above_criterion 2024  1547 vs 1547
+PASS  eval rows = Phase 3 rows: dropout_9_12 2023  1642 vs 1642
+PASS  eval rows = Phase 3 rows: dropout_9_12 2024  1654 vs 1654
+PASS  eval rows = Phase 3 rows: attendance_rate 2023  1647 vs 1647
+PASS  eval rows = Phase 3 rows: attendance_rate 2024  1657 vs 1657
+PASS  eval rows = Phase 3 rows: retention_rate 2023  1650 vs 1650
+PASS  eval rows = Phase 3 rows: retention_rate 2024  1660 vs 1660
+PASS  eval rows = Phase 3 rows: risk_index 2023  1519 vs 1519
+PASS  eval rows = Phase 3 rows: risk_index 2024  1546 vs 1546
+PASS  eval rows = Phase 3 rows: tsi_both 2023  1584 vs 1584
+PASS  eval rows = Phase 3 rows: tsi_both 2024  1604 vs 1604
+
+63/63 checks passed
+wrote data/graph_expanded/pyg/snapshots.pt: 7 years x 1670 campuses x 430 features

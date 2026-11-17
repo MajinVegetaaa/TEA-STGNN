@@ -66,7 +66,74 @@ locations: 06_school_locations/Public_School_Locations_-_Current.csv
 # fetched 2026-10-22 from the file name TEA's 2017-18 page uses (the 2016-17 page links a retired path that 404s).
 # Checked: title "2016-17", 8,649 all-grades rows, 11.8% of rates identical to 2017-18 (not copied).
 not_yet_used:
+  staar_additional_groups:
+    2018: 13_staar_eoc/2018/CAMPSTAAR5.dat  # no All Students fields; preserved, excluded
   sat_act: {2017: 01_sat_act/2017/CAMPPERF.dat}
   attendance_dropout: {2017: 02_attendance_dropout/2017/CAMPGRAD.dat}
   demographics: {2017: 03_demographics_tapr/2017.dat}
   retention: {2017: 04_retention/campus-download-1617.xlsx}
+  # Finance, rejected downloads and supplemental data remain staged.
+  finance_peims:
+    # Keys are archive filename years, NOT FUNDYEAR. Each file contains multiple FUNDYEAR values.
+    # Fiscal/school-year and release-date mapping still need verification.
+    2018: 10_finance_peims/actget2018.zip
+    2019: 10_finance_peims/actget2019.zip
+    2020: 10_finance_peims/actget2020.zip
+    2021: 10_finance_peims/actget2021.zip
+    2022: 10_finance_peims/actget2022.zip
+    2023: 10_finance_peims/actget2023.zip
+    2024: 10_finance_peims/actget2024.zip
+  rejected_downloads:
+    # Identical to staar_eoc_2019.xls; all rate columns end in 19R. Preserve for traceability only.
+    staar_mislabeled_2018: 13_staar_eoc/reference_only/mislabeled/staar_eoc_2018.xls
+  supplemental_staar_all_grades:
+    2017: 13_staar_eoc/reference_only/all_grades/CSTAAR_ALL2.xls
+    # Valid year labels, but these are ALL-grade tables, not the requested EOC subject tables.
+    2018: 13_staar_eoc/reference_only/all_grades/CSTAAR_ALL1 (1).xls
+    2018_additional: 13_staar_eoc/reference_only/all_grades/CSTAAR_ALL2 (1).xls
+    2019: 13_staar_eoc/reference_only/all_grades/CSTAAR_ALL1.xls
+
+# Additive sources verified for the November integration; source titles/rosters/codes prove years.
+staff_tapr:
+  2018: {file: 09_staff_tapr/staff_2018.xls, header_rows: 1}
+  2019: {file: 09_staff_tapr/staff_2019.xls, header_rows: 1}
+  2020: {file: 09_staff_tapr/staff_2020.xls, header_rows: 1}
+  2021: {file: 09_staff_tapr/staff_2021.csv, header_rows: 1}
+  2022: {file: 09_staff_tapr/staff_2022.csv, header_rows: 1}
+  2023: {file: 09_staff_tapr/staff_2023.csv, header_rows: 1}
+  2024: {file: 09_staff_tapr/staff_2024.csv, header_rows: 2}
+
+ap:
+  2018: {file: 08_ap/ap-campus-data-2017-18.xlsx, sheet: AP_Campus_Data_2017-18}
+  2019: {file: 08_ap/ap-campus-data-2018-19-0.xlsx, sheet: AP_Campus_Data_2018-19}
+  2020: {file: 08_ap/ap-campus-data-2019-20.xlsx, sheet: ap-campus-data-2019-20}
+  2021: {file: 08_ap/ap-campus-data-2020-21.xlsx, sheet: ap-campus-data-2020-21}
+  2022: {file: 08_ap/ap-campus-data-2021-22.xlsx, sheet: ap-campus-data-2021-22}
+  2023: {file: 08_ap/ap-campus-data-2022-23-3.xlsx, sheet: ap-campus-data-2022-23}
+  2024: {file: 08_ap/ap-campus-data-2023-24.xlsx, sheet: ap-campus-data-2023-24}
+
+ib:
+  2018: {file: 11_ib/ib-campus-data-2017-18.xlsx, sheet: IB_Campus_Data_2017-18}
+  2019: {file: 11_ib/ib-campus-data-2018-19-0.xlsx, sheet: IB_Campus_Data_2018-19}
+  2020: {file: 11_ib/ib-campus-data-2019-20.xlsx, sheet: ib-campus-data-2019-20}
+  2021: {file: 11_ib/ib-campus-data-2020-21.xlsx, sheet: ib-campus-data-2020-21}
+  2022: {file: 11_ib/ib-campus-data-2021-22.xlsx, sheet: ib-campus-data-2021-22}
+  2023: {file: 11_ib/ib-campus-data-2022-23-3.xlsx, sheet: ib-campus-data-2022-23}
+  2024: {file: 11_ib/ib-campus-data-2023-24.xlsx, sheet: ib-campus-data-2023-24}
+
+graduation_4yr:
+  2018: {file: 12_graduation/campus-data-download-4yr-2018-v2.xlsx, sheet: Comp_2018_4yr}
+  2019: {file: 12_graduation/campus-data-download-4yr-2019.xlsx, sheet: Comp_2019_4yr}
+  2020: {file: 12_graduation/campus-data-download-4yr-2020.xlsx, sheet: Comp_2020_4yr}
+  2021: {file: 12_graduation/campus-data-download-4yr-2021.xlsx, sheet: Comp_2021_4yr}
+  2022: {file: 12_graduation/campus-data-download-4yr-2022-1.xlsx, sheet: Comp_2022_4yr}
+  2023: {file: 12_graduation/campus-data-download-4yr-2023.xlsx, sheet: Comp_2023_4yr}
+  2024: {file: 12_graduation/campus-data-download-4yr-2024.xlsx, sheet: Comp_2024_4yr}
+
+staar_eoc:
+  2018: {definition_file: source_definitions/staar_2018.html, file: 13_staar_eoc/2018/CAMPSTAAR2.dat, header_rows: 1}
+  2019: {definition_file: source_definitions/staar_2019.html, file: 13_staar_eoc/2019/staar_eoc_2019.xls, header_rows: 1}
+  2021: {definition_file: source_definitions/staar_2021.html, file: 13_staar_eoc/2021/staar_eoc_2021.csv, header_rows: 1}
+  2022: {definition_file: source_definitions/staar_2022.html, file: 13_staar_eoc/2022/staar_eoc_2022.csv, header_rows: 1}
+  2023: {definition_file: source_definitions/staar_2023.html, file: 13_staar_eoc/2023/staar_eoc_2023.csv, header_rows: 1}
+  2024: {definition_file: 13_staar_eoc/2024/staar_eoc_2024.csv, file: 13_staar_eoc/2024/staar_eoc_2024.csv, header_rows: 2}

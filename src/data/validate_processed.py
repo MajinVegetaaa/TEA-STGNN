@@ -209,7 +209,12 @@ def main() -> int:
     check("coordinates inside Texas", md.latitude.between(25.5, 36.6).all() and md.longitude.between(-106.7, -93.4).all())
     check("NCES ID unique", not md.nces_school_id.duplicated().any())
 
+    if "staff_tapr" in SRC:
+        import validate_additions
+        validate_additions.validate(m, check)
     pd.DataFrame(results).to_csv(P / "reports" / "processed_validation.csv", index=False)
+    if "staff_tapr" in SRC:
+        validate_additions.save_gate(results)
     failed = [r for r in results if not r["passed"]]
     print(f"\n{len(results) - len(failed)}/{len(results)} checks passed")
     return 1 if failed else 0

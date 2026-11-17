@@ -1,0 +1,28 @@
+{'file': '08_ap/ap-campus-data-2017-18.xlsx', 'year': 2018, 'rows': 65718, 'duplicate_group_campus': 0, 'cohort_size': 1619, 'cohort_matched': 1133, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '08_ap/ap-campus-data-2018-19-0.xlsx', 'year': 2019, 'rows': 66474, 'duplicate_group_campus': 0, 'cohort_size': 1630, 'cohort_matched': 1149, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '08_ap/ap-campus-data-2019-20.xlsx', 'year': 2020, 'rows': 66918, 'duplicate_group_campus': 0, 'cohort_size': 1644, 'cohort_matched': 1103, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '08_ap/ap-campus-data-2020-21.xlsx', 'year': 2021, 'rows': 68001, 'duplicate_group_campus': 0, 'cohort_size': 1654, 'cohort_matched': 1124, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '08_ap/ap-campus-data-2021-22.xlsx', 'year': 2022, 'rows': 68913, 'duplicate_group_campus': 0, 'cohort_size': 1665, 'cohort_matched': 1127, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '08_ap/ap-campus-data-2022-23-3.xlsx', 'year': 2023, 'rows': 69483, 'duplicate_group_campus': 0, 'cohort_size': 1668, 'cohort_matched': 1132, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '08_ap/ap-campus-data-2023-24.xlsx', 'year': 2024, 'rows': 66006, 'duplicate_group_campus': 0, 'cohort_size': 1666, 'cohort_matched': 1117, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '09_staff_tapr/staff_2018.xls', 'year': 2018, 'rows': 8759, 'duplicate_campus': 0, 'cohort_size': 1619, 'cohort_matched': 1593}
+{'file': '09_staff_tapr/staff_2019.xls', 'year': 2019, 'rows': 8838, 'duplicate_campus': 0, 'cohort_size': 1630, 'cohort_matched': 1619}
+{'file': '09_staff_tapr/staff_2020.xls', 'year': 2020, 'rows': 8866, 'duplicate_campus': 0, 'cohort_size': 1644, 'cohort_matched': 1630}
+{'file': '09_staff_tapr/staff_2021.csv', 'year': 2021, 'rows': 8840, 'duplicate_campus': 0, 'cohort_size': 1654, 'cohort_matched': 1644}
+{'file': '09_staff_tapr/staff_2022.csv', 'year': 2022, 'rows': 8966, 'duplicate_campus': 0, 'cohort_size': 1665, 'cohort_matched': 1653}
+{'file': '09_staff_tapr/staff_2023.csv', 'year': 2023, 'rows': 9044, 'duplicate_campus': 0, 'cohort_size': 1668, 'cohort_matched': 1664}
+{'file': '09_staff_tapr/staff_2024.csv', 'year': 2024, 'rows': 9082, 'duplicate_campus': 0, 'cohort_size': 1666, 'cohort_matched': 1666}
+{'file': '10_finance_peims/actget2018.zip', 'crc_ok': True, 'rows': 4792235, 'fundyears': ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']}
+{'file': '10_finance_peims/actget2019.zip', 'crc_ok': True, 'rows': 4872439, 'fundyears': ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020']}
+{'file': '10_finance_peims/actget2020.zip', 'crc_ok': True, 'rows': 5190148, 'fundyears': ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021']}
+{'file': '10_finance_peims/actget2021.zip', 'crc_ok': True, 'rows': 5465388, 'fundyears': ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022']}
+{'file': '10_finance_peims/actget2022.zip', 'crc_ok': True, 'rows': 5850022, 'fundyears': ['2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']}
+{'file': '10_finance_peims/actget2023.zip', 'crc_ok': True, 'rows': 5441686, 'fundyears': ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024']}
+{'file': '10_finance_peims/actget2024.zip', 'crc_ok': True, 'rows': 5398527, 'fundyears': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025']}
+{'file': '11_ib/ib-campus-data-2017-18.xlsx', 'year': 2018, 'rows': 3240, 'duplicate_group_campus': 0, 'cohort_size': 1619, 'cohort_matched': 57, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '11_ib/ib-campus-data-2018-19-0.xlsx', 'year': 2019, 'rows': 3456, 'duplicate_group_campus': 0, 'cohort_size': 1630, 'cohort_matched': 62, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '11_ib/ib-campus-data-2019-20.xlsx', 'year': 2020, 'rows': 4104, 'duplicate_group_campus': 0, 'cohort_size': 1644, 'cohort_matched': 70, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '11_ib/ib-campus-data-2020-21.xlsx', 'year': 2021, 'rows': 4275, 'duplicate_group_campus': 0, 'cohort_size': 1654, 'cohort_matched': 74, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '11_ib/ib-campus-data-2021-22.xlsx', 'year': 2022, 'rows': 4218, 'duplicate_group_campus': 0, 'cohort_size': 1665, 'cohort_matched': 73, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '11_ib/ib-campus-data-2022-23-3.xlsx', 'year': 2023, 'rows': 4161, 'duplicate_group_campus': 0, 'cohort_size': 1668, 'cohort_matched': 72, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
+{'file': '11_ib/ib-campus-data-2023-24.xlsx', 'year': 2024, 'rows': 4104, 'duplicate_group_campus': 0, 'cohort_size': 1666, 'cohort_matched': 71, 'rate_out_of_range': {'Part_Rate': 0, 'Exnees_Above_Crit_Rate': 0, 'Exams_Above_Crit_Rate': 0}}
