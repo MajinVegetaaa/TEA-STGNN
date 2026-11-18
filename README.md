@@ -3,6 +3,17 @@
 Forecasting Texas high-school outcomes with a spatio-temporal graph neural network.
 See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 
+## Current benchmark
+
+The `phase5-stgnn-baselines` branch includes the ten-target snapshot and Phase 3
+reference predictions. See [Phase 5 results](results/phase5/README.md) for scores.
+With PyTorch, PyG, NumPy and pandas installed, run the GCN + LSTM benchmark from
+the repository root:
+
+```sh
+python src/models/phase5_gcn_lstm.py --model gcn_lstm --device cpu --out results/phase5/gcn_lstm
+```
+
 ## Layout
 - `data/raw/` — downloads in numbered source folders, untouched (not in git; see `data/raw/README.md`)
 - `data/processed/` — cleaned tables (`master_school_year.csv` etc.; see `data/processed/README.md`); `data/graph/` — yearly graph files

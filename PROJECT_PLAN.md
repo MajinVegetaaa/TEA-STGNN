@@ -146,10 +146,11 @@ Gate: validators pass in the cloud and one model trains. **Passed 2026-10-23** (
 
 ### Phase 5 — Standard STGNN baselines (PPT slide 16)
 Output: prediction files for each model in the shared format.
-- [ ] GCN + LSTM
-- [ ] T-GCN and GConvGRU
-- [ ] A3TGCN
-- [ ] GraphWaveNet and MTGNN (after the professor confirms which MTGNN)
+- [x] GCN + LSTM — local benchmark and Colab GPU summary checked
+- [x] T-GCN and GConvGRU — local benchmarks audited
+- [x] A3TGCN — local benchmark audited
+- [x] GraphWaveNet with fixed campus graph supports — local benchmark audited
+- [ ] MTGNN — awaiting the professor’s architecture choice
 
 These take one graph, so run them on the combined edges and on the strongest single relation.
 
@@ -398,3 +399,22 @@ passes 86 checks, PyG conversion 63, and both new targets pass training smoke te
 The six approved baseline comparisons use the original split/seeds and validation
 selection locks; final outcomes are recorded in `results/expanded/README.md`.
 Original graph and baseline files remain separate and preserved.
+
+### Completed evaluation — 2026-11-18
+
+All six input comparisons and fixed test evaluations are complete (60 target/input-set results). Independent validation passed for all models, seeds, eligibility rows and selection locks. All 56 original graph/results files and seven edge files retain their checksums; 48 frozen comparisons use identical rows. The unit suite passes 16/16.
+
+Validation-selected additions improved 2024 MAE for ACT and TSI, worsened it for SAT total and Risk Index, and left six targets unchanged versus the new existing-input comparison. The gains are small (ACT 1.1500 to 1.1479; TSI 14.4148 to 14.3335); these results do not support a general accuracy improvement from adding all sources. See `results/expanded/README.md` and `final_selection_report.csv` for the ten locked choices, coverage and errors. Finance remains staged; no full GNN performance study or historical-vintage forecasting claim is made.
+
+### Phase 5 kickoff — expanded graph
+
+The user reported successful Phase 4 verification on a Colab Tesla T4 with
+PyTorch 2.14.1+cu130. The Phase 5 GCN + LSTM runner uses the verified
+ten-target snapshot, weighted graph convolution, a 32-unit LSTM and separate
+target heads trained as independent models. The validation search compares the
+combined graph with each target-eligible single relation and selects an epoch
+from 1–30 at seed 0. Both the combined graph and the winning single relation
+are refit for seeds 0–4. The locked Phase 3 campus rows and outcomes are checked
+during test scoring. See results/phase5/gcn_lstm/README.md for run status.
+
+Phase 5 results are in [one comparison table](results/phase5/README.md). All five completed CPU benchmarks had higher test MAE than Phase 3 on all ten targets. The uploaded GCN + LSTM Colab summary matched all 20 CPU graph choices and campus counts, with a maximum absolute MAE difference of 0.00126. The other four completed runs used the local CPU. MTGNN awaits clarification.

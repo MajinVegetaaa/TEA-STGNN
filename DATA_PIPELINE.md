@@ -384,3 +384,9 @@ binning subsample), with a seed-equivalence check before caching. Stochastic
 forests/XGBoost still run each seed. No model family or grid is reduced.
 
 See `results/expanded/README.md` for the final validation and accuracy report.
+
+If interrupted, `python src/baselines/run_expansion.py --resume` reuses complete
+validation runs from the same unchanged experiment after checking every target,
+model, seed, campus/year row and tuning-grid count. Incomplete input-set runs are
+recomputed. Do not use resume after changing inputs or modeling settings. The
+durable run log is `results/expanded/validation/experiment.log`.

@@ -1,0 +1,15 @@
+/Users/poorabmishra/Desktop/MajorProject/src/models/phase5_gcn_lstm.py:42: UserWarning: Sparse invariant checks are implicitly disabled. Memory errors (e.g. SEGFAULT) will occur when operating on a sparse tensor which violates the invariants, but checks incur performance overhead. To silence this warning, explicitly opt in or out. See `torch.sparse.check_sparse_tensor_invariants.__doc__` for guidance.  (Triggered internally at /Users/runner/work/pytorch/pytorch/aten/src/ATen/Context.cpp:767.)
+  adjacency = torch.sparse_coo_tensor(edges.flip(0), weights, (len(x), len(x))).coalesce()
+/Users/poorabmishra/Desktop/MajorProject/src/models/phase5_gcn_lstm.py:45: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at /Users/runner/work/pytorch/pytorch/aten/src/ATen/SparseCsrTensorImpl.cpp:51.)
+  return torch.sparse.mm(adjacency.to_sparse_csr(), x)
+Validation complete: act_composite
+Validation complete: sat_total
+Validation complete: sat_act_above_criterion
+Validation complete: dropout_9_12
+Validation complete: attendance_rate
+Validation complete: retention_rate
+Validation complete: risk_index
+Validation complete: tsi_both
+Validation complete: sat_act_participation
+Validation complete: graduation_4yr
+Completed 20 fixed target/graph comparisons

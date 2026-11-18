@@ -247,3 +247,9 @@ expanded graph/PyG artifacts, source downloads and the frozen snapshot with the
 handoff; these large artifacts are gitignored. Reproduction commands are in
 `DATA_PIPELINE.md`. Finance remains staged and graph defaults retain their existing
 professor-review status.
+
+### Completed evaluation — 2026-11-18
+
+All six input comparisons and fixed test evaluations are complete (60 target/input-set results). Independent validation passed for all models, seeds, eligibility rows and selection locks. All 56 original graph/results files and seven edge files retain their checksums; 48 frozen comparisons use identical rows. The unit suite passes 16/16.
+
+Validation-selected additions improved 2024 MAE for ACT and TSI, worsened it for SAT total and Risk Index, and left six targets unchanged versus the new existing-input comparison. The gains are small (ACT 1.1500 to 1.1479; TSI 14.4148 to 14.3335); these results do not support a general accuracy improvement from adding all sources. See `results/expanded/README.md` and `final_selection_report.csv` for the ten locked choices, coverage and errors. Finance remains staged; no full GNN performance study or historical-vintage forecasting claim is made.

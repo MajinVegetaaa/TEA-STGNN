@@ -1,0 +1,44 @@
+{
+  "model": "T-GCN",
+  "hidden": 32,
+  "learning_rate": 0.003,
+  "epochs": 30,
+  "validation_seed": 0,
+  "split": {
+    "train_years": [
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "val_years": [
+      2023
+    ],
+    "test_years": [
+      2024
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "device": "cpu",
+  "torch_version": "2.12.1",
+  "snapshot_sha256": "8b30664e696becb6abc361e5b32b8203d5c5a68a0bd97f8c90de01424cadc00f",
+  "targets": [
+    "act_composite",
+    "sat_total",
+    "sat_act_above_criterion",
+    "dropout_9_12",
+    "attendance_rate",
+    "retention_rate",
+    "risk_index",
+    "tsi_both",
+    "sat_act_participation",
+    "graduation_4yr"
+  ]
+}

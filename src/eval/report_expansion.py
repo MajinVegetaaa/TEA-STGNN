@@ -31,6 +31,7 @@ def main():
     paired=pd.read_csv(OUT/'frozen_comparison.csv').merge(locked[['target','input_set']],on=['target','input_set'],validate='one_to_one')
     wins=int((chosen.delta_vs_existing < -1e-10).sum())
     losses=int((chosen.delta_vs_existing > 1e-10).sum())
+    present_2024=int(nodes.year.eq(2024).sum())
     text=f'''# Expanded-data experiment — 2026-11-18
 
 Completed the approved six comparisons for ten targets. Selection used 2023
@@ -46,8 +47,9 @@ change the locked selections.
 Errors are in each target's native units (ACT points, SAT points, percentage
 points for rates, or Risk Index units). MAE/RMSE/R² are averaged over five seeds;
 MAE SD is the population standard deviation across seeds. Coverage is the share
-of the 1,670-campus cohort with both observed target and observed raw prior-year
-target. The new graduation model uses publication-filtered histories even though
+of the {present_2024:,} campuses present in the 2024 panel (from the fixed
+1,670-campus cohort) with both observed target and observed raw prior-year target.
+The new graduation model uses publication-filtered histories even though
 raw lag 1 determines the common mask and retrospective persistence.
 
 {table(chosen[['target','input_set','model','val_mae','n','eligible_pct','mae','mae_sd','rmse','r2','persistence_mae']])}
@@ -56,6 +58,13 @@ raw lag 1 determines the common mask and retrospective persistence.
 
 Each cell is test MAE for the model selected within that input set on 2023.
 The best test cell is not used to select an input set.
+Equal validation minima use the runner's stable table order. In particular,
+persistence is identical across input sets and uses no added contextual fields;
+an input-set label on a persistence winner does not imply those additions helped.
+The graduation target has its own publication-filtered history in every input
+set, including existing inputs. The graduation addition supplies those histories
+as contextual inputs across targets, rather than removing the new target's own
+history from its baseline.
 
 {table(comparison.pivot(index='target',columns='input_set',values='mae')[['existing','staff','ap_ib','staar','graduation','all']].reset_index())}
 
@@ -72,7 +81,9 @@ they are not multiple-comparison-adjusted or proof of causal benefit.
 
 Frozen models could select level/relative/zscore representations and used the
 previous preprocessing. The six new runs all use level and training-only median
-imputation plus missing flags. Therefore within-expansion comparisons isolate
+imputation plus missing flags. The frozen selection table records fitted-model
+winners separately from persistence; the new selection admits persistence as a
+winner. Therefore within-expansion comparisons isolate
 input additions more closely than the frozen comparison, which also changes
 preprocessing and the representation-selection protocol.
 

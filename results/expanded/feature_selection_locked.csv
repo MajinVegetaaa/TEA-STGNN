@@ -1,0 +1,11 @@
+input_set,target,model,val_mae,params
+ap_ib,act_composite,random_forest (+context +graph),1.1807738751451793,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+all,attendance_rate,persistence (last year's value),1.350516089860352,{}
+all,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+all,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+all,retention_rate,persistence (last year's value),1.232181818181818,{}
+staar,risk_index,gradient_boosting (+context +district only),6.455648238824793,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+existing,sat_act_above_criterion,random_forest (+context),6.067570167366864,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+all,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+staar,sat_total,gradient_boosting (+context),30.674646758314783,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+staar,tsi_both,random_forest (+context +graph),12.691206612450703,"{'min_samples_leaf': 5, 'max_features': 0.5}"

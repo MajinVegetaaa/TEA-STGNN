@@ -248,3 +248,7 @@ validation MAE was 2.7975 versus persistence 2.1988 (1,534 rows); participation 
 13.7579 versus persistence 12.0506 (1,584 rows). These are wiring/training checks,
 not tuned GNN results or evidence of an improvement. The six baseline comparisons
 and their validation-locked selections are reported in `results/expanded/README.md`.
+
+The completed experiment audit also verifies all model/seed evaluation rows,
+selection locks and truths. All 56 original graph/results artifacts and seven
+edge files retain their frozen checksums; see `results/expanded/validation.json`.

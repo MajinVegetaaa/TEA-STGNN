@@ -18,7 +18,7 @@ test_stale_gate_does_not_authorize_expansion (test_new_sources.SourceTests.test_
 test_unknown_tokens_fail_instead_of_becoming_missing (test_new_sources.SourceTests.test_unknown_tokens_fail_instead_of_becoming_missing) ... ok
 
 ----------------------------------------------------------------------
-Ran 16 tests in 9.086s
+Ran 16 tests in 8.903s
 
 OK
 dropped 34 inputs with no training-year values: chronic_absenteeism_lag3, chronic_absenteeism_ma3, chronic_absenteeism_trend3, available_ap_participation_lag5, available_ap_participation_ma3, available_ap_participation_trend3, available_ap_examinees_above_criterion_lag5, available_ap_examinees_above_criterion_ma3, available_ap_examinees_above_criterion_trend3, available_ap_exams_above_criterion_lag5, available_ap_exams_above_criterion_ma3, available_ap_exams_above_criterion_trend3, available_ib_participation_lag5, available_ib_participation_ma3, available_ib_participation_trend3, available_ib_examinees_above_criterion_lag5, available_ib_examinees_above_criterion_ma3, available_ib_examinees_above_criterion_trend3, available_ib_exams_above_criterion_lag5, available_ib_exams_above_criterion_ma3, available_ib_exams_above_criterion_trend3, available_staar_algebra1_meets_ma3, available_staar_algebra1_meets_trend3, available_staar_english1_meets_ma3, available_staar_english1_meets_trend3, available_staar_english2_meets_ma3, available_staar_english2_meets_trend3, available_staar_biology_meets_ma3, available_staar_biology_meets_trend3, available_staar_us_history_meets_ma3, available_staar_us_history_meets_trend3, available_graduation_4yr_lag5, available_graduation_4yr_ma3, available_graduation_4yr_trend3

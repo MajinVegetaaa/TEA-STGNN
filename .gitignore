@@ -23,3 +23,8 @@ wandb/
 Docs/minor_report_updated.docx
 
 .venv-expanded/
+
+# Final-run inputs shipped with the team handoff.
+!/data/graph_expanded/pyg/snapshots.pt
+!/results/expanded/selected_test_predictions.csv
+/HANDOFF_INVENTORY.csv

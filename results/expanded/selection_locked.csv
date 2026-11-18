@@ -1,0 +1,61 @@
+input_set,target,model,val_mae,params
+all,act_composite,random_forest (+context),1.1886923007301204,"{'min_samples_leaf': 20, 'max_features': 0.5}"
+all,attendance_rate,persistence (last year's value),1.350516089860352,{}
+all,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+all,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+all,retention_rate,persistence (last year's value),1.232181818181818,{}
+all,risk_index,random_forest (+context),6.504894194603838,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+all,sat_act_above_criterion,random_forest (+context),6.121621873092733,"{'min_samples_leaf': 20, 'max_features': 0.5}"
+all,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+all,sat_total,gradient_boosting (+context +academic only),31.45113565912096,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+all,tsi_both,persistence (last year's value),12.707891414141415,{}
+ap_ib,act_composite,random_forest (+context +graph),1.1807738751451793,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+ap_ib,attendance_rate,persistence (last year's value),1.350516089860352,{}
+ap_ib,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+ap_ib,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+ap_ib,retention_rate,persistence (last year's value),1.232181818181818,{}
+ap_ib,risk_index,random_forest (+context +graph),6.5756577438205195,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+ap_ib,sat_act_above_criterion,random_forest (+context),6.088069805918453,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+ap_ib,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+ap_ib,sat_total,random_forest (+context),31.3992433597196,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+ap_ib,tsi_both,gradient_boosting (+context +graph),12.704763427345274,"{'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20}"
+existing,act_composite,random_forest (+context +graph),1.1808958319527616,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+existing,attendance_rate,persistence (last year's value),1.350516089860352,{}
+existing,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+existing,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+existing,retention_rate,persistence (last year's value),1.232181818181818,{}
+existing,risk_index,gradient_boosting (+context +district only),6.577007368342171,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+existing,sat_act_above_criterion,random_forest (+context),6.067570167366864,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+existing,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+existing,sat_total,gradient_boosting (+context +district only),31.05029304873376,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+existing,tsi_both,persistence (last year's value),12.707891414141415,{}
+graduation,act_composite,random_forest (+context +graph),1.1813957687800931,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+graduation,attendance_rate,persistence (last year's value),1.350516089860352,{}
+graduation,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+graduation,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+graduation,retention_rate,persistence (last year's value),1.232181818181818,{}
+graduation,risk_index,gradient_boosting (+context +district only),6.58890648057824,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+graduation,sat_act_above_criterion,random_forest (+context),6.098269985838641,"{'min_samples_leaf': 20, 'max_features': 0.5}"
+graduation,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+graduation,sat_total,gradient_boosting (+context +district only),31.165292866649775,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+graduation,tsi_both,persistence (last year's value),12.707891414141415,{}
+staar,act_composite,random_forest (+context +graph),1.1893880658838685,"{'min_samples_leaf': 20, 'max_features': 0.5}"
+staar,attendance_rate,persistence (last year's value),1.350516089860352,{}
+staar,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+staar,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+staar,retention_rate,persistence (last year's value),1.232181818181818,{}
+staar,risk_index,gradient_boosting (+context +district only),6.455648238824793,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+staar,sat_act_above_criterion,gradient_boosting (+context +district only),6.091717954046454,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+staar,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+staar,sat_total,gradient_boosting (+context),30.674646758314783,"{'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}"
+staar,tsi_both,random_forest (+context +graph),12.691206612450703,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+staff,act_composite,random_forest (+context),1.1894733101497328,"{'min_samples_leaf': 20, 'max_features': 0.5}"
+staff,attendance_rate,persistence (last year's value),1.350516089860352,{}
+staff,dropout_9_12,persistence (last year's value),0.49951278928136417,{}
+staff,graduation_4yr,persistence (last year's value),2.198826597131682,{}
+staff,retention_rate,persistence (last year's value),1.232181818181818,{}
+staff,risk_index,random_forest (+context +graph),6.600122815895763,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+staff,sat_act_above_criterion,random_forest (+context),6.119026229742049,"{'min_samples_leaf': 20, 'max_features': 0.5}"
+staff,sat_act_participation,persistence (last year's value),12.05056818181818,{}
+staff,sat_total,random_forest (+context),31.317545571251905,"{'min_samples_leaf': 5, 'max_features': 0.5}"
+staff,tsi_both,persistence (last year's value),12.707891414141415,{}

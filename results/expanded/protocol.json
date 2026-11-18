@@ -1,0 +1,36 @@
+{
+  "mode": "level",
+  "input_sets": [
+    "existing",
+    "staff",
+    "ap_ib",
+    "staar",
+    "graduation",
+    "all"
+  ],
+  "split": {
+    "train_years": [
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "val_years": [
+      2023
+    ],
+    "test_years": [
+      2024
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "selection_year": 2023,
+  "test_year": 2024,
+  "selection_includes_persistence": true
+}

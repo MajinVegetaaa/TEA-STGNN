@@ -7,6 +7,7 @@ first expanded experiment fixes target representation to level. Selection uses
 import os
 os.environ['TEA_EXPANDED'] = '1'
 import ast
+import argparse
 import hashlib
 import json
 import sys
@@ -20,7 +21,40 @@ SETS = ['existing','staff','ap_ib','staar','graduation','all']
 OUT = ROOT/'results/expanded'
 
 
+def completed_validation(input_set):
+    """Accept a saved run only when every validation model/seed/row is complete."""
+    directory=OUT/input_set/'level'
+    if not all((directory/name).exists() for name in ('predictions.csv','tuning.csv')):
+        return False
+    p=pd.read_csv(directory/'predictions.csv',dtype={'campus_id':str})
+    tuning=pd.read_csv(directory/'tuning.csv')
+    nodes=pd.read_csv(B.G/'nodes.csv',dtype=B.ID)
+    assert p.split.eq('val').all() and p.year.isin(B.VAL).all()
+    assert set(p.target)==set(B.TARGETS)
+    assert not p.duplicated(['target','model','seed','campus_id','year']).any()
+    assert np.isfinite(p[['y_true','y_pred']].to_numpy()).all()
+    for target,g in p.groupby('target'):
+        expected=set(B.MODELS)
+        if target=='risk_index':expected.remove('gradient_boosting (+context +academic only)')
+        assert set(g.model)==expected|{"persistence (last year's value)"}
+        truth=nodes[nodes.year.isin(B.VAL)&nodes[target].notna()&nodes[target+'_lag1'].notna()].set_index(['campus_id','year'])[target].sort_index()
+        for model,d in g.groupby('model'):
+            assert set(d.seed)==set(B.SEEDS)
+            for seed,part in d.groupby('seed'):
+                actual=part.set_index(['campus_id','year']).y_true.sort_index()
+                assert actual.index.equals(truth.index)
+                np.testing.assert_allclose(actual,truth,rtol=0,atol=1e-12)
+            if model in B.MODELS:
+                grid=tuning[(tuning.target==target)&(tuning.model==model)]
+                assert len(grid)==len(B.GRIDS[B.MODELS[model][0]])
+                assert np.isfinite(grid.val_mae).all()
+    return True
+
+
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--resume',action='store_true',help='Reuse complete validation outputs from this unchanged experiment')
+    args=parser.parse_args()
     OUT.mkdir(parents=True,exist_ok=True)
     cache = {}
     original_fit = B.fit_predict
@@ -62,6 +96,9 @@ def main():
         return cache[key].copy()
     B.fit_predict = cached
     for input_set in SETS:
+        if args.resume and completed_validation(input_set):
+            print('Validated saved validation run:',input_set,flush=True)
+            continue
         sys.argv = ['run_experiment.py','--mode','level','--input-set',input_set,'--validation-only']
         B.main()
     predictions = pd.concat([pd.read_csv(OUT/s/'level/predictions.csv',dtype={'campus_id':str}).assign(input_set=s) for s in SETS],ignore_index=True)

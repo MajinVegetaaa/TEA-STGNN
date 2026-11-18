@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "input_sets": [
+    {
+      "input_set": "existing",
+      "validation_rows": 1117105,
+      "test_rows": 75805,
+      "all_checks_pass": true
+    },
+    {
+      "input_set": "staff",
+      "validation_rows": 1117105,
+      "test_rows": 75805,
+      "all_checks_pass": true
+    },
+    {
+      "input_set": "ap_ib",
+      "validation_rows": 1117105,
+      "test_rows": 75805,
+      "all_checks_pass": true
+    },
+    {
+      "input_set": "staar",
+      "validation_rows": 1117105,
+      "test_rows": 75805,
+      "all_checks_pass": true
+    },
+    {
+      "input_set": "graduation",
+      "validation_rows": 1117105,
+      "test_rows": 75805,
+      "all_checks_pass": true
+    },
+    {
+      "input_set": "all",
+      "validation_rows": 1117105,
+      "test_rows": 75805,
+      "all_checks_pass": true
+    }
+  ],
+  "preserved_files": 56,
+  "unchanged_edge_files": 7,
+  "fingerprints_at_validation": {
+    "configs/feature_availability.yaml": "6768fcd7c1d75872ef962ec152fdea3fd80f084dc67e5b73c08ea631b5b02678",
+    "configs/split.yaml": "e3275ecfba9e8d8167b75eb54ecceb4bb4c73de6652501c5fd77402ea775750d",
+    "data/graph_expanded/nodes.csv": "3372ea60d1f71faa803d9daa2fb9d48bed3990e2ee468f5f91ee699a4e667a64",
+    "src/baselines/run_experiment.py": "8c8312f1af18c8d8edf5a8161a02df31499775389e4e5a3e85bd75e62c8b8f8e",
+    "src/baselines/run_expansion.py": "4f501f227d7c9734715e2cbc709adf9c05c21570047f20981c2545929c7ff2b5",
+    "results/expanded/selection_locked.csv": "f18f6e62e5a60ebf6f59893ecae6260ff4767a673499984fa82fbca50eec76f5",
+    "results/expanded/feature_selection_locked.csv": "04bd0ac53d29dd3755a098e12ca1e8208492d00f241e56dd69867d506ed0070b",
+    "results/expanded/selected_test_predictions.csv": "d49a05bc571c87e2be2746252eccae4a4acb816623e8b56487e397ea7ea3e236"
+  }
+}

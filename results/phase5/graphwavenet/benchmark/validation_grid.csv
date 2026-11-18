@@ -1,0 +1,60 @@
+target,graph,relations,val_mae,epochs
+act_composite,combined,"['district', 'geographic', 'demographic', 'region', 'academic_act']",1.2292628288269043,29
+act_composite,district,['district'],1.2303276062011719,30
+act_composite,geographic,['geographic'],1.233683466911316,29
+act_composite,demographic,['demographic'],1.229854702949524,29
+act_composite,region,['region'],1.2336623668670654,28
+act_composite,academic_act,['academic_act'],1.2289466857910156,28
+sat_total,combined,"['district', 'geographic', 'demographic', 'region', 'academic_sat']",33.916080474853516,28
+sat_total,district,['district'],33.99302291870117,27
+sat_total,geographic,['geographic'],34.088253021240234,28
+sat_total,demographic,['demographic'],33.43222427368164,30
+sat_total,region,['region'],33.95567321777344,29
+sat_total,academic_sat,['academic_sat'],33.55078125,30
+sat_act_above_criterion,combined,"['district', 'geographic', 'demographic', 'region', 'academic_criterion']",6.670538425445557,30
+sat_act_above_criterion,district,['district'],6.686697006225586,29
+sat_act_above_criterion,geographic,['geographic'],6.66353178024292,23
+sat_act_above_criterion,demographic,['demographic'],6.6780595779418945,28
+sat_act_above_criterion,region,['region'],6.676610469818115,27
+sat_act_above_criterion,academic_criterion,['academic_criterion'],6.684689044952393,27
+dropout_9_12,combined,"['district', 'geographic', 'demographic', 'region', 'academic_dropout']",0.5785115361213684,30
+dropout_9_12,district,['district'],0.5762786865234375,30
+dropout_9_12,geographic,['geographic'],0.5992506146430969,30
+dropout_9_12,demographic,['demographic'],0.5792456865310669,17
+dropout_9_12,region,['region'],0.5762008428573608,30
+dropout_9_12,academic_dropout,['academic_dropout'],0.5753482580184937,30
+attendance_rate,combined,"['district', 'geographic', 'demographic', 'region', 'academic_attendance']",1.533003330230713,5
+attendance_rate,district,['district'],1.4660762548446655,5
+attendance_rate,geographic,['geographic'],1.5382660627365112,5
+attendance_rate,demographic,['demographic'],1.5225894451141357,4
+attendance_rate,region,['region'],1.5344966650009155,5
+attendance_rate,academic_attendance,['academic_attendance'],1.536926507949829,4
+retention_rate,combined,"['district', 'geographic', 'demographic', 'region', 'academic_retention']",1.4982990026474,26
+retention_rate,district,['district'],1.5294724702835083,28
+retention_rate,geographic,['geographic'],1.544718861579895,22
+retention_rate,demographic,['demographic'],1.5348055362701416,27
+retention_rate,region,['region'],1.5041601657867432,27
+retention_rate,academic_retention,['academic_retention'],1.5502309799194336,26
+risk_index,combined,"['district', 'geographic', 'demographic', 'region']",7.083799362182617,10
+risk_index,district,['district'],7.217579364776611,10
+risk_index,geographic,['geographic'],7.214646339416504,10
+risk_index,demographic,['demographic'],7.065535068511963,9
+risk_index,region,['region'],6.993999004364014,10
+tsi_both,combined,"['district', 'geographic', 'demographic', 'region', 'academic_criterion']",13.85267448425293,25
+tsi_both,district,['district'],13.790420532226562,27
+tsi_both,geographic,['geographic'],13.975789070129395,25
+tsi_both,demographic,['demographic'],13.9334077835083,24
+tsi_both,region,['region'],13.687201499938965,26
+tsi_both,academic_criterion,['academic_criterion'],13.682836532592773,25
+sat_act_participation,combined,"['district', 'geographic', 'demographic', 'region', 'academic_participation']",12.382207870483398,28
+sat_act_participation,district,['district'],12.006440162658691,24
+sat_act_participation,geographic,['geographic'],12.404991149902344,30
+sat_act_participation,demographic,['demographic'],12.297368049621582,30
+sat_act_participation,region,['region'],12.359245300292969,23
+sat_act_participation,academic_participation,['academic_participation'],12.560280799865723,21
+graduation_4yr,combined,"['district', 'geographic', 'demographic', 'region', 'academic_retention']",2.352982521057129,27
+graduation_4yr,district,['district'],2.473644971847534,25
+graduation_4yr,geographic,['geographic'],2.402531147003174,29
+graduation_4yr,demographic,['demographic'],2.346806049346924,29
+graduation_4yr,region,['region'],2.516695261001587,26
+graduation_4yr,academic_retention,['academic_retention'],2.3956305980682373,29
