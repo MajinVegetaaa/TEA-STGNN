@@ -5,7 +5,7 @@ See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
 
 ## Current benchmark
 
-The `phase5-stgnn-baselines` branch includes the ten-target snapshot and Phase 3
+The `main` branch includes the ten-target snapshot and Phase 3
 reference predictions. See [Phase 5 results](results/phase5/README.md) for scores.
 With PyTorch, PyG, NumPy and pandas installed, run the GCN + LSTM benchmark from
 the repository root:
