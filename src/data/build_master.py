@@ -11,7 +11,7 @@ and writes:
 
 Also writes data/processed/risk_index_components.csv.
 Run from the repo root:  python3 src/data/build_master.py
-See DATA_PIPELINE.md for every rule applied here.
+See docs/DATA_PIPELINE.md for every rule applied here.
 """
 from __future__ import annotations
 
@@ -331,7 +331,7 @@ def load_tsi() -> pd.DataFrame:
 
 # ---------------------------------------------------------------------------------------------- cohort
 def define_cohort(d: pd.DataFrame, panel_all: pd.DataFrame) -> pd.DataFrame:
-    """Texas public high schools serving grades 9-12. See DATA_PIPELINE.md, Step 1."""
+    """Texas public high schools serving grades 9-12. See docs/DATA_PIPELINE.md, Step 1."""
     # A campus "has graduates" in a year if TEA published an SAT/ACT participation value for it
     # (a real %, 0, or a -1/-2 suppression code). '.' means no graduating class was reported.
     grads = panel_all[panel_all.sat_act_participation.notna() | (panel_all.sat_act_participation_supp > 0)]

@@ -1,4 +1,7 @@
-# TEA STGNN — Master Plan and Project Log
+# TEA STGNN — Master Plan and Project Log (history)
+
+> **Superseded as the plan on 2026-11-21 by [`ROADMAP.md`](../ROADMAP.md).** Kept unchanged as the record of
+> Phases 1–5 (was `PROJECT_PLAN.md` at the repo root).
 
 Last updated: 2026-10-20 · Repo: https://github.com/MajinVegetaaa/TEA-STGNN (private)
 
@@ -301,7 +304,7 @@ and registered under `not_yet_used` in `configs/data_sources.yaml`.
 - [x] Staff 2024 downloaded; additional CSTAF file presumed 2023, with year confirmation pending.
 - [ ] Obtain staff 2018–2022 and confirm CSTAF report year.
 - [ ] Obtain IB campus files if the proposed AP/IB feature is intended to include IB.
-- [ ] Verify finance fiscal-year mapping, release timing, FIN_UNIT campus mapping and charter coverage.
+- [x] Verify finance fiscal-year mapping, release timing, FIN_UNIT campus mapping and charter coverage (done 2026-11-21: see DECISIONS.md; charter archives added).
 - [ ] Implement loaders, suppression handling, cohort joins and lagged features; rerun data/graph gates before model integration.
 - [ ] Discipline/DAEP remains unresolved; no discipline download was supplied in this batch.
 
@@ -315,7 +318,7 @@ used directly as the observation year. Detailed counts are in the source audit J
 
 ## PPT coverage review and integration preparation — 2026-11-16 (second download batch)
 
-Source: `Docs/TEA_STGNN_Architecture (1).pptx`, all 18 slide text layers reviewed,
+Source: `docs/references/TEA_STGNN_Architecture (1).pptx`, all 18 slide text layers reviewed,
 compared with the current master/metadata schemas, feature code, split configuration and
 chronological decisions (especially the additive TSI integration on 2026-10-25).
 This section supersedes the earlier download-gap checklist for staff and IB.
@@ -417,4 +420,14 @@ from 1–30 at seed 0. Both the combined graph and the winning single relation
 are refit for seeds 0–4. The locked Phase 3 campus rows and outcomes are checked
 during test scoring. See results/phase5/gcn_lstm/README.md for run status.
 
-Phase 5 results are in [one comparison table](results/phase5/README.md). All five completed CPU benchmarks had higher test MAE than Phase 3 on all ten targets. The uploaded GCN + LSTM Colab summary matched all 20 CPU graph choices and campus counts, with a maximum absolute MAE difference of 0.00126. The other four completed runs used the local CPU. MTGNN awaits clarification.
+Phase 5 results are in [one comparison table](../results/phase5/README.md). All five completed CPU benchmarks had higher test MAE than Phase 3 on all ten targets. The uploaded GCN + LSTM Colab summary matched all 20 CPU graph choices and campus counts, with a maximum absolute MAE difference of 0.00126. The other four completed runs used the local CPU. MTGNN awaits clarification.
+
+### Finance integration — 2026-11-21
+
+Finance (slide 3: per-student expenditure) is integrated into the master table: 19 additive columns, 98.1–99.6% of model campuses per year, checked against
+68 of TEA's own campus financial reports and by independent recomputation from the raw archives. Raw audit 200, processed validation 127, expanded graph 86/86,
+tests 32 across the four test modules (2 skipped). It is **not** a model input: no experiment input, snapshot or stored result changed (`expanded_temporal_features.csv` regenerates
+byte-identical; 7 edge files, the PyG snapshot and all 56 frozen artifacts unchanged). The expanded graph's node table and catalog gained 8 same-year columns, so the
+`nodes.csv` fingerprint recorded in `results/expanded/validation.json` is now stale (a record only; `validate_expansion.py` passes against the new file; see DECISIONS.md 2026-11-21). Decision needed:
+rerun the expanded experiment / Phase 5 with finance as an input (merge `configs/finance_availability.yaml` into `feature_availability.yaml`, add `"finance"` to
+`new_sources.FEATURE_GROUPS`), or leave finance as master-only. Slide 3's teacher-similarity and funding-similarity edges are separate graph work.

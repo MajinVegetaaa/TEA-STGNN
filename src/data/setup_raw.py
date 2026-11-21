@@ -1,6 +1,6 @@
 """Put the raw data into the data/raw/ layout the pipeline expects (see data/raw/README.md).
 
-  python3 src/data/setup_raw.py --zip Dataset.zip [--tapr <folder>] [--retention <folder>] [--tsi <folder>]
+  python3 src/data/setup_raw.py --zip data/archives/Dataset.zip [--tapr <folder>] [--retention <folder>] [--tsi <folder>]
 
 Extracts the TEA files from Dataset.zip (2019-2023) into the numbered source folders, copies the TAPR and
 retention and TSI downloads if their folders are given, then checks every file in configs/data_sources.yaml is present.
@@ -59,7 +59,7 @@ def copy_folder(src: Path, dst: Path) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--zip", type=Path, default=ROOT / "Dataset.zip")
+    ap.add_argument("--zip", type=Path, default=ROOT / "data" / "archives" / "Dataset.zip")
     ap.add_argument("--tapr", type=Path, help="folder with the TAPR student-information files (names as in configs/data_sources.yaml)")
     ap.add_argument("--retention", type=Path, help="folder with campus-download-ret-*.xlsx")
     ap.add_argument("--tsi", type=Path, help="folder with the TAPR CCMR/TSI files named by report year (2020.dat ... 2025.csv)")

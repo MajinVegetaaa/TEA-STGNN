@@ -218,7 +218,7 @@ audit checks, 115 processed-data checks, and 11 regression tests pass**.
 `master_school_year.csv` now includes verified staff, separate AP/IB, federal
 four-year graduation and five All Students STAAR EOC Meets fields, along with
 source tokens, statuses and supporting counts. The existing 11,546-row panel and
-all 59 original columns are identical to the frozen version. Finance remains staged.
+all 59 original columns are identical to the frozen version. Finance remains staged (update 2026-11-21: finance is now integrated into the master, not as a model input; see DECISIONS.md).
 
 2018 STAAR required a correction: `CAMPSTAAR5.dat` lacks All Students fields.
 The correct `CAMPSTAAR2.dat` was downloaded, verified and registered; the original
@@ -245,11 +245,11 @@ The results, coverage, paired original-eight comparisons and validation receipt
 are documented in `results/expanded/README.md`. Preserve local prediction files,
 expanded graph/PyG artifacts, source downloads and the frozen snapshot with the
 handoff; these large artifacts are gitignored. Reproduction commands are in
-`DATA_PIPELINE.md`. Finance remains staged and graph defaults retain their existing
+`DATA_PIPELINE.md`. Finance remains staged (update 2026-11-21: finance is now integrated into the master, not as a model input; see DECISIONS.md) and graph defaults retain their existing
 professor-review status.
 
 ### Completed evaluation — 2026-11-18
 
 All six input comparisons and fixed test evaluations are complete (60 target/input-set results). Independent validation passed for all models, seeds, eligibility rows and selection locks. All 56 original graph/results files and seven edge files retain their checksums; 48 frozen comparisons use identical rows. The unit suite passes 16/16.
 
-Validation-selected additions improved 2024 MAE for ACT and TSI, worsened it for SAT total and Risk Index, and left six targets unchanged versus the new existing-input comparison. The gains are small (ACT 1.1500 to 1.1479; TSI 14.4148 to 14.3335); these results do not support a general accuracy improvement from adding all sources. See `results/expanded/README.md` and `final_selection_report.csv` for the ten locked choices, coverage and errors. Finance remains staged; no full GNN performance study or historical-vintage forecasting claim is made.
+Validation-selected additions improved 2024 MAE for ACT and TSI, worsened it for SAT total and Risk Index, and left six targets unchanged versus the new existing-input comparison. The gains are small (ACT 1.1500 to 1.1479; TSI 14.4148 to 14.3335); these results do not support a general accuracy improvement from adding all sources. See `results/expanded/README.md` and `final_selection_report.csv` for the ten locked choices, coverage and errors. Finance remains staged (update 2026-11-21: finance is now integrated into the master, not as a model input; see DECISIONS.md); no full GNN performance study or historical-vintage forecasting claim is made.

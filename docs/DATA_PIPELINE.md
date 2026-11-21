@@ -25,7 +25,7 @@ Years used are exactly those listed in `configs/data_sources.yaml` (2018–2024)
 | TAPR CCMR / TSI criteria (CGRAD1) | `07_tsi/2020.dat`, `2021–2025.csv` (named by report year); class 2018 from `01_sat_act/2018/CAMPPERF.dat` | campus × graduating class | % of graduates meeting TSI criteria: reading, math, both (`tsi_both` is a target) |
 
 Not used: state files (`SCAD`, `SDROP_ATT`; state benchmarks, not campus data), `Directory (1).csv` (same as
-`Directory.csv` plus site-address columns), the `.geojson` (same points as the CSV), and the earlier audit's
+`Directory.csv` plus site-address columns), the `.geojson` (same points as the CSV; deleted 2026-11-21 as unused), and the earlier audit's
 `data/processed/*.csv` (rebuilt here from raw).
 
 ## Year definition
@@ -297,7 +297,7 @@ missing. AP/IB blank percentages are `undefined_or_suppressed`, because the
 workbooks do not distinguish those reasons. Unmatched campuses are
 `source_absent`, never zero. Published rates take precedence even when blank or
 suppressed. Derivation is allowed only when the entire rate column is absent,
-with matching unsuppressed counts and a positive denominator. Finance stays staged.
+with matching unsuppressed counts and a positive denominator. Finance was integrated on 2026-11-21 (next section).
 
 Observed campus counts (source absence and masks excluded):
 
@@ -390,3 +390,19 @@ validation runs from the same unchanged experiment after checking every target,
 model, seed, campus/year row and tuning-grid count. Incomplete input-set runs are
 recomputed. Do not use resume after changing inputs or modeling settings. The
 durable run log is `results/expanded/validation/experiment.log`.
+
+## PEIMS finance (added 2026-11-21)
+
+`src/data/new_sources.py::load_finance` reads the seven district (`actget`) and seven charter (`charact`) archives and adds 19 columns to the master
+table: four measures (instruction; core operating) x (all funds; general fund) in USD and per student, a status per value, `source_finance` and
+`source_finance_type`. Rules that matter: all rows of an archive count (`FUNDYEAR`/`FISCALYR` is the grant year); campus id is `DISTRICT`+`FIN_UNIT` on
+campus-coded rows; rows are summed before any status logic because `ACTAMT` has legitimate negative adjustments; a campus absent from both archives is
+`source_absent`, a campus with no positive spending in a measure is `nonpositive_total`, never a silent zero; per student = USD / master `enrollment`.
+`audit_raw.py` verifies each archive (CRC, year stamp, one `DTUPDATE`, no campus in both). `validate_additions.py` recomputes every model campus-year from
+the raw archives with its own code and checks every printed line of 68 TEA campus reports. Finance is **not** in `FEATURE_GROUPS`: it is in the master and
+the expanded graph's node table but not a model input (see `configs/finance_availability.yaml`).
+
+**Warning — graph validator.** Run `validate_graph.py` only as `TEA_EXPANDED=1 python3 src/graphs/validate_graph.py` (86/86). Without that variable it checks the
+frozen `data/graph/`, rewrites the frozen `data/graph/reports/graph_quality_report.csv` and fails the master-consistency check (the frozen graph predates the staff/AP/
+graduation/STAAR/finance columns); this has been the case since the 2026-11-18 milestone. If it was run by accident, restore the file from `results/frozen/pre_expansion/`.
+

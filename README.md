@@ -1,34 +1,42 @@
 # TEA STGNN
 
-Forecasting Texas high-school outcomes with a spatio-temporal graph neural network.
-See `TEA_STGNN_Project_Brief.pdf` and `Team_Work_Division.pdf` for the plan.
+Forecasting next year's outcomes (SAT, ACT, TSI, college readiness, participation, attendance, dropout, retention,
+graduation, risk index) for 1,670 Texas public high schools with a spatio-temporal graph neural network.
 
-## Current benchmark
+**Start here: [`ROADMAP.md`](ROADMAP.md)** — the plan, the decisions, the step we are on and how to run each step.
 
-The `main` branch includes the ten-target snapshot and Phase 3
-reference predictions. See [Phase 5 results](results/phase5/README.md) for scores.
-With PyTorch, PyG, NumPy and pandas installed, run the GCN + LSTM benchmark from
-the repository root:
+## Setup
 
-```sh
-python src/models/phase5_gcn_lstm.py --model gcn_lstm --device cpu --out results/phase5/gcn_lstm
-```
+Python 3.13 (3.12 also works).
 
-## Layout
-- `data/raw/` — downloads in numbered source folders, untouched (not in git; see `data/raw/README.md`)
-- `data/processed/` — cleaned tables (`master_school_year.csv` etc.; see `data/processed/README.md`); `data/graph/` — yearly graph files
-- `src/data/` cleaning & features · `src/eval/` split & metrics · `src/baselines/` · `src/graphs/` · `src/models/`
-- `configs/data_sources.yaml` — every raw file and year used (2018–2024)
-- `configs/split.yaml` — train 2018–2022, validate 2023, test 2024; `configs/graph.yaml`, `configs/risk_index.yaml` — settings pending professor review
-- `requirements.txt` (pipeline, baselines) and `requirements-gpu.txt` (torch 2.12.1, PyG, PyG Temporal) — Python 3.13 (3.12 also works)
-- `src/graphs/to_pyg.py` — PyG snapshots (`data/graph/pyg/snapshots.pt`); `src/models/smoke_test.py` — Phase 4 smoke test
-- `results/level/`, `results/relative/`, `results/zscore/` — experiment runs (predictions format `model,seed,campus_id,year,target,y_true,y_pred`)
-
-## Rebuild data and graph
 ```bash
-python3 src/data/setup_raw.py --zip Dataset.zip --tapr <TAPR folder> --retention <retention folder>
-python3 src/data/audit_raw.py            # proves every raw file is the right dataset and year
-python3 src/data/build_master.py && python3 src/data/validate_processed.py
-python3 src/graphs/build_graph_data.py && python3 src/graphs/validate_graph.py
+pip install -r requirements.txt            # data pipeline, graph build, tabular baselines
+pip install -r requirements-gpu.txt        # graph models (torch 2.12.1, PyG); see docs/PROJECT_LOG.md §4 for CUDA wheels
 ```
-Docs: `PROJECT_PLAN.md` (start here), `DATA_PIPELINE.md`, `GRAPH_DATA_DOCUMENTATION.md`, `DATA_LEAD_HANDOFF.md`, `DECISIONS.md`.
+
+Raw TEA downloads are not in git. Put them in `data/raw/` with
+`python3 src/data/setup_raw.py --zip data/archives/Dataset.zip --tapr <folder> --retention <folder> --tsi <folder>`
+and see [`data/raw/README.md`](data/raw/README.md) for the other sources.
+
+## Run
+
+```bash
+make help     # list everything
+make check    # validate current files and run tests (no rebuild)
+make data     # audit raw files -> master table -> validate
+make graph    # rebuild + validate the expanded graph
+```
+
+## Docs
+
+| File | What it covers |
+|---|---|
+| [`ROADMAP.md`](ROADMAP.md) | Plan, decisions D1–D6, steps S0–S8 and their status |
+| [`DECISIONS.md`](DECISIONS.md) | Every decision, dated |
+| [`docs/DATA_PIPELINE.md`](docs/DATA_PIPELINE.md) | How raw files become `data/processed/` (cohort, years, sources, checks) |
+| [`docs/GRAPH_DATA_DOCUMENTATION.md`](docs/GRAPH_DATA_DOCUMENTATION.md) | Graph nodes, edges, weights and checks |
+| [`docs/DATA_LEAD_HANDOFF.md`](docs/DATA_LEAD_HANDOFF.md) | Data hand-off and audit summary |
+| [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md) | History of Phases 1–5 (the old project plan) |
+| [`results/phase5/README.md`](results/phase5/README.md) | Current graph-model baseline scores |
+
+Reference material (PPT, project brief, papers) lives in `docs/references/` and is not in git.
