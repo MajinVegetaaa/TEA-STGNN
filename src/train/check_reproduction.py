@@ -1,8 +1,8 @@
-"""S2 done-when: the harness reproduces the Phase 5 GCN + LSTM benchmark.
+"""The harness reproduces a Phase 5 benchmark (S2: GCN + LSTM; S3: the ported GConvGRU and GraphWaveNet).
 
-Compares results/s2/gcn_lstm_phase5/ with results/phase5/gcn_lstm/benchmark/: same snapshot, every validation
-candidate's 2023 MAE and chosen epochs, the locked choices, and every 2024 per-seed MAE.
-Run from the repo root:  python src/train/check_reproduction.py   (exit 1 on any mismatch)
+Compares a harness run with results/phase5/<model>/benchmark/: same snapshot, every validation candidate's 2023 MAE
+and chosen epochs, the locked choices and, when the harness run includes --test, every 2024 per-seed MAE.
+Run from the repo root:  python src/train/check_reproduction.py [model] [harness run dir]   (exit 1 on any mismatch)
 """
 from __future__ import annotations
 
@@ -13,7 +13,9 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-NEW, OLD = ROOT / "results/s2/gcn_lstm_phase5", ROOT / "results/phase5/gcn_lstm/benchmark"
+MODEL = sys.argv[1] if len(sys.argv) > 1 else "gcn_lstm"
+NEW = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "results/s2/gcn_lstm_phase5"
+OLD = ROOT / "results/phase5" / MODEL / "benchmark"
 TOL = 1e-5
 ok = []
 
@@ -40,6 +42,9 @@ def main() -> int:
     old_lock = {(r["target"], r["graph"]) for r in json.loads((OLD / "selection_locked.json").read_text())}
     rec("locked choices (combined + best single relation)", new_lock == old_lock, f"{len(new_lock)}")
 
+    if not (NEW / "per_seed.csv").exists():
+        print(f"\n{sum(ok)}/{len(ok)} checks passed (validation only; no --test run)")
+        return 0 if all(ok) else 1
     s = pd.read_csv(NEW / "per_seed.csv").merge(pd.read_csv(OLD / "per_seed.csv"), on=["target", "graph", "seed"],
                                                  suffixes=("", "_p5"))
     rec("every 2024 target/graph/seed present", len(s) == len(pd.read_csv(OLD / "per_seed.csv")), f"{len(s)}")

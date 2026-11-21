@@ -3,7 +3,7 @@
 > **Superseded as the plan on 2026-11-21 by [`ROADMAP.md`](../ROADMAP.md).** Kept unchanged as the record of
 > Phases 1–5 (was `PROJECT_PLAN.md` at the repo root).
 
-Last updated: 2026-10-20 · Repo: https://github.com/MajinVegetaaa/TEA-STGNN (private)
+Last updated: 2026-10-20 · Repo: https://github.com/MajinVegetaaa/TEA-STGNN (public)
 
 ## 1. What this project is
 

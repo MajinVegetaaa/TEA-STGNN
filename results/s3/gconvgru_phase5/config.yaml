@@ -1,0 +1,12 @@
+name: gconvgru (Phase 5 reproduction)
+model: gconvgru
+graph: v1
+label: level
+tasks: single
+graphs: combined+single
+hidden: 32
+lr: 0.003
+max_epochs: 30
+threads: 2
+device: cpu
+out: s3/gconvgru_phase5

@@ -1,0 +1,61 @@
+model,setting,target,graph,ratio_2023,bar_ratio_2023
+GConvGRU,"A: v1, Phase 5 inputs, level",act_composite,academic_act,0.9889482335613891,0.9075212483435484
+GConvGRU,"A: v1, Phase 5 inputs, level",sat_total,academic_sat,1.070575673733811,0.9110771652817232
+GConvGRU,"A: v1, Phase 5 inputs, level",sat_act_above_criterion,district,0.9544508393783155,0.832717350296961
+GConvGRU,"A: v1, Phase 5 inputs, level",sat_act_participation,district,1.0672445001304218,1.0
+GConvGRU,"A: v1, Phase 5 inputs, level",dropout_9_12,region,1.2693852609542657,0.9681432907179608
+GConvGRU,"A: v1, Phase 5 inputs, level",attendance_rate,district,1.307753490637128,1.0
+GConvGRU,"A: v1, Phase 5 inputs, level",retention_rate,district,1.3963856667735068,0.96391997616729
+GConvGRU,"A: v1, Phase 5 inputs, level",graduation_4yr,academic_retention,1.1653474214170358,0.8970016072660465
+GConvGRU,"A: v1, Phase 5 inputs, level",risk_index,region,0.9829173018711462,0.8298940027678482
+GConvGRU,"A: v1, Phase 5 inputs, level",tsi_both,district,1.1426310319027346,0.9917404093717208
+GConvGRU,"B: v2, D1 inputs, level",act_composite,district,0.9928582730709518,0.9075212483435484
+GConvGRU,"B: v2, D1 inputs, level",sat_total,region,1.0387558556819771,0.9110771652817232
+GConvGRU,"B: v2, D1 inputs, level",sat_act_above_criterion,combined,0.953097737369673,0.832717350296961
+GConvGRU,"B: v2, D1 inputs, level",sat_act_participation,district,1.105304553615973,1.0
+GConvGRU,"B: v2, D1 inputs, level",dropout_9_12,demographic,1.3991344362356415,0.9681432907179608
+GConvGRU,"B: v2, D1 inputs, level",attendance_rate,geographic,1.7786648346638332,1.0
+GConvGRU,"B: v2, D1 inputs, level",retention_rate,academic_retention,1.5112189082137875,0.96391997616729
+GConvGRU,"B: v2, D1 inputs, level",graduation_4yr,region,1.349269952136861,0.8970016072660465
+GConvGRU,"B: v2, D1 inputs, level",risk_index,demographic,0.9622385813583126,0.8298940027678482
+GConvGRU,"B: v2, D1 inputs, level",tsi_both,district,1.1897260301729282,0.9917404093717208
+GConvGRU,"C: v2, D1 inputs, change",act_composite,demographic,0.9694057770237051,0.9075212483435484
+GConvGRU,"C: v2, D1 inputs, change",sat_total,region,0.9572911419877641,0.9110771652817232
+GConvGRU,"C: v2, D1 inputs, change",sat_act_above_criterion,combined,0.929883435497924,0.832717350296961
+GConvGRU,"C: v2, D1 inputs, change",sat_act_participation,combined,1.048366705877586,1.0
+GConvGRU,"C: v2, D1 inputs, change",dropout_9_12,combined,1.1309612366137602,0.9681432907179608
+GConvGRU,"C: v2, D1 inputs, change",attendance_rate,district,1.452421314633864,1.0
+GConvGRU,"C: v2, D1 inputs, change",retention_rate,geographic,1.2398843453614066,0.96391997616729
+GConvGRU,"C: v2, D1 inputs, change",graduation_4yr,district,1.0720314542209928,0.8970016072660465
+GConvGRU,"C: v2, D1 inputs, change",risk_index,district,0.9460649890947233,0.8298940027678482
+GConvGRU,"C: v2, D1 inputs, change",tsi_both,region,1.0276701795621677,0.9917404093717208
+GraphWaveNet,"A: v1, Phase 5 inputs, level",act_composite,academic_act,0.9651730664085593,0.9075212483435484
+GraphWaveNet,"A: v1, Phase 5 inputs, level",sat_total,demographic,0.9919244589784031,0.9110771652817232
+GraphWaveNet,"A: v1, Phase 5 inputs, level",sat_act_above_criterion,combined,0.9267407765786279,0.832717350296961
+GraphWaveNet,"A: v1, Phase 5 inputs, level",sat_act_participation,district,1.0234896726289213,1.0
+GraphWaveNet,"A: v1, Phase 5 inputs, level",dropout_9_12,academic_dropout,1.251168280783549,0.9681432907179608
+GraphWaveNet,"A: v1, Phase 5 inputs, level",attendance_rate,district,1.5273619468143074,1.0
+GraphWaveNet,"A: v1, Phase 5 inputs, level",retention_rate,combined,1.3056081722157393,0.96391997616729
+GraphWaveNet,"A: v1, Phase 5 inputs, level",graduation_4yr,demographic,1.1894664228294443,0.8970016072660465
+GraphWaveNet,"A: v1, Phase 5 inputs, level",risk_index,region,1.0227839594788626,0.8298940027678482
+GraphWaveNet,"A: v1, Phase 5 inputs, level",tsi_both,academic_criterion,1.0782968948285165,0.9917404093717208
+GraphWaveNet,"B: v2, D1 inputs, level",act_composite,geographic,0.9526352287657411,0.9075212483435484
+GraphWaveNet,"B: v2, D1 inputs, level",sat_total,demographic,1.0402389244532786,0.9110771652817232
+GraphWaveNet,"B: v2, D1 inputs, level",sat_act_above_criterion,combined,0.9255651253359136,0.832717350296961
+GraphWaveNet,"B: v2, D1 inputs, level",sat_act_participation,academic_participation,1.0004572831011491,1.0
+GraphWaveNet,"B: v2, D1 inputs, level",dropout_9_12,combined,1.1329189156552035,0.9681432907179608
+GraphWaveNet,"B: v2, D1 inputs, level",attendance_rate,district,1.3872542986997294,1.0
+GraphWaveNet,"B: v2, D1 inputs, level",retention_rate,district,1.1470314448383854,0.96391997616729
+GraphWaveNet,"B: v2, D1 inputs, level",graduation_4yr,region,1.0792345627769164,0.8970016072660465
+GraphWaveNet,"B: v2, D1 inputs, level",risk_index,district,0.9102896909185738,0.8298940027678482
+GraphWaveNet,"B: v2, D1 inputs, level",tsi_both,geographic,1.0690292145928126,0.9917404093717208
+GraphWaveNet,"C: v2, D1 inputs, change",act_composite,region,0.950021310816578,0.9075212483435484
+GraphWaveNet,"C: v2, D1 inputs, change",sat_total,combined,0.8995309643020348,0.9110771652817232
+GraphWaveNet,"C: v2, D1 inputs, change",sat_act_above_criterion,combined,0.9064917493909778,0.832717350296961
+GraphWaveNet,"C: v2, D1 inputs, change",sat_act_participation,geographic,1.0187398701607862,1.0
+GraphWaveNet,"C: v2, D1 inputs, change",dropout_9_12,combined,1.1110397146496234,0.9681432907179608
+GraphWaveNet,"C: v2, D1 inputs, change",attendance_rate,academic_attendance,1.414986827109911,1.0
+GraphWaveNet,"C: v2, D1 inputs, change",retention_rate,combined,1.0812033833025791,0.96391997616729
+GraphWaveNet,"C: v2, D1 inputs, change",graduation_4yr,demographic,1.0498392309455544,0.8970016072660465
+GraphWaveNet,"C: v2, D1 inputs, change",risk_index,region,0.8985742325522166,0.8298940027678482
+GraphWaveNet,"C: v2, D1 inputs, change",tsi_both,geographic,0.9977602270586761,0.9917404093717208

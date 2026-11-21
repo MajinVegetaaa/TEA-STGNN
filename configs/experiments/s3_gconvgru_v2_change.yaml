@@ -1,0 +1,13 @@
+# S3 go/no-go: gconvgru on graph v2 (D1 inputs), label = change. 2023 only (--val-seeds); 2024 is not touched.
+name: gconvgru (v2, change)
+model: gconvgru
+graph: v2
+label: change
+tasks: single
+graphs: combined+single
+hidden: 32
+lr: 0.003
+max_epochs: 30
+threads: 2
+device: cpu
+out: s3/gconvgru_v2_change

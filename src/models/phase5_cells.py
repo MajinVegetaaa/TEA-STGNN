@@ -51,13 +51,13 @@ class GraphWindow:
 
 class GConvGRU(nn.Module):
     """Two-term Chebyshev filters for inputs and hidden states (lambda_max=2)."""
-    def __init__(self, features, hidden):
+    def __init__(self, features, hidden, outputs=1):
         super().__init__()
         self.hidden = hidden
         self.input = nn.Linear(2 * features, 3 * hidden)
         self.gates = nn.Linear(2 * hidden, 2 * hidden)
         self.candidate = nn.Linear(2 * hidden, hidden)
-        self.readout = nn.Linear(hidden, 1)
+        self.readout = nn.Linear(hidden, outputs)
 
     def forward(self, window):
         state = window.x.new_zeros(window.x.size(1), self.hidden)
@@ -75,13 +75,13 @@ class GConvGRU(nn.Module):
 
 class GraphWaveNet(nn.Module):
     """Causal dilated gated blocks with residual, skip, and graph diffusion."""
-    def __init__(self, features, hidden):
+    def __init__(self, features, hidden, outputs=1):
         super().__init__()
         self.start = nn.Linear(features, hidden)
         self.filters = nn.ModuleList(nn.Linear(2*hidden, 2*hidden) for _ in range(2))
         self.diffuse = nn.ModuleList(nn.Linear(3*hidden, hidden) for _ in range(2))
         self.skip = nn.ModuleList(nn.Linear(hidden, hidden) for _ in range(2))
-        self.end = nn.Sequential(nn.ReLU(), nn.Linear(hidden, hidden), nn.ReLU(), nn.Linear(hidden, 1))
+        self.end = nn.Sequential(nn.ReLU(), nn.Linear(hidden, hidden), nn.ReLU(), nn.Linear(hidden, outputs))
 
     def forward(self, window):
         sequence = self.start(window.x)

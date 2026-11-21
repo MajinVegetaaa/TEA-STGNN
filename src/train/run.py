@@ -1,6 +1,7 @@
 """Train and select a neural model on the locked protocol (configs/protocol.yaml), from one experiment config.
 
     python src/train/run.py configs/experiments/<name>.yaml            # 2023 selection only (seed 0)
+    python src/train/run.py configs/experiments/<name>.yaml --val-seeds  # + 2023 score for all 5 seeds (mean +/- SD)
     python src/train/run.py configs/experiments/<name>.yaml --test     # + refit on 2018-2023, 5 seeds, score 2024
 
 Selection (2023): for every graph candidate (`combined` = all of a target's relations, plus each single relation if
@@ -35,6 +36,7 @@ from trainer import fit  # noqa: E402
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("config", type=Path)
+    ap.add_argument("--val-seeds", action="store_true", help="refit the locked choices on 2018-2022 for every seed, score 2023")
     ap.add_argument("--test", action="store_true", help="refit the locked choices and score 2024")
     ap.add_argument("--targets", nargs="*", help="subset of targets (smoke tests)")
     ap.add_argument("--max-epochs", type=int, help="override (smoke tests)")
@@ -93,6 +95,21 @@ def main() -> None:
                   for r in grid for t in r["targets"]]).drop(columns="targets").to_csv(out / "validation_grid.csv",
                                                                                      index=False)
     (out / "selection_locked.json").write_text(json.dumps(locked, indent=2))
+
+    # ---- 2023 for every seed (the final-model score is a mean +/- SD over seeds); never touches 2024
+    if args.val_seeds:
+        rows = []
+        for row in locked:
+            for seed in panel.split["seeds"]:
+                f = train(row["targets"], row["relations"], val, row["epochs"], seed, False)
+                for k, t in enumerate(row["targets"]):
+                    j = panel.targets.index(t)
+                    mask = panel.eval_mask[val, :, j]
+                    truth = panel.y[val, mask, j].numpy()
+                    rows.append({"target": t, "graph": row["graph"], "seed": seed, "n": int(mask.sum()),
+                                 "val_mae": float(np.abs(f.forecast[mask.numpy(), k] - truth).mean()),
+                                 "persistence_mae": float(np.abs(panel.y_lag1[val, mask, j].numpy() - truth).mean())})
+        pd.DataFrame(rows).to_csv(out / "validation_seeds.csv", index=False)
     if not args.test:
         return
 

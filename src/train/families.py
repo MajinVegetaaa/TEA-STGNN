@@ -15,6 +15,7 @@ import torch
 from torch import nn
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "models"))
+from phase5_cells import GConvGRU, GraphWaveNet, GraphWindow  # noqa: E402  (Phase 5 cells, reused unchanged)
 from phase5_gcn_lstm import graph_inputs  # noqa: E402  (Phase 5 graph normalisation, reused unchanged)
 
 
@@ -32,6 +33,26 @@ class GCNLSTM(nn.Module):
         return self.head(sequence)
 
 
+class Keep3D(nn.Module):
+    """Phase 5 cells squeeze a single output to [years, schools]; the harness always uses [years, schools, outputs]."""
+
+    def __init__(self, model: nn.Module):
+        super().__init__()
+        self.model = model
+
+    def forward(self, x):
+        out = self.model(x)
+        return out.unsqueeze(-1) if out.dim() == 2 else out
+
+
+def windows(family: str):
+    """Snapshots -> GraphWindow (inputs + one propagation matrix per year), as in Phase 5."""
+    def prepare(snaps, rel):
+        values, supports = zip(*[graph_inputs(s, rel, family) for s in snaps])
+        return GraphWindow(torch.stack(values), list(supports))
+    return prepare
+
+
 @dataclass
 class Family:
     prepare: Callable[[list, list[str]], torch.Tensor]       # (snapshots, relations) -> model input
@@ -42,4 +63,7 @@ class Family:
 FAMILIES = {
     "gcn_lstm": Family(prepare=lambda snaps, rel: torch.stack([graph_inputs(s, rel, "gcn_lstm") for s in snaps]),
                        build=GCNLSTM),
+    # GConvGRU's window holds [X, -A X]; its cell takes the original feature count
+    "gconvgru": Family(prepare=windows("gconvgru"), build=lambda f, h, o: Keep3D(GConvGRU(f // 2, h, o))),
+    "graphwavenet": Family(prepare=windows("graphwavenet"), build=lambda f, h, o: Keep3D(GraphWaveNet(f, h, o))),
 }
