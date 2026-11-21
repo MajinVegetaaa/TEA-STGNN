@@ -1,0 +1,58 @@
+"""Load a PyG snapshot file into one panel of tensors that every neural model uses.
+
+Years run along the first axis, schools along the second (the same school order in every year), targets along the last.
+Year index 0 (2018) has no history, so it is never a training label.
+"""
+from __future__ import annotations
+
+import hashlib
+from dataclasses import dataclass
+from pathlib import Path
+
+import torch
+
+ROOT = Path(__file__).resolve().parents[2]
+SNAPSHOTS = {"v1": ROOT / "data/graph_expanded/pyg/snapshots.pt",     # Phase 5 graph (frozen)
+             "v2": ROOT / "data/graph_v2/pyg/snapshots.pt"}           # current graph (S1b)
+BASE_RELATIONS = ["district", "geographic", "demographic", "region"]   # + the target's own academic relation
+
+
+@dataclass
+class Panel:
+    years: list[int]
+    campus_ids: list[str]
+    targets: list[str]
+    snapshots: list            # HeteroData per year (graph structure, edge weights / attributes)
+    y: torch.Tensor            # [years, schools, targets] raw outcome (NaN = missing)
+    y_lag1: torch.Tensor       # [years, schools, targets] last year's value
+    eval_mask: torch.Tensor    # [years, schools, targets] target and last year's value observed (scored rows)
+    present: torch.Tensor      # [years, schools]
+    split: dict
+    academic_relation: dict    # target -> its academic edge set
+    sha256: str
+    path: Path
+
+    @property
+    def val_index(self) -> int:
+        """Index of the validation year (2023); training years are 1..val_index-1."""
+        return len(self.split["train_years"])
+
+    def relations(self, target: str) -> list[str]:
+        """Relations a single-target model may use: the shared ones plus the target's own academic set."""
+        rel = BASE_RELATIONS.copy()
+        if target in self.academic_relation:
+            rel.append(self.academic_relation[target])
+        return rel
+
+
+def load(graph: str) -> Panel:
+    path = SNAPSHOTS[graph]
+    data = torch.load(path, weights_only=False, map_location="cpu")
+    snaps = data["snapshots"]
+    split = data["split"]
+    assert data["years"] == split["train_years"] + split["val_years"] + split["test_years"], "years out of order"
+    stack = lambda key: torch.stack([s["campus"][key] for s in snaps])
+    return Panel(years=data["years"], campus_ids=data["campus_ids"], targets=data["targets"], snapshots=snaps,
+                 y=stack("y"), y_lag1=stack("y_lag1"), eval_mask=stack("eval_mask"), present=stack("present"),
+                 split=split, academic_relation=data["academic_relation"],
+                 sha256=hashlib.sha256(path.read_bytes()).hexdigest(), path=path)

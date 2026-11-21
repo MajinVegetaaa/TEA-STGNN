@@ -1,0 +1,14 @@
+# S2 smoke test of the parts Phase 5 never used: graph v2, change-from-last-year label (D6), one model for all
+# ten targets. Not a result; run with --max-epochs 3 to check the harness end to end.
+name: GCN + LSTM (multi-task, change, v2) smoke
+model: gcn_lstm
+graph: v2
+label: change
+tasks: multi
+relations: [district, geographic, demographic, region]
+hidden: 32
+lr: 0.003
+max_epochs: 30
+threads: 2
+device: cpu
+out: s2/smoke_v2_change_multitask

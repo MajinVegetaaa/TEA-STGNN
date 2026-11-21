@@ -1,0 +1,16 @@
+name: GCN + LSTM (multi-task, change, v2) smoke
+model: gcn_lstm
+graph: v2
+label: change
+tasks: multi
+relations:
+- district
+- geographic
+- demographic
+- region
+hidden: 32
+lr: 0.003
+max_epochs: 30
+threads: 2
+device: cpu
+out: s2/smoke_v2_change_multitask

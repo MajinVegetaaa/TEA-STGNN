@@ -65,6 +65,9 @@ def build_features(nodes: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, 
     if empty:
         print(f"dropped {len(empty)} inputs with no training-year values: " + ", ".join(empty))
     X = nodes[cols].astype(float)
+    if V2:   # finance per student is heavy-tailed (a few tiny schools report up to $2.3M): signed log before scaling
+        fin = [c for c in cols if c.startswith("finance_")]
+        X[fin] = np.sign(X[fin]) * np.log1p(X[fin].abs())
     miss = [c for c in cols if X[c].isna().any()]
     ind = X[miss].isna().astype(float).add_suffix("_missing")
     med = X[train].median()
@@ -74,7 +77,8 @@ def build_features(nodes: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, 
     onehot = pd.get_dummies(nodes[STATIC_CAT].astype(str), prefix=STATIC_CAT, dtype=float)
     out = pd.concat([X, ind, onehot], axis=1)
     scaler = {"columns": cols, "median": med.to_dict(), "mean": mu.to_dict(), "sd": sd.to_dict(),
-              "fit_years": SPLIT["train_years"]}
+              "fit_years": SPLIT["train_years"],
+              **({"signed_log": [c for c in cols if c.startswith("finance_")]} if V2 else {})}
     return out, scaler
 
 

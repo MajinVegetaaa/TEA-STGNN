@@ -38,7 +38,7 @@ scale, rural and town schools get about half the geographic weight of city schoo
 | **S1** | Lock the protocol: one config for targets, split, metrics, persistence shortcut and forecast-timing rule (`configs/protocol.yaml`, `src/eval/protocol.py`); fix the "2023 test year" wording | D1, D2, D6 | Phase 3 "numbers to beat" reproduce exactly | **done 2026-11-21** (19/19, max diff 4e-15; bar = 0.953) |
 | **S1b** | Graph v2: σ fixed from training years, per-school geographic scale, raw distances stored as edge features; old graph archived | D4 | graph validator passes; v1 vs v2 differences documented | **done 2026-11-21** (86/86; same edges, re-weighted; geographic weight by locale now 0.47–0.50 vs 0.34–0.74; PyG snapshot is built at the start of S2 in the GPU environment: `make snapshot`) |
 | **S1c** | Numbers to beat under D1: make every source's lag-1 history an input (staff, AP/IB, STAAR, graduation and finance; today only publication-filtered `available_*` versions are inputs), then rerun the tabular baselines (persistence, LR, KNN, RF, GB, XGBoost; level/relative/zscore) for all 10 targets on graph v2, select on 2023 | S1, S1b | one `results/s1c/numbers_to_beat.csv` that every later step compares against | **done 2026-11-21**: bar on 2023 = **0.930** (10 targets, persistence counts as a candidate); `results/s1c/numbers_to_beat.csv`, `bar.json` |
-| **S2** | One training harness for every neural model: data loading, masks, single/multi-task loss, early stopping on 2023, 5 seeds, equal tuning budget | S1, S1b, S1c | Phase 5 GCN+LSTM reproduces within tolerance on the harness | not started |
+| **S2** | One training harness for every neural model: data loading, masks, single/multi-task loss, early stopping on 2023, 5 seeds, equal tuning budget | S1, S1b, S1c | Phase 5 GCN+LSTM reproduces within tolerance on the harness | **done 2026-11-22**: `src/train/` harness reproduces Phase 5 GCN+LSTM (9/9: 2023 MAE of all 59 candidates identical, 2024 per-seed MAE within 5.5e-6); change label, multi-task and graph v2 smoke-tested; v2 snapshot built on the laptop (`make snapshot`), no GPU needed |
 | **S3** | Go/no-go diagnostic: GConvGRU and GraphWaveNet with the change-from-last-year target | S2 | we know whether the shortcut closes the gap to Phase 3 | not started |
 | **S4** | MTGNN baseline (graph learning layer, mix-hop propagation, dilated inception convolutions; 7 annual steps) | S2, D3 | tuned on 2023 with the shared budget; tests pass | not started |
 | **S5** | Proposed model, in versions: v0 GRU only → v1 + relation-aware GAT → v2 + multi-task heads → v3 (optional) hierarchy nodes | S2 | each version compared on 2023; best beats MTGNN and Phase 3, or the result is documented honestly | not started |
@@ -58,7 +58,8 @@ make check       # run every validator and test on the current files (no rebuild
 make data        # audit raw files, rebuild the master table, validate it
 make features    # rebuild the publication-filtered (expanded) features
 make graph       # rebuild and validate graph v2, compare with v1
-make snapshot    # graph v2 -> PyG snapshot (GPU environment)
+make snapshot    # graph v2 -> PyG snapshot (uses .venv-expanded)
+make s2          # harness reproduces Phase 5 GCN + LSTM
 make test        # unit tests
 make protocol    # check the locked protocol reproduces the stored baseline numbers
 ```
@@ -74,6 +75,8 @@ src/data/             audit, cleaning, master table, sources, validation
 src/graphs/           graph build, validation, PyG snapshots
 src/baselines/        Phase 3 tabular baselines
 src/models/           Phase 5 STGNN baselines (new: MTGNN in S4, proposed model in S5)
+src/train/            neural harness: data.py (panel), trainer.py (training loop), families.py (models), run.py (CLI)
+configs/experiments/  one YAML per neural run (model, graph, label, tasks, budget: hidden / lr / max_epochs)
 src/eval/             metrics, comparisons, reports
 tests/                unit and regression tests
 data/                 raw/, processed/, graph_v2/ (current), graph_expanded/ (v1, Phase 5, frozen), graph/ (original, frozen), archives/
