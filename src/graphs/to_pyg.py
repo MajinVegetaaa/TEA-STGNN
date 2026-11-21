@@ -17,8 +17,14 @@ Writes data/graph/pyg/snapshots.pt. Run from the repo root:  python3 src/graphs/
 from __future__ import annotations
 
 from pathlib import Path
-import os
-EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import graph_version  # noqa: E402
+from edge_features import distance_stats, edge_attributes  # noqa: E402
+
+EXPANDED = graph_version.expanded()
+V2 = graph_version.name() == "v2"     # v2 also stores edge_attr = [weight, distance_z] per edge (configs/graph_v2.yaml)
 
 import numpy as np
 import pandas as pd
@@ -27,7 +33,7 @@ import yaml
 from torch_geometric.data import HeteroData
 
 ROOT = Path(__file__).resolve().parents[2]
-G = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
+G = graph_version.folder()
 OUT = G / "pyg" / "snapshots.pt"
 SPLIT = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())
 ID = {"campus_id": str, "src_campus_id": str, "dst_campus_id": str, "district_id": str, "esc_region": str}
@@ -86,6 +92,13 @@ def main() -> None:
     y_stats = {t: {"mean": nodes.groupby("year")[t].mean().to_dict(), "sd": nodes.groupby("year")[t].std().to_dict()}
                for t in TARGETS}
     edges = {l: pd.read_csv(G / f"edges_{l}.csv", dtype=ID) for l in LAYERS}
+    # v2 edge features: distances standardised per relation on the training years only
+    dist_stats = {}
+    if V2:
+        for layer, e in edges.items():
+            for es, g in (e.groupby("edge_set") if layer == "academic" else [(None, e)]):
+                rel = f"academic_{es.removeprefix('excl_')}" if es else layer
+                dist_stats[rel] = distance_stats(g, SPLIT["train_years"])
 
     relations = [l for l in LAYERS if l != "academic"] + \
         [f"academic_{es.removeprefix('excl_')}" for es in sorted(edges["academic"].edge_set.unique())]
@@ -118,16 +131,22 @@ def main() -> None:
                 w = torch.tensor(g.weight.to_numpy(), dtype=torch.float32)
                 d["campus", rel, "campus"].edge_index = torch.stack([torch.cat([s, t_]), torch.cat([t_, s])])
                 d["campus", rel, "campus"].edge_weight = torch.cat([w, w])
+                if V2:
+                    a = torch.tensor(edge_attributes(g, dist_stats[rel]), dtype=torch.float32)
+                    d["campus", rel, "campus"].edge_attr = torch.cat([a, a])
         for rel in relations:      # same relation set every year (2018 has no academic/demographic edges: no prior year)
             if ("campus", rel, "campus") not in d.edge_types:
                 d["campus", rel, "campus"].edge_index = torch.zeros(2, 0, dtype=torch.long)
                 d["campus", rel, "campus"].edge_weight = torch.zeros(0)
+                if V2:
+                    d["campus", rel, "campus"].edge_attr = torch.zeros(0, 2)
         snaps.append(d)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     torch.save({"years": [int(y) for y in years], "campus_ids": campuses, "feature_names": names, "targets": TARGETS,
                 "academic_relation": {t: f"academic_{sets[t].removeprefix('excl_')}" for t in TARGETS if t in sets},
-                "split": SPLIT, "scaler": scaler, "year_stats": y_stats, "snapshots": snaps}, OUT)
+                "split": SPLIT, "scaler": scaler, "year_stats": y_stats, "snapshots": snaps,
+                **({"edge_attr": ["weight", "distance_z"], "edge_distance_stats": dist_stats} if V2 else {})}, OUT)
     check(snaps, nodes, edges, campuses, names)
     print(f"wrote {OUT.relative_to(ROOT)}: {len(snaps)} years x {n} campuses x {len(names)} features")
 

@@ -7,8 +7,13 @@ No model is trained here.
 from __future__ import annotations
 
 from pathlib import Path
-import os
-EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
+import json
+
+import graph_version
+from edge_features import gaussian_weight, local_scales, self_tuning_weight, training_sigma
+
+EXPANDED = graph_version.expanded()           # expanded inputs and ten targets (graph_expanded and graph_v2)
+V2 = graph_version.name() == "v2"             # v2 edge weights (configs/graph_v2.yaml, S1b)
 
 import numpy as np
 import pandas as pd
@@ -16,7 +21,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 P = ROOT / "data" / "processed"
-OUT = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
+OUT = graph_version.folder()
 ID = {"campus_id": str, "district_id": str, "esc_region": str, "county_id": str, "nces_school_id": str,
       "nces_locale_code": str, "cbsa_code": str}
 YEARS = [int(y) for y in yaml.safe_load((Path(__file__).resolve().parents[2] / "configs" / "data_sources.yaml").read_text())["years"]]
@@ -25,6 +30,8 @@ EARTH_KM = 6371.0088
 # Parameters live in configs/graph.yaml and are PENDING PROFESSOR REVIEW (Questions PDF Q10)
 CFG = yaml.safe_load((ROOT / "configs" / "graph.yaml").read_text())
 PARAM_STATUS = CFG["status"]
+V2_CFG = yaml.safe_load((ROOT / "configs" / "graph_v2.yaml").read_text()) if V2 else None
+TRAIN_YEARS = [int(y) for y in yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())["train_years"]]
 GEO_K = int(CFG["geographic"]["k"])
 GEO_MAX_KM = float(CFG["geographic"]["max_km"])
 GEO_TAU_KM = float(CFG["geographic"]["tau_km"])
@@ -132,9 +139,16 @@ def geographic_edges(nodes_y: pd.DataFrame, year: int) -> pd.DataFrame:
     rows, cols, dk = rows[keep], cols[keep], dk[keep]
     ids = g.campus_id.to_numpy()
     e = undirected(ids[rows], ids[cols], distance=dk, weight=np.exp(-dk / GEO_TAU_KM))
+    rule = f"weight exp(-km/{GEO_TAU_KM:g})"
+    if V2:   # same edges; self-tuning weight from each school's distance to its k-th neighbour this year
+        floor = float(V2_CFG["geographic"]["min_scale_km"])
+        scale = dict(zip(ids, local_scales(dist, GEO_K, floor)))
+        e["weight"] = self_tuning_weight(e.distance.to_numpy(), e.src_campus_id.map(scale).to_numpy(),
+                                         e.dst_campus_id.map(scale).to_numpy())
+        rule = f"weight exp(-km^2/(s_i*s_j)), s_i = km to {GEO_K}th neighbour (floor {floor:g} km)"
     return finish(e, year, "geographic", 0,
                   f"{GEO_K} nearest (haversine, NCES 2024-25 coords) within {GEO_MAX_KM:g} km, union; "
-                  f"weight exp(-km/{GEO_TAU_KM:g}); virtual/hybrid campuses excluded")
+                  f"{rule}; virtual/hybrid campuses excluded")
 
 
 def academic_profile(master: pd.DataFrame, year: int, campus_ids: np.ndarray,
@@ -223,6 +237,26 @@ def temporal_edges(nodes: pd.DataFrame) -> pd.DataFrame:
     return df[EDGE_COLS]
 
 
+def training_year_weights(academic: pd.DataFrame, demographic: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    """v2: one Gaussian kernel width per edge set from the training-year graphs, applied to every year."""
+    sigmas = {}
+    parts = []
+    for es, g in academic.groupby("edge_set", sort=False):
+        sigma = sigmas[es] = training_sigma(g, TRAIN_YEARS)
+        g = g.assign(weight=gaussian_weight(g.distance.to_numpy(), sigma),
+                     method=g.method.str.replace(r"weight exp\(.*\)$",
+                                                 f"weight exp(-d^2/(2*{sigma:.3f}^2)), sigma from training years",
+                                                 regex=True))
+        parts.append(g)
+    academic = pd.concat(parts).loc[academic.index]
+    sigma = sigmas["demographic"] = training_sigma(demographic, TRAIN_YEARS)
+    demographic = demographic.assign(
+        weight=gaussian_weight(demographic.distance.to_numpy(), sigma),
+        method=demographic.method.str.replace(r"weight exp\(.*\)$",
+                                              f"weight exp(-d^2/(2*{sigma:.3f}^2)), sigma from training years", regex=True))
+    return academic, demographic, sigmas
+
+
 # ----------------------------------------------------------------------------------------------- main
 def build() -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
@@ -283,6 +317,10 @@ def build() -> dict:
             out["academic"].append(e)
             acad_info[(y, es)] = info
     edges = {k: pd.concat([e for e in v if len(e)], ignore_index=True) for k, v in out.items()}
+    if V2:
+        edges["academic"], edges["demographic"], sigmas = training_year_weights(edges["academic"], edges["demographic"])
+        (OUT / "graph_v2_parameters.json").write_text(json.dumps(
+            {"train_years": TRAIN_YEARS, "similarity_sigma": sigmas, **V2_CFG}, indent=2) + "\n")
     edges["temporal"] = temporal_edges(nodes)
     # unavailable: header-only files (no fabricated edges)
     edges["transition"] = pd.DataFrame(columns=EDGE_COLS)
@@ -301,4 +339,5 @@ if __name__ == "__main__":
     print(f"graph parameters status: {PARAM_STATUS}")
     for (y, es), i in r["acad_info"].items():
         if i.get("features") or es == "demographic" and i["eligible"]:
-            print(y, es, len(i.get("features", DEMO_FEATURES)), "features, sigma", round(i["sigma"], 3), "eligible", i["eligible"])
+            print(y, es, len(i.get("features", DEMO_FEATURES)), "features,", "per-year sigma (v1; v2 uses graph_v2_parameters.json)" if V2 else "sigma",
+                  round(i["sigma"], 3), "eligible", i["eligible"])

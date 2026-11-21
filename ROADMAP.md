@@ -22,7 +22,7 @@ History of everything done so far: [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md).
 | D1 | What is known on forecast day | **Retrospective:** every source's values up to t−1 are inputs for year t, nothing from year t. A research benchmark, not a deployable forecast (publication dates not enforced). In `configs/protocol.yaml` |
 | D2 | Targets | **The current 10**; accountability ratings later only if the professor asks |
 | D3 | MTGNN | **Wu et al., KDD 2020** ("Connecting the Dots"), as the main graph baseline |
-| D4 | Graph settings | **Freeze, do not tune on 2023.** Keep k=5 geographic (≤100 km), k=10 academic and demographic. Fix the kernel width σ from the training years. Per-school geographic scale (σᵢ = distance to 5th neighbour). Raw distances as GAT edge features. Robustness check over k in S7. Applied in S1b |
+| D4 | Graph settings | **Freeze, do not tune on 2023.** Keep k=5 geographic (≤100 km), k=10 academic and demographic. Fix the kernel width σ from the training years. Per-school geographic scale (σᵢ = distance to 5th neighbour, floor 1 km). Raw distances as GAT edge features. Robustness check over k in S7. **Applied in S1b: `configs/graph_v2.yaml`, `data/graph_v2/`** |
 | D5 | District and region | **Test as an ablation** (cliques vs hierarchy nodes vs features only) |
 | D6 | What the model predicts | **Change from last year** (persistence shortcut), not the raw level |
 
@@ -36,8 +36,8 @@ scale, rural and town schools get about half the geographic weight of city schoo
 |---|---|---|---|---|
 | **S0** | Clean the repo: folder layout, one command (`make`), docs into `docs/`, no science changes | — | validators give the same counts; data and results byte-identical | **done 2026-11-21** |
 | **S1** | Lock the protocol: one config for targets, split, metrics, persistence shortcut and forecast-timing rule (`configs/protocol.yaml`, `src/eval/protocol.py`); fix the "2023 test year" wording | D1, D2, D6 | Phase 3 "numbers to beat" reproduce exactly | **done 2026-11-21** (19/19, max diff 4e-15; bar = 0.953) |
-| **S1b** | Graph v2: σ fixed from training years, per-school geographic scale, raw distances stored as edge features; old graph archived | D4 | graph validator passes; v1 vs v2 differences documented | not started |
-| **S1c** | Numbers to beat under D1: rerun the tabular baselines (persistence, LR, KNN, RF, GB, XGBoost; level/relative/zscore) for all 10 targets with every source at lag 1 and graph v2, select on 2023 | S1, S1b | one `results/s1c/numbers_to_beat.csv` that every later step compares against | not started |
+| **S1b** | Graph v2: σ fixed from training years, per-school geographic scale, raw distances stored as edge features; old graph archived | D4 | graph validator passes; v1 vs v2 differences documented | **done 2026-11-21** (86/86; same edges, re-weighted; geographic weight by locale now 0.47–0.50 vs 0.34–0.74; PyG snapshot is built at the start of S2 in the GPU environment: `make snapshot`) |
+| **S1c** | Numbers to beat under D1: make every source's lag-1 history an input (staff, AP/IB, STAAR, graduation and finance; today only publication-filtered `available_*` versions are inputs), then rerun the tabular baselines (persistence, LR, KNN, RF, GB, XGBoost; level/relative/zscore) for all 10 targets on graph v2, select on 2023 | S1, S1b | one `results/s1c/numbers_to_beat.csv` that every later step compares against | not started |
 | **S2** | One training harness for every neural model: data loading, masks, single/multi-task loss, early stopping on 2023, 5 seeds, equal tuning budget | S1, S1b, S1c | Phase 5 GCN+LSTM reproduces within tolerance on the harness | not started |
 | **S3** | Go/no-go diagnostic: GConvGRU and GraphWaveNet with the change-from-last-year target | S2 | we know whether the shortcut closes the gap to Phase 3 | not started |
 | **S4** | MTGNN baseline (graph learning layer, mix-hop propagation, dilated inception convolutions; 7 annual steps) | S2, D3 | tuned on 2023 with the shared budget; tests pass | not started |
@@ -57,7 +57,8 @@ make help        # list targets
 make check       # run every validator and test on the current files (no rebuild)
 make data        # audit raw files, rebuild the master table, validate it
 make features    # rebuild the publication-filtered (expanded) features
-make graph       # rebuild and validate the expanded graph
+make graph       # rebuild and validate graph v2, compare with v1
+make snapshot    # graph v2 -> PyG snapshot (GPU environment)
 make test        # unit tests
 make protocol    # check the locked protocol reproduces the stored baseline numbers
 ```
@@ -75,7 +76,7 @@ src/baselines/        Phase 3 tabular baselines
 src/models/           Phase 5 STGNN baselines (new: MTGNN in S4, proposed model in S5)
 src/eval/             metrics, comparisons, reports
 tests/                unit and regression tests
-data/                 raw/, processed/, graph/ (frozen original), graph_expanded/ (current), archives/ (zips, old Excel)
+data/                 raw/, processed/, graph_v2/ (current), graph_expanded/ (v1, Phase 5, frozen), graph/ (original, frozen), archives/
 results/              Phase 3 (level/relative/zscore, selection.csv), expanded/, phase5/, frozen/ (do not edit)
 ```
 

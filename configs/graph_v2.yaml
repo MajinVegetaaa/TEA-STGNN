@@ -1,0 +1,21 @@
+# Graph v2 (S1b, 2026-11-21; decision D4). Same nodes, same edges and the same k / distance settings as
+# configs/graph.yaml (kept frozen); only the edge WEIGHTS and the edge features change. Used when TEA_GRAPH=v2,
+# written to data/graph_v2/. The v1 graph (data/graph_expanded/) stays untouched as the Phase 5 graph.
+
+geographic:
+  # Self-tuning local scale (Zelnik-Manor & Perona, NeurIPS 2004): weight = exp(-d^2 / (s_i * s_j)), where s_i is
+  # school i's distance to its k-th nearest school that year (k = geographic.k in graph.yaml, i.e. 5).
+  # Replaces exp(-km / 20), which gave rural and town schools about half the weight of city schools.
+  weight: self_tuning
+  min_scale_km: 1.0   # floor for s_i: six campuses share an address with 5+ others (5th-neighbour distance 0 km)
+
+similarity:
+  # Academic and demographic: weight = exp(-d^2 / (2 sigma^2)) with ONE sigma per edge set, the median edge
+  # distance over the training-year graphs (configs/split.yaml), instead of re-fitting sigma every year.
+  sigma_from: training_years
+
+edge_features:
+  # Stored per relation in the PyG snapshot as edge_attr (for GATv2's edge_dim): the weight and the raw
+  # distance (km for geographic, profile distance for academic/demographic) standardised on training years.
+  # Relations without a distance (district, region) get distance_z = 0.
+  columns: [weight, distance_z]
