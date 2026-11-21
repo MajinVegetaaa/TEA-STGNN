@@ -45,7 +45,7 @@ def main() -> int:
     train = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())["train_years"]
     master = pd.read_csv(P / "master_school_year.csv", dtype=ID)
     meta = pd.read_csv(P / "school_metadata.csv", dtype=ID)
-    tf = pd.read_csv(P / ("expanded_temporal_features.csv" if EXPANDED else "temporal_features.csv"), dtype=ID)
+    tf = pd.read_csv(graph_version.features_file(), dtype=ID)
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID)
     E = {t: pd.read_csv(G / f"edges_{t}.csv", dtype=ID) for t in TYPES}
 

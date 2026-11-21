@@ -262,7 +262,7 @@ def build() -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     master = pd.read_csv(P / "master_school_year.csv", dtype=ID)
     meta = pd.read_csv(P / "school_metadata.csv", dtype=ID)
-    tf = pd.read_csv(P / ("expanded_temporal_features.csv" if EXPANDED else "temporal_features.csv"), dtype=ID)
+    tf = pd.read_csv(graph_version.features_file(), dtype=ID)
 
     # ---------------- nodes: one row per campus-year, annual values + temporal features + static metadata
     meta_cols = ["campus_id"] + [c for c in STATIC_META if c not in ("district_id", "esc_region")]
@@ -282,7 +282,8 @@ def build() -> dict:
     for c in nodes.columns:
         if c in ("campus_id", "year", "node_index"):
             kind, role = "key", "identifier"
-        elif EXPANDED and c in tf.columns and c not in original_temporal and not c.startswith("available_"):
+        elif EXPANDED and not V2 and c in tf.columns and c not in original_temporal and not c.startswith("available_"):
+            # expanded (v1) record: raw history of added sources was not publication-eligible; under D1 (v2) it is an input
             kind, role = "history", "audit history only; publication eligibility not established"
         elif c in tf.columns:
             kind, role = "annual (derived from years < t)", "input feature (temporal)"

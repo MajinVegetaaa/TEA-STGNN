@@ -1,0 +1,160 @@
+target mode: zscore -> /Users/poorabmishra/Desktop/MajorProject/results/s1c/all/zscore
+
+== act_composite: train 4786 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1074, test 1079
+  linear_regression (own lags)                  best {} val MAE 1.237
+  knn (own lags)                                best {'n_neighbors': 20} val MAE 1.307
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 1.252
+  random_forest (+context)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 1.188
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.232
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 1.194
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.230
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 1.207
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 1.181
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.218
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.223
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.219
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.236
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.235
+
+== sat_total: train 4866 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1242, test 1260
+  linear_regression (own lags)                  best {} val MAE 33.544
+  knn (own lags)                                best {'n_neighbors': 20} val MAE 35.694
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 34.600
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 33.060
+  gradient_boosting (+context)                  best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 33.091
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 33.020
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 33.200
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 32.781
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 33.041
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 33.000
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 33.563
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 33.280
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 33.580
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 33.223
+
+== sat_act_above_criterion: train 5887 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1520, test 1547
+  linear_regression (own lags)                  best {} val MAE 6.649
+  knn (own lags)                                best {'n_neighbors': 40} val MAE 6.789
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 6.731
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 6.105
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.274
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 6.200
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.174
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 6.190
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 6.261
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.193
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.178
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.194
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.204
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.189
+
+== sat_act_participation: train 6075 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1584, test 1604
+  linear_regression (own lags)                  best {} val MAE 13.282
+  knn (own lags)                                best {'n_neighbors': 40} val MAE 13.350
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 13.672
+  random_forest (+context)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 12.981
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 13.181
+  random_forest (+context +graph)               best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 13.039
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.682
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 13.105
+  xgboost (+context +graph)                     best {'learning_rate': 0.1, 'max_depth': 4, 'min_child_weight': 20, 'subsample': 0.8} val MAE 12.807
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.688
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 13.056
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 13.206
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 13.161
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.958
+
+== dropout_9_12: train 6388 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1642, test 1654
+  linear_regression (own lags)                  best {} val MAE 0.491
+  knn (own lags)                                best {'n_neighbors': 40} val MAE 0.490
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 0.504
+  random_forest (+context)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 0.502
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 0.515
+  random_forest (+context +graph)               best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 0.501
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 0.512
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 0.510
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 0.508
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 0.511
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 0.515
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 0.511
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 0.514
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 0.510
+
+== attendance_rate: train 6462 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1647, test 1657
+  linear_regression (own lags)                  best {} val MAE 1.891
+  knn (own lags)                                best {'n_neighbors': 40} val MAE 1.889
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 1.855
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 1.548
+  gradient_boosting (+context)                  best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.504
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 1.579
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.677
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 1.492
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 1.729
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.499
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.554
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.547
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.502
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.636
+
+== retention_rate: train 6484 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1650, test 1660
+  linear_regression (own lags)                  best {} val MAE 1.188
+  knn (own lags)                                best {'n_neighbors': 40} val MAE 1.258
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 1.288
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 1.286
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.348
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 1.266
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.318
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 1.282
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 1.284
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.343
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.362
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 1.311
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.324
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.303
+
+== graduation_4yr: train 5836 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1534, test 1550
+  linear_regression (own lags)                  best {} val MAE 2.225
+  knn (own lags)                                best {'n_neighbors': 20} val MAE 2.236
+  random_forest (own lags)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 2.273
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 2.004
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.978
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 2.046
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 2.015
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 2.000
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 2.010
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.975
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 2.000
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.995
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 2.003
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 1.972
+
+== risk_index: train 5878 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1519, test 1546
+  linear_regression (own lags)                  best {} val MAE 6.976
+  knn (own lags)                                best {'n_neighbors': 40} val MAE 7.149
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 7.050
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 6.314
+  gradient_boosting (+context)                  best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 6.424
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 6.334
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.1, 'max_leaf_nodes': 15, 'min_samples_leaf': 20} val MAE 6.439
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 6.384
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 6.425
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.330
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.356
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.434
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 6.369
+
+== tsi_both: train 6075 (years [np.int64(2019), np.int64(2020), np.int64(2021), np.int64(2022)]), val 1584, test 1604
+  linear_regression (own lags)                  best {} val MAE 12.864
+  knn (own lags)                                best {'n_neighbors': 20} val MAE 13.235
+  random_forest (own lags)                      best {'min_samples_leaf': 20, 'max_features': 0.5} val MAE 12.881
+  random_forest (+context)                      best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 12.783
+  gradient_boosting (+context)                  best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.962
+  random_forest (+context +graph)               best {'min_samples_leaf': 5, 'max_features': 0.5} val MAE 12.724
+  gradient_boosting (+context +graph)           best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.829
+  xgboost (+context)                            best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 12.812
+  xgboost (+context +graph)                     best {'learning_rate': 0.05, 'max_depth': 6, 'min_child_weight': 20, 'subsample': 0.8} val MAE 12.762
+  gradient_boosting (+context +district only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.946
+  gradient_boosting (+context +geographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.827
+  gradient_boosting (+context +academic only)   best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.903
+  gradient_boosting (+context +demographic only) best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.908
+  gradient_boosting (+context +region only)     best {'learning_rate': 0.05, 'max_leaf_nodes': 31, 'min_samples_leaf': 20} val MAE 12.871

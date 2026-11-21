@@ -2,12 +2,12 @@
 # Graphs: data/graph_v2/ is current (S1b). data/graph_expanded/ (v1, the Phase 5 graph) and data/graph/ (original) are
 # frozen and never rebuilt here; `check` still validates v1.
 PY ?= python3
-TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2
+TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features
 
-.PHONY: help check data features graph snapshot test protocol
+.PHONY: help check data features graph snapshot test protocol s1c
 
 help:            ## list targets
-	@grep -E '^[a-z]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/'
+	@grep -E '^[a-z0-9]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/'
 
 check:           ## validate the current files and run tests (no rebuild)
 	$(PY) src/data/validate_processed.py
@@ -21,8 +21,8 @@ data:            ## audit raw files, rebuild the master table, validate it (~12 
 	$(PY) src/data/build_master.py
 	$(PY) src/data/validate_processed.py
 
-features:        ## rebuild publication-filtered features (needs a passing `make data`)
-	$(PY) src/data/prepare_expanded_features.py
+features:        ## rebuild D1 history features for graph v2 (needs a passing `make data`)
+	$(PY) src/data/prepare_d1_features.py
 
 graph:           ## rebuild and validate graph v2 (data/graph_v2/) and compare it with v1
 	TEA_GRAPH=v2 $(PY) src/graphs/build_graph_data.py
@@ -37,3 +37,9 @@ test:            ## unit tests
 
 protocol:        ## check the locked protocol reproduces the stored baseline numbers
 	$(PY) src/eval/check_protocol.py
+
+s1c:             ## numbers to beat under D1 on graph v2 (~2.5 h on the laptop: 60 runs, 3 in parallel)
+	mkdir -p results/s1c/logs
+	for mode in level relative zscore; do (for set in existing all; do \
+	  $(PY) src/baselines/run_s1c.py --input-set $$set --mode $$mode > results/s1c/logs/$${set}_$${mode}.log 2>&1; done) & done; wait
+	$(PY) src/eval/numbers_to_beat.py

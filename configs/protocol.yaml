@@ -28,6 +28,9 @@ selection:
   score: "mean over targets of (model MAE / persistence MAE) on 2023, per seed; then mean and SD over seeds"
   tie_rule: "candidates within one seed SD of the best score count as tied; the simpler one (lower complexity rank) wins"
   test_year_used_once: true
+  # The numbers to beat (S1c): per target, the best 2023 candidate among every tabular model AND persistence itself;
+  # if nothing beats last year's value on 2023, the bar for that target is persistence. results/s1c/bar.json
+  bar: best 2023 candidate per target, persistence included
 
 significance:
   method: paired bootstrap of MAE differences on seed-averaged predictions, identical schools
