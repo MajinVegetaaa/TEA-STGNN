@@ -44,4 +44,5 @@ Graduation's own model histories use the availability-filtered lags. Its raw lag
 still determines the common evaluation mask and the retrospective persistence
 benchmark. Frozen original fields and academic similarity are unchanged, so their
 publication timing is a limitation of all six comparisons, not evidence that they
-were known at the assumed issuance cutoff. Finance remains excluded.
+were known at the assumed issuance cutoff. Finance is in the master table but is not a model input; its availability rules (lag 2, bounds from each
+archive's DTUPDATE) are in `finance_availability.yaml`, kept separate so this file's fingerprint in `results/expanded/validation.json` stays valid.

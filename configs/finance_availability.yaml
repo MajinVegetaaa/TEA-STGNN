@@ -1,0 +1,26 @@
+# Availability policy for the PEIMS finance fields. NOT used by any model yet.
+#
+# Kept separate from feature_availability.yaml on purpose: results/expanded/validation.json fingerprints that file as the
+# policy the stored experiment ran under, so editing it would silently change the provenance of those results. When a rerun
+# with finance is approved, merge this group into feature_availability.yaml (and add "finance" to
+# new_sources.FEATURE_GROUPS and a prefix to the baseline runners) as one deliberate, recorded change.
+#
+# Same cutoff rule as the other sources: for target school-year end T, only information published by August 1 of T-1.
+cutoff_month_day: '08-01'
+
+group: finance
+fields: [finance_instruction_per_student, finance_instruction_gf_per_student,
+         finance_core_operating_per_student, finance_core_operating_gf_per_student]
+
+# Derived, not assumed (tests/test_finance.py recomputes it from the bounds): finance year k is published in Feb/Mar of
+# k+1, so for target T it is released by the cutoff only if k <= T-2.
+minimum_lag: 2
+
+# Month-end of each archive's single DTUPDATE (identical for the district and charter archive of a year):
+# 19FEB2019, 18FEB2020, 22FEB2021, 17FEB2022, 13FEB2023, 12FEB2024, 04MAR2025.
+publication_bounds: {2018: '2019-02-28', 2019: '2020-02-29', 2020: '2021-02-28', 2021: '2022-02-28',
+                     2022: '2023-02-28', 2023: '2024-02-29', 2024: '2025-03-31'}
+
+# Limitation shared with every other source: TEA re-posted all of these archives in May 2026 (Last-Modified headers), so
+# the downloaded values are today's revisions, not the vintages available at each cutoff. Same caveat as staff/AP/graduation;
+# no archived-vintage backtest is claimed.

@@ -1,0 +1,8 @@
+relation,edges,same_edges,same_weights
+district,27987,True,True
+region,675500,True,True
+geographic,36167,True,False
+academic,430899,True,False
+demographic,69882,True,False
+temporal,9876,True,True
+transition,0,True,True

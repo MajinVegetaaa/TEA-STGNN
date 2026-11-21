@@ -1,4 +1,5 @@
-"""Quality checks for data/graph/ (written to data/graph/graph_quality_report.csv).
+"""Quality checks for one graph folder (written to <graph>/reports/graph_quality_report.csv).
+Which graph: TEA_GRAPH=v2 | expanded | (unset = original), see src/graphs/graph_version.py.
 
 Recomputes distances and similarities independently of build_graph_data.py and rebuilds the academic
 edges with year-t values scrambled to prove they never use same-year information.
@@ -8,17 +9,20 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-import os
-EXPANDED = os.environ.get("TEA_EXPANDED") == "1"
 
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_graph_data as B  # noqa: E402  (only used for parameters and the leakage rebuild)
+import graph_version  # noqa: E402
+import yaml  # noqa: E402
+
+EXPANDED = graph_version.expanded()
+V2 = graph_version.name() == "v2"
 
 ROOT = Path(__file__).resolve().parents[2]
-G = ROOT / "data" / ("graph_expanded" if EXPANDED else "graph")
+G = graph_version.folder()
 P = ROOT / "data" / "processed"
 ID = B.ID | {"src_campus_id": str, "dst_campus_id": str}
 TYPES = ["district", "geographic", "academic", "demographic", "transition", "region", "temporal"]
@@ -38,9 +42,10 @@ def unit_vec(lat, lon):
 
 
 def main() -> int:
+    train = yaml.safe_load((ROOT / "configs" / "split.yaml").read_text())["train_years"]
     master = pd.read_csv(P / "master_school_year.csv", dtype=ID)
     meta = pd.read_csv(P / "school_metadata.csv", dtype=ID)
-    tf = pd.read_csv(P / ("expanded_temporal_features.csv" if EXPANDED else "temporal_features.csv"), dtype=ID)
+    tf = pd.read_csv(graph_version.features_file(), dtype=ID)
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID)
     E = {t: pd.read_csv(G / f"edges_{t}.csv", dtype=ID) for t in TYPES}
 
@@ -133,8 +138,21 @@ def main() -> int:
     d_ind = B.EARTH_KM * np.arccos(cosang)
     err = np.abs(d_ind - e.distance.values).max()
     rec("geographic distance matches independent great-circle (max abs km error)", round(float(err), 4), err < 0.01, "geographic")
-    w_err = np.abs(np.exp(-e.distance.values / B.GEO_TAU_KM) - e.weight.values).max()
-    rec("geographic weight == exp(-km/tau)", round(float(w_err), 8), w_err < 1e-5, "geographic")
+    if not V2:
+        w_err = np.abs(np.exp(-e.distance.values / B.GEO_TAU_KM) - e.weight.values).max()
+        rec("geographic weight == exp(-km/tau)", round(float(w_err), 8), w_err < 1e-5, "geographic")
+    else:   # v2: recompute each school's local scale independently (own great-circle code, yaml read directly)
+        floor = float(yaml.safe_load((ROOT / "configs" / "graph_v2.yaml").read_text())["geographic"]["min_scale_km"])
+        w_err = 0.0
+        for y, ny in nodes[(nodes.is_virtual_or_hybrid == 0) & nodes.latitude.notna()].groupby("year"):
+            u = unit_vec(ny.latitude.values, ny.longitude.values)
+            D = B.EARTH_KM * np.arccos(np.clip(u @ u.T, -1, 1)); np.fill_diagonal(D, np.inf)
+            scale = pd.Series(np.maximum(np.sort(D, axis=1)[:, B.GEO_K - 1], floor), index=ny.campus_id.to_numpy())
+            ey = e[e.year == y]
+            want = np.exp(-ey.distance.values ** 2 / (scale[ey.src_campus_id].values * scale[ey.dst_campus_id].values))
+            w_err = max(w_err, float(np.abs(want - ey.weight.values).max()))
+        rec("v2 geographic weight == exp(-km^2/(s_i*s_j)), s_i = floored km to k-th neighbour that year",
+            round(w_err, 8), w_err < 1e-4, "geographic")
     rec(f"geographic distance <= {B.GEO_MAX_KM:g} km", round(float(e.distance.max()), 2), e.distance.max() <= B.GEO_MAX_KM, "geographic")
     virt = set(meta.campus_id[meta.is_virtual_or_hybrid == 1])
     rec("virtual/hybrid campuses in geographic edges", int(e.src_campus_id.isin(virt).sum() + e.dst_campus_id.isin(virt).sum()),
@@ -183,9 +201,14 @@ def main() -> int:
         bad += (sh.sum() < B.ACAD_MIN_SHARED) or not np.isclose(d, r.distance, rtol=1e-6, atol=1e-8)  # CSV keeps 9 significant digits
     rec("academic distance matches loop recomputation over the set's own features (600 sampled edges)",
         f"{600 - bad}/600", bad == 0, "academic")
-    w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance) ** 2)), g.weight, atol=1e-5)
-               for _, g in e.groupby(["edge_set", "year"]))
-    rec("academic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per set and year", w_ok, w_ok, "academic")
+    if not V2:
+        w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance) ** 2)), g.weight, atol=1e-5)
+                   for _, g in e.groupby(["edge_set", "year"]))
+        rec("academic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per set and year", w_ok, w_ok, "academic")
+    else:
+        w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance[g.year.isin(train)]) ** 2)), g.weight,
+                               atol=1e-5) for _, g in e.groupby("edge_set"))
+        rec("v2 academic weight == exp(-d^2 / 2 sigma^2), one sigma per set = median training-year distance", w_ok, w_ok, "academic")
     # leakage: scramble every indicator in year t, rebuild year-t academic edges, they must be identical
     leak_ok = True
     for y in B.YEARS[1:]:
@@ -217,9 +240,14 @@ def main() -> int:
         d = np.sqrt(np.mean((x[sh] - yv[sh]) ** 2))
         bad += (sh.sum() < B.DEMO_MIN_SHARED) or not np.isclose(d, r.distance, rtol=1e-6, atol=1e-8)
     rec("demographic distance matches loop recomputation (400 sampled edges)", f"{400 - bad}/400", bad == 0, "demographic")
-    w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance) ** 2)), g.weight, atol=1e-5)
-               for _, g in e.groupby("year"))
-    rec("demographic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per year", w_ok, w_ok, "demographic")
+    if not V2:
+        w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance) ** 2)), g.weight, atol=1e-5)
+                   for _, g in e.groupby("year"))
+        rec("demographic weight == exp(-d^2 / 2 sigma^2), sigma = median distance per year", w_ok, w_ok, "demographic")
+    else:
+        sig = np.median(e.distance[e.year.isin(train)])
+        w_ok = bool(np.allclose(np.exp(-(e.distance ** 2) / (2 * sig ** 2)), e.weight, atol=1e-5))
+        rec("v2 demographic weight == exp(-d^2 / 2 sigma^2), one sigma = median training-year distance", w_ok, w_ok, "demographic")
     leak_ok = True
     for y in B.YEARS[1:]:
         scr = master.copy()

@@ -1,0 +1,321 @@
+[
+  {
+    "targets": [
+      "act_composite"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_act"
+    ],
+    "epochs": 27,
+    "val_ratio": 1.0492339302850158,
+    "val_mae": {
+      "act_composite": 1.357263207435608
+    }
+  },
+  {
+    "targets": [
+      "act_composite"
+    ],
+    "graph": "academic_act",
+    "relations": [
+      "academic_act"
+    ],
+    "epochs": 30,
+    "val_ratio": 1.0018500092661735,
+    "val_mae": {
+      "act_composite": 1.2959685325622559
+    }
+  },
+  {
+    "targets": [
+      "sat_total"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_sat"
+    ],
+    "epochs": 25,
+    "val_ratio": 1.1190990142639647,
+    "val_mae": {
+      "sat_total": 38.19894027709961
+    }
+  },
+  {
+    "targets": [
+      "sat_total"
+    ],
+    "graph": "academic_sat",
+    "relations": [
+      "academic_sat"
+    ],
+    "epochs": 26,
+    "val_ratio": 1.0961427628034317,
+    "val_mae": {
+      "sat_total": 37.41535949707031
+    }
+  },
+  {
+    "targets": [
+      "sat_act_above_criterion"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_criterion"
+    ],
+    "epochs": 26,
+    "val_ratio": 1.008263249861217,
+    "val_mae": {
+      "sat_act_above_criterion": 7.226395606994629
+    }
+  },
+  {
+    "targets": [
+      "sat_act_above_criterion"
+    ],
+    "graph": "district",
+    "relations": [
+      "district"
+    ],
+    "epochs": 26,
+    "val_ratio": 0.9676025943791645,
+    "val_mae": {
+      "sat_act_above_criterion": 6.93497371673584
+    }
+  },
+  {
+    "targets": [
+      "dropout_9_12"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_dropout"
+    ],
+    "epochs": 16,
+    "val_ratio": 1.2227491307282456,
+    "val_mae": {
+      "dropout_9_12": 0.6107788681983948
+    }
+  },
+  {
+    "targets": [
+      "dropout_9_12"
+    ],
+    "graph": "region",
+    "relations": [
+      "region"
+    ],
+    "epochs": 16,
+    "val_ratio": 1.2006766474936352,
+    "val_mae": {
+      "dropout_9_12": 0.5997533798217773
+    }
+  },
+  {
+    "targets": [
+      "attendance_rate"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_attendance"
+    ],
+    "epochs": 1,
+    "val_ratio": 1.0563385888664518,
+    "val_mae": {
+      "attendance_rate": 1.4266021251678467
+    }
+  },
+  {
+    "targets": [
+      "attendance_rate"
+    ],
+    "graph": "district",
+    "relations": [
+      "district"
+    ],
+    "epochs": 1,
+    "val_ratio": 1.0640355076185797,
+    "val_mae": {
+      "attendance_rate": 1.4369969367980957
+    }
+  },
+  {
+    "targets": [
+      "retention_rate"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_retention"
+    ],
+    "epochs": 16,
+    "val_ratio": 1.393853307134378,
+    "val_mae": {
+      "retention_rate": 1.7174806594848633
+    }
+  },
+  {
+    "targets": [
+      "retention_rate"
+    ],
+    "graph": "district",
+    "relations": [
+      "district"
+    ],
+    "epochs": 28,
+    "val_ratio": 1.3722696441373066,
+    "val_mae": {
+      "retention_rate": 1.6908856630325317
+    }
+  },
+  {
+    "targets": [
+      "risk_index"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region"
+    ],
+    "epochs": 17,
+    "val_ratio": 1.0014735654588771,
+    "val_mae": {
+      "risk_index": 7.604973793029785
+    }
+  },
+  {
+    "targets": [
+      "risk_index"
+    ],
+    "graph": "region",
+    "relations": [
+      "region"
+    ],
+    "epochs": 17,
+    "val_ratio": 0.9595412186091845,
+    "val_mae": {
+      "risk_index": 7.286548614501953
+    }
+  },
+  {
+    "targets": [
+      "tsi_both"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_criterion"
+    ],
+    "epochs": 23,
+    "val_ratio": 1.351825377349216,
+    "val_mae": {
+      "tsi_both": 17.178850173950195
+    }
+  },
+  {
+    "targets": [
+      "tsi_both"
+    ],
+    "graph": "district",
+    "relations": [
+      "district"
+    ],
+    "epochs": 28,
+    "val_ratio": 1.157004365416178,
+    "val_mae": {
+      "tsi_both": 14.703085899353027
+    }
+  },
+  {
+    "targets": [
+      "sat_act_participation"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_participation"
+    ],
+    "epochs": 21,
+    "val_ratio": 1.1686001733468736,
+    "val_mae": {
+      "sat_act_participation": 14.082295417785645
+    }
+  },
+  {
+    "targets": [
+      "sat_act_participation"
+    ],
+    "graph": "district",
+    "relations": [
+      "district"
+    ],
+    "epochs": 26,
+    "val_ratio": 1.0527745629607494,
+    "val_mae": {
+      "sat_act_participation": 12.686531066894531
+    }
+  },
+  {
+    "targets": [
+      "graduation_4yr"
+    ],
+    "graph": "combined",
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_retention"
+    ],
+    "epochs": 19,
+    "val_ratio": 1.3570256676382348,
+    "val_mae": {
+      "graduation_4yr": 2.9838640689849854
+    }
+  },
+  {
+    "targets": [
+      "graduation_4yr"
+    ],
+    "graph": "academic_retention",
+    "relations": [
+      "academic_retention"
+    ],
+    "epochs": 30,
+    "val_ratio": 1.1998357937346376,
+    "val_mae": {
+      "graduation_4yr": 2.638230800628662
+    }
+  }
+]

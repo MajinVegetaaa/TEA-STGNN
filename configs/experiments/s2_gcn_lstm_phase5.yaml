@@ -1,0 +1,14 @@
+# S2 done-when: the harness reproduces the Phase 5 GCN + LSTM benchmark (results/phase5/gcn_lstm/benchmark/).
+# Same graph (v1), same label (level), one model per target, combined graph + best single relation, 30 epochs.
+name: GCN + LSTM
+model: gcn_lstm
+graph: v1
+label: level            # Phase 5 predicted the raw level; the protocol's choice for new models is `change` (D6)
+tasks: single
+graphs: combined+single
+hidden: 32
+lr: 0.003
+max_epochs: 30
+threads: 2
+device: cpu
+out: s2/gcn_lstm_phase5

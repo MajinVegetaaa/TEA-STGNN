@@ -72,17 +72,7 @@ not_yet_used:
   attendance_dropout: {2017: 02_attendance_dropout/2017/CAMPGRAD.dat}
   demographics: {2017: 03_demographics_tapr/2017.dat}
   retention: {2017: 04_retention/campus-download-1617.xlsx}
-  # Finance, rejected downloads and supplemental data remain staged.
-  finance_peims:
-    # Keys are archive filename years, NOT FUNDYEAR. Each file contains multiple FUNDYEAR values.
-    # Fiscal/school-year and release-date mapping still need verification.
-    2018: 10_finance_peims/actget2018.zip
-    2019: 10_finance_peims/actget2019.zip
-    2020: 10_finance_peims/actget2020.zip
-    2021: 10_finance_peims/actget2021.zip
-    2022: 10_finance_peims/actget2022.zip
-    2023: 10_finance_peims/actget2023.zip
-    2024: 10_finance_peims/actget2024.zip
+  # Rejected downloads and supplemental data remain staged. Finance is integrated (see finance_peims below).
   rejected_downloads:
     # Identical to staar_eoc_2019.xls; all rate columns end in 19R. Preserve for traceability only.
     staar_mislabeled_2018: 13_staar_eoc/reference_only/mislabeled/staar_eoc_2018.xls
@@ -137,3 +127,19 @@ staar_eoc:
   2022: {definition_file: source_definitions/staar_2022.html, file: 13_staar_eoc/2022/staar_eoc_2022.csv, header_rows: 1}
   2023: {definition_file: source_definitions/staar_2023.html, file: 13_staar_eoc/2023/staar_eoc_2023.csv, header_rows: 1}
   2024: {definition_file: 13_staar_eoc/2024/staar_eoc_2024.csv, file: 13_staar_eoc/2024/staar_eoc_2024.csv, header_rows: 2}
+
+# PEIMS actual financial data (campus-coded expenditure rows). Verified 2026-11-21:
+#  - TEA's download page labels actgetY / charactY "District/Charter (Y-1)-Y Financial Actual Data", so file year Y is
+#    school year Y-1..Y = the project's `year` Y. Every row of a file is that fiscal year's spending; FUNDYEAR (district)
+#    and FISCALYR (charter) are the grant/fund year and must NOT be filtered (doing so drops ~4% of campus spending).
+#  - Campus id = DISTRICT + FIN_UNIT (campus-coded rows only; FIN_UNIT 000 is district-wide). A campus appears in the
+#    district file or the charter file, never both. Charter columns: CS_NONPROF_ASSET=FUND, CS_NONPROF_FUNC=FUNCTION,
+#    CS_NONPROF_OBJ=OBJECT (see src/data/new_sources.py). Each archive has one DTUPDATE (the publication date).
+finance_peims:
+  2018: {file: 10_finance_peims/actget2018.zip, charter_file: 10_finance_peims/CharAct18.zip}
+  2019: {file: 10_finance_peims/actget2019.zip, charter_file: 10_finance_peims/charact19.zip}
+  2020: {file: 10_finance_peims/actget2020.zip, charter_file: 10_finance_peims/charact20.zip}
+  2021: {file: 10_finance_peims/actget2021.zip, charter_file: 10_finance_peims/charact21.zip}
+  2022: {file: 10_finance_peims/actget2022.zip, charter_file: 10_finance_peims/charact22.zip}
+  2023: {file: 10_finance_peims/actget2023.zip, charter_file: 10_finance_peims/charact23.zip}
+  2024: {file: 10_finance_peims/actget2024.zip, charter_file: 10_finance_peims/charact24.zip}

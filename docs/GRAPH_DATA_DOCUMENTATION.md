@@ -252,3 +252,27 @@ and their validation-locked selections are reported in `results/expanded/README.
 The completed experiment audit also verifies all model/seed evaluation rows,
 selection locks and truths. All 56 original graph/results artifacts and seven
 edge files retain their frozen checksums; see `results/expanded/validation.json`.
+
+## Graph v2 (S1b, 2026-11-21) — the current graph
+
+`TEA_GRAPH=v2 python3 src/graphs/build_graph_data.py` (or `make graph`) writes `data/graph_v2/`. Settings:
+`configs/graph_v2.yaml` (on top of the frozen `configs/graph.yaml`). Nodes, edges, k values and the 100 km limit are
+**identical** to v1 (`data/graph_expanded/`, the Phase 5 graph, kept frozen); only weights and edge features change.
+
+| Relation | v1 weight | v2 weight |
+|---|---|---|
+| Geographic | exp(−km/20) | exp(−km²/(sᵢ·sⱼ)), sᵢ = km from school i to its 5th-nearest school that year, floored at 1 km (self-tuning scale, Zelnik-Manor & Perona 2004) |
+| Academic (7 sets) | Gaussian, σ = that year's median edge distance | Gaussian, **one σ per set** = median edge distance over the training years (`graph_v2_parameters.json`) |
+| Demographic | same as academic | same, one σ |
+| District, region, temporal | 1 | 1 |
+
+Why: with a fixed 20 km scale, rural and town schools got about half the geographic weight of city schools (mean
+edge weight 0.34 vs 0.74); in v2 every locale gets 0.47–0.50. With σ re-fit every year, a weight meant "similar relative
+to that year" (median 0.61 every year by construction); with one σ it means the same in every year, which shows that
+2024 schools are closer to their academic neighbours (median 0.67) than in the training years.
+
+Edge features (PyG snapshot, `make snapshot`): `edge_attr = [weight, distance_z]` for every relation, where distance_z is
+the raw distance (km, or profile distance) standardised on training years; 0 for relations without a distance.
+For GATv2's `edge_dim`. `validate_graph.py` recomputes the v2 weights with its own code (86/86);
+`src/graphs/compare_v1_v2.py` writes the v1 vs v2 comparison to `results/s1b/`.
+

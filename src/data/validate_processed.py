@@ -31,7 +31,7 @@ def check(name: str, ok: bool, detail: str = "") -> None:
 
 
 def main() -> int:
-    for f in REQUIRED + ["../../DATA_PIPELINE.md"]:
+    for f in REQUIRED + ["../../docs/DATA_PIPELINE.md"]:
         p = (P / f).resolve()
         check(f"exists and non-empty: {p.relative_to(ROOT)}", p.exists() and p.stat().st_size > 0)
     m = pd.read_csv(P / "master_school_year.csv", dtype=ID)

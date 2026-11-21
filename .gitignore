@@ -20,7 +20,9 @@ __pycache__/
 .venv/
 wandb/
 # Teammates' midterm report (contains names and roll numbers): keep out of git
-Docs/minor_report_updated.docx
+# Reference material (PPT, papers, brief) stays local; only Markdown in docs/ is tracked
+/docs/references/
+docs/references/minor_report_updated.docx
 
 .venv-expanded/
 

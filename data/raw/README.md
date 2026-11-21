@@ -16,7 +16,7 @@ Nothing here is in git. **Which file is used for which year is listed in `config
 | `unused/previous_audit/` | earlier audit notes, scripts and PDFs that came in Dataset.zip | — | reference only |
 
 **Year rule.** A folder or file year `Y` means school year (Y−1)–Y. For example, 2023 = 2022-23, and that is
-what `year` means in every processed table. Two naming traps, both verified in `DATA_PIPELINE.md`:
+what `year` means in every processed table. Two naming traps, both verified in `docs/DATA_PIPELINE.md`:
 - the 2023 SAT/ACT and attendance files are named "2024 …"
 - retention files are named by school year (`ret-2223` = 2022-23 = year 2023)
 
@@ -30,7 +30,7 @@ Listed under `not_yet_used` in `configs/data_sources.yaml`. These downloads are 
 |---|---|---|
 | `08_ap/` | Seven original TEA AP campus workbooks | School years 2017–18 through 2023–24. AP only; IB absent. Select the data sheet and `All Students` group before joining; preserve suppressed values as missing. |
 | `09_staff_tapr/` | `CSTAF.csv`, 2024 staff CSV, supplied dictionary PDF | 2024 confirmed in descriptive header; CSTAF presumed 2023 from download conversation, not internally dated. 2018–2022 missing. CSTAF has one header row and apostrophe-prefixed IDs; 2024 has two header rows. |
-| `10_finance_peims/` | Seven original actuals ZIPs | file years 2018–2024. Detailed account rows; aggregate before joining. FIN_UNIT needs documented campus mapping; central units must not become school IDs. Charter-specific files were not supplied. Verify fiscal/school-year and release timing before using lagged features. |
+| `10_finance_peims/` | Seven district actuals ZIPs (`actget`) + seven charter ZIPs (`CharAct18`, `charact19`–`24`, added 2026-11-21, TEA names kept) | file years 2018–2024. Integrated 2026-11-21; see "Finance integration" below. Do NOT filter by FUNDYEAR/FISCALYR (grant year); central FIN_UNITs never become campuses. |
 
 Original filenames and file bytes preserved. Audit: `src/data/audit_new_downloads.py`;
 results: `results/source_audit/downloads_2026-11-16.json`.
@@ -50,7 +50,7 @@ All seven staff files now exist as `staff_2018.xls` through `staff_2024.csv`.
 2021–2023 are coded CSVs; 2024 has descriptive and code header rows.
 Years 2018–2023 are indicated by user filenames; coded columns alone do not establish report year.
 `11_ib/` contains seven original IB campus workbooks, 2017–18 through 2023–24.
-All 28 AP/staff/finance/IB data files are registered under `not_yet_used`.
+All 28 AP/staff/finance/IB data files were first registered under `not_yet_used`; AP, staff and IB were then integrated (2026-11-18) and finance on 2026-11-21 (see below).
 The audit script now includes IB and all staff formats; rerunning replaces the audit JSON.
 
 ### Graduation and STAAR batch — 2026-11-16
@@ -82,6 +82,19 @@ statements that 2018 EOC was missing are superseded. 2020 remains unavailable.
 
 ## Integration status — 2026-11-18
 
-Staff, AP, IB, four-year graduation and STAAR now have active registrations in configs/data_sources.yaml and loaders in src/data/new_sources.py, called by the existing master builder. Finance remains staged. Source years, populations and unique keys pass the extended raw audit.
+Staff, AP, IB, four-year graduation and STAAR now have active registrations in configs/data_sources.yaml and loaders in src/data/new_sources.py, called by the existing master builder. Finance was integrated on 2026-11-21 (see the finance integration section below). Source years, populations and unique keys pass the extended raw audit.
 
 The prior CAMPSTAAR5 verification established the year but missed the required All Students population. It is preserved and excluded. The correct primary-group CAMPSTAAR2 was retrieved from TEA and contains published rates. See source_definitions/README.md for dictionaries, download parameters and checksum. No original download was modified.
+
+### Finance integration — 2026-11-21
+
+- **Year:** `actgetY` / `charactY` = school year (Y−1)–Y = the project's `year` Y (TEA's page: "District/Charter (Y−1)–Y Financial Actual Data").
+  One `DTUPDATE` per archive (Feb/Mar of Y+1). Use **every row**; `FUNDYEAR` (district) and `FISCALYR` (charter) are the grant/fund year.
+- **Campus id** = `DISTRICT` + `FIN_UNIT`, campus-coded rows only (`FIN_UNIT` 000 = district-wide). A campus is in exactly one of the district and
+  charter archives (verified, every year). Charter columns: `CS_NONPROF_ASSET`=FUND, `CS_NONPROF_FUNC`=FUNCTION, `CS_NONPROF_OBJ`=OBJECT.
+- **Measures** (TEA's own definitions; objects 6100–6499): instruction (functions 11, 95) and core operating (11/95, 12, 13, 21, 23, 31–34), each for
+  all funds and for the general fund (fund 199; charters 199 + 420), in USD and per student (master `enrollment`).
+- **Oracle:** `source_definitions/finance_campus_reports/` holds TEA's own campus financial reports (PDF 2020–24, HTML 2018–19) for 10 sampled campuses
+  and `oracle.csv`, transcribed by `src/data/transcribe_finance_reports.py` (needs `pypdf`, not in requirements.txt). `validate_additions.py` checks
+  every printed function line against them.
+- Raw audit 200 checks; processed validation 127; coverage 98.1–99.6% of model campuses per year; not a model input yet (`configs/finance_availability.yaml`).

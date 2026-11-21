@@ -52,3 +52,12 @@ published rate is never reconstructed. See TEA's
 The [STAAR redesign](https://tea.texas.gov/assessment-and-accountability/assessment-initiatives/staar-redesign)
 took effect in spring 2023. Consistent field names do not remove this assessment
 change; 2023/2024 comparisons need that qualification. There is no 2020 source.
+
+## finance_campus_reports/ (added 2026-11-21)
+
+TEA's own "PEIMS Actual Financial Data by Campus" reports, fetched 2026-11-21 for 10 sampled model campuses (6 district, 4 charter) and kept unmodified:
+`<year>/<campus>.pdf` for 2020–2024 (`.../sas/broker?_program=sfadhoc.new_Campus_actual<YY>.sas&which_camp=<campus>` on rptsvr1.tea.texas.gov) and
+`<year>/<campus>.html` for 2018–2019 (`sfadhoc.Campus_actual<YY>.sas`, older layout). Two 2023/2024 files (068803001) say "not a valid district in <year>" and
+are skipped. `oracle.csv` is their transcription (`src/data/transcribe_finance_reports.py`): 68 reports, general-fund and all-funds columns.
+It is the independent check for the finance integration; the district-level TEA rule that defines the measures is printed on each report ("Objects 6100-6400").
+

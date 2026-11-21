@@ -121,7 +121,7 @@ and tuning grids; `selected_test_predictions.csv` contains only locked test runs
 Large predictions, raw/processed data, graph tensors and the frozen snapshot are
 local and gitignored: preserve them separately when sharing the project.
 
-Run the commands in [DATA_PIPELINE.md](../../DATA_PIPELINE.md). The experiment
+Run the commands in [DATA_PIPELINE.md](../../docs/DATA_PIPELINE.md). The experiment
 reuses existing model families/grids, caches identical feature tables/predictions,
 and reuses deterministic HGB seed outputs only where early stopping and binning
 subsampling cannot apply, after checking seed equivalence. No stochastic forest

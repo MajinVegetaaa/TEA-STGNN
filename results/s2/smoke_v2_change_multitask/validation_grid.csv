@@ -1,0 +1,11 @@
+graph,relations,epochs,val_ratio,target,val_mae
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,act_composite,1.3066942691802979
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,sat_total,32.907737731933594
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,sat_act_above_criterion,6.966433048248291
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,dropout_9_12,0.5167050361633301
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,attendance_rate,1.824826955795288
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,retention_rate,1.263447880744934
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,risk_index,7.615617752075195
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,tsi_both,12.75957202911377
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,sat_act_participation,12.115161895751953
+combined,"['district', 'geographic', 'demographic', 'region']",1,1.044941046855346,graduation_4yr,2.374490976333618

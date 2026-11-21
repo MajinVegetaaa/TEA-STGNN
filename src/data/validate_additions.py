@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import json
 import re
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -43,6 +45,9 @@ def gate_files() -> list[Path]:
     paths += [RAW / e["file"] for source in (*SOURCES, "sat_act", "attendance_dropout", "demographics", "retention", "tsi")
               for e in src.get(source, {}).values()]
     paths += [RAW / src[name] for name in ("directory", "locations")]
+    for entry in src.get("finance_peims", {}).values():
+        paths += [RAW / entry["file"], RAW / entry["charter_file"]]
+    paths.append(RAW / "source_definitions/finance_campus_reports/oracle.csv")
     paths += list((RAW / "source_definitions").glob("*.html"))
     return sorted(set(paths))
 
@@ -199,10 +204,131 @@ def validate(master: pd.DataFrame, check) -> None:
     staar = [c for c in master if c.startswith("staar_") and c.endswith("_meets")]
     check("all five STAAR subjects missing in 2020", len(staar) == 5 and master.loc[master.year == 2020, staar].isna().all().all())
     check("graduation numerator does not exceed cohort", not (master.graduation_count > master.graduation_cohort).any())
-    check("finance excluded from master", not any("finance" in c for c in master))
+    validate_finance(master, src, check)
     coverage = pd.read_csv(P / "reports/addition_coverage.csv")
     check("coverage report matches observed master cells",
           all(r.observed == int(master.loc[master.year == r.year, r.field].notna().sum()) for r in coverage.itertuples()))
+
+
+# ---- PEIMS finance. Written without the loader: plain csv streaming and its own copy of the field maps. ----
+FIN_COLUMNS = {"district": ("DISTRICT", "FIN_UNIT", "FUND", "FUNCTION", "OBJECT", "ACTAMT"),
+               "charter": ("DISTRICT", "FIN_UNIT", "CS_NONPROF_ASSET", "CS_NONPROF_FUNC", "CS_NONPROF_OBJ", "ACTAMT")}
+FIN_GENERAL = {"district": {"199"}, "charter": {"199", "420"}}
+FIN_MEASURES = {"finance_instruction": {"11", "95"},
+                "finance_core_operating": {"11", "95", "12", "13", "21", "23", "31", "32", "33", "34"}}
+ORACLE_FUNCTIONS = {"fn_11_95": {"11", "95"}, "fn_12": {"12"}, "fn_13": {"13"}, "fn_21": {"21"}, "fn_23": {"23"},
+                    "fn_31": {"31"}, "fn_32": {"32"}, "fn_33": {"33"}, "fn_34": {"34"}, "fn_35": {"35"},
+                    "fn_36": {"36"}, "fn_51": {"51"}, "fn_52": {"52"}, "fn_53": {"53"}}
+
+
+def stream_finance(path: Path, kind: str, wanted: set[str]):
+    """{(campus, function, general_fund): amount} and the set of campuses with any campus-coded operating row."""
+    district, unit, fund, function, obj, amount = FIN_COLUMNS[kind]
+    general = FIN_GENERAL[kind]
+    sums, present = {}, set()
+    with zipfile.ZipFile(path) as archive, archive.open(archive.namelist()[0]) as raw:
+        reader = csv.reader(io.TextIOWrapper(raw, encoding="utf-8", newline=""))
+        head = next(reader)
+        i = [head.index(n) for n in (district, unit, fund, function, obj, amount)]
+        for row in reader:
+            u = row[i[1]]
+            if u == "000" or not 6100 <= int(row[i[4]]) <= 6499:
+                continue
+            campus = row[i[0]] + u
+            if campus not in wanted:
+                continue
+            present.add(campus)
+            key = (campus, row[i[3]].strip(), row[i[2]].strip() in general)
+            sums[key] = sums.get(key, 0.0) + float(row[i[5]])
+    return sums, present
+
+
+def validate_finance(master: pd.DataFrame, src: dict, check) -> None:
+    fields = [f"{b}{s}_{k}" for b in FIN_MEASURES for s in ("", "_gf") for k in ("expenditure", "per_student")]
+    check("finance columns present (8 values, 8 statuses, source type, source file)",
+          all(f in master and f + "_status" in master for f in fields) and "source_finance_type" in master and "source_finance" in master)
+    wanted = set(master.campus_id.unique())
+    check("no model campus uses a unit code of 700 or above (a central-unit code could be mistaken for a campus)",
+          not any(int(c[6:]) >= 700 for c in wanted), f"{sum(int(c[6:]) >= 700 for c in wanted)} such campuses")
+    oracle = pd.read_csv(RAW / "source_definitions/finance_campus_reports/oracle.csv", dtype={"campus_id": str})
+    enrollment = master.set_index(["campus_id", "year"]).enrollment
+    oracle_cells = oracle_bad = missing_enrollment = 0
+    for year, entry in src["finance_peims"].items():
+        sums, present, kinds = {}, set(), {}
+        for kind, key in (("district", "file"), ("charter", "charter_file")):
+            s, p = stream_finance(RAW / entry[key], kind, wanted)
+            sums.update(s); present |= p; kinds[kind] = p
+        my = master[master.year == year].set_index("campus_id")
+        errors = []
+        if kinds["district"] & kinds["charter"]:
+            errors.append("campus in both archives")
+        for campus, row in my.iterrows():
+            here = campus in present
+            expected_type = "charter" if campus in kinds["charter"] else ("district" if here else None)
+            if here and row.source_finance_type != expected_type:
+                errors.append(f"{campus} type")
+            if not here and (pd.notna(row.source_finance_type) or pd.notna(row.source_finance)):
+                errors.append(f"{campus} absent but sourced")
+            for base, functions in FIN_MEASURES.items():
+                for suffix in ("", "_gf"):
+                    total = sum(sums.get((campus, f, g), 0.0) for f in functions for g in ((True,) if suffix else (True, False)))
+                    name = f"{base}{suffix}_expenditure"
+                    want_status = "source_absent" if not here else ("observed" if total > 0 else "nonpositive_total")
+                    got, status = row[name], row[name + "_status"]
+                    if status != want_status or (want_status == "observed" and not np.isclose(got, total, rtol=0, atol=0.01)) or \
+                            (want_status != "observed" and pd.notna(got)):
+                        errors.append(f"{campus} {name}")
+                    members = enrollment.get((campus, year), np.nan)
+                    per, per_status = row[name.replace("_expenditure", "_per_student")], row[name.replace("_expenditure", "_per_student_status")]
+                    if want_status != "observed":
+                        want_per = want_status
+                    elif pd.isna(members):
+                        want_per = "missing_enrollment"
+                    elif members <= 0:
+                        want_per = "zero_denominator"
+                    else:
+                        want_per = "observed"
+                    ok = per_status == want_per and ((want_per == "observed" and np.isclose(per, total / members, rtol=1e-12)) or
+                                                     (want_per != "observed" and pd.isna(per)))
+                    if not ok:
+                        errors.append(f"{campus} {name} per student")
+        check(f"finance/{year}: every model campus-year recomputed from the raw archives (dollars, statuses, per student)",
+              not errors, f"{len(my)} campuses, {len(present)} present, {len(errors)} mismatches {errors[:2]}")
+        # TEA's own campus reports: each printed function line and the enrollment denominator.
+        for r in oracle[oracle.year == year].itertuples():
+            gf = r.funds == "general_fund"
+            for column, functions in ORACLE_FUNCTIONS.items():
+                value = getattr(r, column)
+                if pd.isna(value):
+                    continue
+                if gf and column == "fn_35":
+                    # Food service is in neither measure. TEA's general-fund column for it also counts fund 101 for two
+                    # small districts (e.g. 077901001 FY2018: 225,535 + 5,375 = 230,910); every measured function ties.
+                    continue
+                mine = sum(sums.get((r.campus_id, f, g), 0.0) for f in functions for g in ((True,) if gf else (True, False)))
+                oracle_cells += 1
+                oracle_bad += abs(mine - value) > 1
+            if r.funds == "all_funds":
+                known = enrollment.get((r.campus_id, year), np.nan)
+                if pd.isna(known):
+                    missing_enrollment += 1       # TAPR file lacks the campus-year; finance stays missing_enrollment
+                else:
+                    oracle_cells += 1
+                    oracle_bad += known != r.membership
+    check("finance matches TEA's own campus financial reports line by line (functions, general fund and all funds, enrollment)",
+          oracle_cells > 800 and oracle_bad == 0, f"{oracle_cells} report cells for {oracle.groupby(['campus_id','year']).ngroups} campus-years; {oracle_bad} differ; "
+          f"{missing_enrollment} report(s) where the master has no TAPR enrollment")
+    coverage = master.groupby("year").finance_core_operating_per_student.apply(lambda s: s.notna().mean())
+    check("finance covers at least 94% of model campuses every year", bool((coverage >= 0.94).all()),
+          ", ".join(f"{y}: {v:.1%}" for y, v in coverage.items()))
+    values = master[[f for f in fields if f.endswith("_per_student")]].stack()
+    check("per-student values are positive and finite", bool(((values > 0) & np.isfinite(values)).all()))
+    # All funds can fall below the general fund only when the other funds net NEGATIVE (refunds/reversals of grant
+    # spending, which TEA's files carry as negative ACTAMT). The independent recomputation above already proves each value.
+    observed = master.finance_core_operating_expenditure.notna() & master.finance_core_operating_gf_expenditure.notna()
+    negative_other = int((master.finance_core_operating_gf_expenditure > master.finance_core_operating_expenditure + 0.01)[observed].sum())
+    check("net non-general-fund spending is negative in under 0.25% of campus-years (refund reversals)",
+          negative_other < 0.0025 * observed.sum(), f"{negative_other} of {int(observed.sum())} campus-years")
 
 
 if __name__ == "__main__":

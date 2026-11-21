@@ -1,0 +1,12 @@
+name: GCN + LSTM
+model: gcn_lstm
+graph: v1
+label: level
+tasks: single
+graphs: combined+single
+hidden: 32
+lr: 0.003
+max_epochs: 30
+threads: 2
+device: cpu
+out: s2/gcn_lstm_phase5

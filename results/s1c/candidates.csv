@@ -1,0 +1,895 @@
+input_set,mode,model,target,test_mae,val_mae
+all,level,gradient_boosting (+context +academic only),act_composite,1.1545130533555144,1.2092872253139189
+all,level,gradient_boosting (+context +academic only),attendance_rate,0.8449576946261963,2.827203233786538
+all,level,gradient_boosting (+context +academic only),dropout_9_12,0.4406182147348517,0.527291880196944
+all,level,gradient_boosting (+context +academic only),graduation_4yr,1.998800616282314,1.9974003198995685
+all,level,gradient_boosting (+context +academic only),retention_rate,1.0656251274263049,1.2731223292870457
+all,level,gradient_boosting (+context +academic only),sat_act_above_criterion,5.819718309680167,6.189609784861004
+all,level,gradient_boosting (+context +academic only),sat_act_participation,9.703249891444948,12.809502928567287
+all,level,gradient_boosting (+context +academic only),sat_total,29.711438734097804,31.56492771873361
+all,level,gradient_boosting (+context +academic only),tsi_both,13.586926312068751,12.79957092007435
+all,level,gradient_boosting (+context +demographic only),act_composite,1.1485902120374654,1.2049328915698814
+all,level,gradient_boosting (+context +demographic only),attendance_rate,0.9022573737991706,2.9980041014888186
+all,level,gradient_boosting (+context +demographic only),dropout_9_12,0.4331025083224233,0.5166247022640301
+all,level,gradient_boosting (+context +demographic only),graduation_4yr,1.9679041919977809,2.019922071079834
+all,level,gradient_boosting (+context +demographic only),retention_rate,1.052002805854538,1.4804342261987204
+all,level,gradient_boosting (+context +demographic only),risk_index,6.467876998581209,6.440151302018523
+all,level,gradient_boosting (+context +demographic only),sat_act_above_criterion,5.823142041269975,6.194253050572426
+all,level,gradient_boosting (+context +demographic only),sat_act_participation,9.833420563264479,12.785413095822749
+all,level,gradient_boosting (+context +demographic only),sat_total,29.749818939281305,32.00957452839438
+all,level,gradient_boosting (+context +demographic only),tsi_both,13.391285729863313,12.768704083803797
+all,level,gradient_boosting (+context +district only),act_composite,1.1489589086852479,1.2040007373272916
+all,level,gradient_boosting (+context +district only),attendance_rate,0.8628669806169322,2.893321264163849
+all,level,gradient_boosting (+context +district only),dropout_9_12,0.4383204481343898,0.5188850128192929
+all,level,gradient_boosting (+context +district only),graduation_4yr,1.9654523951237945,2.020732602834219
+all,level,gradient_boosting (+context +district only),retention_rate,1.0748331165379486,1.2724654070013581
+all,level,gradient_boosting (+context +district only),risk_index,6.465980542732493,6.380701633538222
+all,level,gradient_boosting (+context +district only),sat_act_above_criterion,5.809254556134367,6.125102145869995
+all,level,gradient_boosting (+context +district only),sat_act_participation,9.869395869487574,12.581688756385125
+all,level,gradient_boosting (+context +district only),sat_total,29.900231648525278,31.403991434405647
+all,level,gradient_boosting (+context +district only),tsi_both,13.381300167337404,12.755413071718586
+all,level,gradient_boosting (+context +geographic only),act_composite,1.1555309222275543,1.2054554580874726
+all,level,gradient_boosting (+context +geographic only),attendance_rate,0.8653955703067467,2.7320859606322783
+all,level,gradient_boosting (+context +geographic only),dropout_9_12,0.43494775994264445,0.5329297624188973
+all,level,gradient_boosting (+context +geographic only),graduation_4yr,2.001906145461014,2.0139564750201213
+all,level,gradient_boosting (+context +geographic only),retention_rate,1.0632644666776958,1.292212859346342
+all,level,gradient_boosting (+context +geographic only),risk_index,6.428349167578858,6.34978520031992
+all,level,gradient_boosting (+context +geographic only),sat_act_above_criterion,5.833499276844138,6.174451179251802
+all,level,gradient_boosting (+context +geographic only),sat_act_participation,9.883147936736496,12.80823837822299
+all,level,gradient_boosting (+context +geographic only),sat_total,29.726814337187697,31.728733390067227
+all,level,gradient_boosting (+context +geographic only),tsi_both,13.409618533840888,12.739470662767035
+all,level,gradient_boosting (+context +graph),act_composite,1.163855434458435,1.2113015662167166
+all,level,gradient_boosting (+context +graph),attendance_rate,0.9459056192144318,3.3919913932690386
+all,level,gradient_boosting (+context +graph),dropout_9_12,0.44074383380989224,0.5363487959258264
+all,level,gradient_boosting (+context +graph),graduation_4yr,2.0053319906109266,2.00944194652828
+all,level,gradient_boosting (+context +graph),retention_rate,1.0605284627386782,1.8365631844790395
+all,level,gradient_boosting (+context +graph),risk_index,6.6120687047828595,6.383835511117938
+all,level,gradient_boosting (+context +graph),sat_act_above_criterion,5.867921540333356,6.152514022884227
+all,level,gradient_boosting (+context +graph),sat_act_participation,10.162746774011271,12.083607795202923
+all,level,gradient_boosting (+context +graph),sat_total,29.624784738230733,31.27421890227984
+all,level,gradient_boosting (+context +graph),tsi_both,13.23708822630771,12.602929433311983
+all,level,gradient_boosting (+context +region only),act_composite,1.1586044682502397,1.2012722351135776
+all,level,gradient_boosting (+context +region only),attendance_rate,0.9314832934454245,2.935924593449793
+all,level,gradient_boosting (+context +region only),dropout_9_12,0.43833797410657055,0.5375330658464403
+all,level,gradient_boosting (+context +region only),graduation_4yr,1.9830075017622193,2.0251028215685096
+all,level,gradient_boosting (+context +region only),retention_rate,1.0624037466372682,1.8222288078998758
+all,level,gradient_boosting (+context +region only),risk_index,6.434898645126768,6.407336300184115
+all,level,gradient_boosting (+context +region only),sat_act_above_criterion,5.813790080693897,6.115160873451407
+all,level,gradient_boosting (+context +region only),sat_act_participation,9.801426232639376,12.319494789031351
+all,level,gradient_boosting (+context +region only),sat_total,29.689093059051714,31.542527549308126
+all,level,gradient_boosting (+context +region only),tsi_both,13.45566402703368,12.730685964320305
+all,level,gradient_boosting (+context),act_composite,1.158294063725128,1.204184307377108
+all,level,gradient_boosting (+context),attendance_rate,0.8656116759690841,2.8358481538215026
+all,level,gradient_boosting (+context),dropout_9_12,0.4384766648699462,0.5267951805446963
+all,level,gradient_boosting (+context),graduation_4yr,1.9873761376629875,2.0005600029804356
+all,level,gradient_boosting (+context),retention_rate,1.0653754200844288,1.2825934425476109
+all,level,gradient_boosting (+context),risk_index,6.422610078843222,6.436645060957557
+all,level,gradient_boosting (+context),sat_act_above_criterion,5.814768807542871,6.1347607508611235
+all,level,gradient_boosting (+context),sat_act_participation,9.73258700711168,12.68102176858619
+all,level,gradient_boosting (+context),sat_total,29.879966793489842,31.60824124454288
+all,level,gradient_boosting (+context),tsi_both,13.582619755098921,12.838638167511345
+all,level,knn (own lags),act_composite,1.2597822057460613,1.2650046554934824
+all,level,knn (own lags),attendance_rate,0.8755144840072424,5.585444748026716
+all,level,knn (own lags),dropout_9_12,0.4202917170495767,0.5012454323995128
+all,level,knn (own lags),graduation_4yr,2.210312903225806,2.3298223598435466
+all,level,knn (own lags),retention_rate,1.081039156626506,1.5908696969696972
+all,level,knn (own lags),risk_index,7.257645017886934,7.212645569861597
+all,level,knn (own lags),sat_act_above_criterion,6.3320119586296055,6.670345394736842
+all,level,knn (own lags),sat_act_participation,10.279607231920199,13.290776515151515
+all,level,knn (own lags),sat_total,32.039523809523814,34.68494363929146
+all,level,knn (own lags),tsi_both,14.083887157107233,13.178844696969696
+all,level,linear_regression (own lags),act_composite,1.2085054701211848,1.203104866397818
+all,level,linear_regression (own lags),attendance_rate,3.5614033700277306,8.62242518505478
+all,level,linear_regression (own lags),dropout_9_12,0.4149368936435066,0.6630632380368985
+all,level,linear_regression (own lags),graduation_4yr,2.153180176198273,2.435251269472827
+all,level,linear_regression (own lags),retention_rate,1.042972397206213,2.5088439365967883
+all,level,linear_regression (own lags),risk_index,7.203511448398709,7.123497749429151
+all,level,linear_regression (own lags),sat_act_above_criterion,6.446541999495922,6.547057195914638
+all,level,linear_regression (own lags),sat_act_participation,9.929235321103663,15.156842069181604
+all,level,linear_regression (own lags),sat_total,30.68878536093111,31.8995834136012
+all,level,linear_regression (own lags),tsi_both,13.606458453922091,12.899263189885968
+all,level,persistence (last year's value),act_composite,1.275903614457831,1.2935754189944133
+all,level,persistence (last year's value),attendance_rate,0.7283041641520819,1.3505160898603523
+all,level,persistence (last year's value),dropout_9_12,0.4485489721886336,0.49951278928136417
+all,level,persistence (last year's value),graduation_4yr,2.2149032258064514,2.198826597131682
+all,level,persistence (last year's value),retention_rate,1.0709036144578312,1.232181818181818
+all,level,persistence (last year's value),risk_index,7.672463795359084,7.593783925038112
+all,level,persistence (last year's value),sat_act_above_criterion,6.751066580478346,7.167171052631578
+all,level,persistence (last year's value),sat_act_participation,8.66652119700748,12.05056818181818
+all,level,persistence (last year's value),sat_total,30.842063492063495,34.13365539452496
+all,level,persistence (last year's value),tsi_both,14.414837905236908,12.707891414141416
+all,level,random_forest (+context +graph),act_composite,1.146490171409381,1.1798845720285023
+all,level,random_forest (+context +graph),attendance_rate,0.9386950309105491,2.868911540550953
+all,level,random_forest (+context +graph),dropout_9_12,0.4257115001766391,0.5090019096688898
+all,level,random_forest (+context +graph),graduation_4yr,1.9675643093119768,2.082970797338765
+all,level,random_forest (+context +graph),retention_rate,1.0997665270608417,1.5895840519205053
+all,level,random_forest (+context +graph),risk_index,6.473304708494585,6.406534130920187
+all,level,random_forest (+context +graph),sat_act_above_criterion,5.834688019957465,6.037828900275249
+all,level,random_forest (+context +graph),sat_act_participation,9.609972907234313,13.031264325876407
+all,level,random_forest (+context +graph),sat_total,29.45259945065615,31.521006614537008
+all,level,random_forest (+context +graph),tsi_both,13.481840377210153,12.654702878897151
+all,level,random_forest (+context),act_composite,1.1517310345440184,1.1739471790723386
+all,level,random_forest (+context),attendance_rate,0.7967728951163489,1.5004370464876655
+all,level,random_forest (+context),dropout_9_12,0.43013359369368354,0.507352420390459
+all,level,random_forest (+context),graduation_4yr,1.9538420779754229,2.0787711707819727
+all,level,random_forest (+context),retention_rate,1.0615079585048472,1.2424257432871322
+all,level,random_forest (+context),risk_index,6.463260980429648,6.397742180935967
+all,level,random_forest (+context),sat_act_above_criterion,5.803832001184867,5.9682276880724485
+all,level,random_forest (+context),sat_act_participation,9.680229143522498,12.892295545647807
+all,level,random_forest (+context),sat_total,29.38716241988139,31.480789285369518
+all,level,random_forest (+context),tsi_both,13.525579094089775,12.674085272712615
+all,level,random_forest (own lags),act_composite,1.2081622778232792,1.2271418891031607
+all,level,random_forest (own lags),attendance_rate,0.9140556135583682,5.248163095779349
+all,level,random_forest (own lags),dropout_9_12,0.42838386218604424,0.5651634687156516
+all,level,random_forest (own lags),graduation_4yr,2.1717196496661586,2.294051746859799
+all,level,random_forest (own lags),retention_rate,1.0744069851253912,1.9674138266338737
+all,level,random_forest (own lags),risk_index,7.142698377022919,7.093069672982949
+all,level,random_forest (own lags),sat_act_above_criterion,6.292484274760678,6.570896316245071
+all,level,random_forest (own lags),sat_act_participation,9.902984292414576,13.708682836672603
+all,level,random_forest (own lags),sat_total,30.857213389492948,32.27051672809973
+all,level,random_forest (own lags),tsi_both,13.921227621232077,13.042304602104924
+all,level,xgboost (+context +graph),act_composite,1.153759868505158,1.1976236819688169
+all,level,xgboost (+context +graph),attendance_rate,1.0315554470690749,3.2628823476396476
+all,level,xgboost (+context +graph),dropout_9_12,0.4459282734074401,0.577446378329895
+all,level,xgboost (+context +graph),graduation_4yr,1.9919342111110687,2.0576336190224938
+all,level,xgboost (+context +graph),retention_rate,1.0649944229454298,1.937128351711482
+all,level,xgboost (+context +graph),risk_index,6.487480256082597,6.419655385081907
+all,level,xgboost (+context +graph),sat_act_above_criterion,5.866941415054535,6.159238770149257
+all,level,xgboost (+context +graph),sat_act_participation,10.088706492957034,12.511326952418594
+all,level,xgboost (+context +graph),sat_total,29.75403609018477,31.71976168965756
+all,level,xgboost (+context +graph),tsi_both,13.343875420995781,12.695730019205747
+all,level,xgboost (+context),act_composite,1.150239034658013,1.1935866306525147
+all,level,xgboost (+context),attendance_rate,0.8848217570846456,2.7615022099025337
+all,level,xgboost (+context),dropout_9_12,0.43888144426684955,0.5297184493968302
+all,level,xgboost (+context),graduation_4yr,1.9821806885911575,2.0701934450266415
+all,level,xgboost (+context),retention_rate,1.0692940934146473,1.23710419625575
+all,level,xgboost (+context),risk_index,6.439405494915389,6.393323377138275
+all,level,xgboost (+context),sat_act_above_criterion,5.807307202635693,6.095704194619468
+all,level,xgboost (+context),sat_act_participation,10.060368952373613,12.751683485640797
+all,level,xgboost (+context),sat_total,29.53340576171875,31.753906829883125
+all,level,xgboost (+context),tsi_both,13.5368543760367,12.748685445006316
+all,relative,gradient_boosting (+context +academic only),act_composite,1.1490144304573213,1.2437790255301464
+all,relative,gradient_boosting (+context +academic only),attendance_rate,0.8152186383710559,1.5135684227623782
+all,relative,gradient_boosting (+context +academic only),dropout_9_12,0.4523783648313554,0.5185215305068331
+all,relative,gradient_boosting (+context +academic only),graduation_4yr,2.0685768183296283,2.034090675241404
+all,relative,gradient_boosting (+context +academic only),retention_rate,1.1465816963052213,1.2571387894838963
+all,relative,gradient_boosting (+context +academic only),sat_act_above_criterion,5.969460555395308,6.255069851549537
+all,relative,gradient_boosting (+context +academic only),sat_act_participation,10.27773324720689,12.68318350695429
+all,relative,gradient_boosting (+context +academic only),sat_total,29.392509958423023,33.3371287865479
+all,relative,gradient_boosting (+context +academic only),tsi_both,14.0385938447094,12.769841055824426
+all,relative,gradient_boosting (+context +demographic only),act_composite,1.1435588539266763,1.2572574837615147
+all,relative,gradient_boosting (+context +demographic only),attendance_rate,0.8214718478119872,1.5006315916191617
+all,relative,gradient_boosting (+context +demographic only),dropout_9_12,0.45136334962175856,0.5148172491999136
+all,relative,gradient_boosting (+context +demographic only),graduation_4yr,2.0447556901270634,2.0569590851245527
+all,relative,gradient_boosting (+context +demographic only),retention_rate,1.1399216391965712,1.3154712001134516
+all,relative,gradient_boosting (+context +demographic only),risk_index,6.481965081946596,6.366636611049686
+all,relative,gradient_boosting (+context +demographic only),sat_act_above_criterion,5.992594565627227,6.234390843151064
+all,relative,gradient_boosting (+context +demographic only),sat_act_participation,10.247120255343237,12.822126997836616
+all,relative,gradient_boosting (+context +demographic only),sat_total,29.672638983365328,33.19870331263871
+all,relative,gradient_boosting (+context +demographic only),tsi_both,14.075405096221312,12.721568464619514
+all,relative,gradient_boosting (+context +district only),act_composite,1.142601361697033,1.2445664242072476
+all,relative,gradient_boosting (+context +district only),attendance_rate,0.8099878384486674,1.5030637462149021
+all,relative,gradient_boosting (+context +district only),dropout_9_12,0.446851333078034,0.5058868209694384
+all,relative,gradient_boosting (+context +district only),graduation_4yr,2.0578975360918013,2.0369036951409876
+all,relative,gradient_boosting (+context +district only),retention_rate,1.1360006441111488,1.2767585338186052
+all,relative,gradient_boosting (+context +district only),risk_index,6.4702191354772935,6.30203573770402
+all,relative,gradient_boosting (+context +district only),sat_act_above_criterion,5.967356367893782,6.212619072062963
+all,relative,gradient_boosting (+context +district only),sat_act_participation,10.309304587454626,12.450198125894541
+all,relative,gradient_boosting (+context +district only),sat_total,29.432848278639607,33.46712621185125
+all,relative,gradient_boosting (+context +district only),tsi_both,14.048660553132652,12.771612340131584
+all,relative,gradient_boosting (+context +geographic only),act_composite,1.1555007882507384,1.2315843420486157
+all,relative,gradient_boosting (+context +geographic only),attendance_rate,0.8064691256416507,1.5711712737435668
+all,relative,gradient_boosting (+context +geographic only),dropout_9_12,0.44910591451580145,0.5187212096750722
+all,relative,gradient_boosting (+context +geographic only),graduation_4yr,2.0625890082718783,2.0615660428024687
+all,relative,gradient_boosting (+context +geographic only),retention_rate,1.1417306019328306,1.2690201398255505
+all,relative,gradient_boosting (+context +geographic only),risk_index,6.462510569284393,6.380157598705199
+all,relative,gradient_boosting (+context +geographic only),sat_act_above_criterion,5.954827595808527,6.172946397800685
+all,relative,gradient_boosting (+context +geographic only),sat_act_participation,10.199917578045213,12.685431205675231
+all,relative,gradient_boosting (+context +geographic only),sat_total,29.198056549076703,33.767899773265725
+all,relative,gradient_boosting (+context +geographic only),tsi_both,14.049506336396131,12.797938355443932
+all,relative,gradient_boosting (+context +graph),act_composite,1.145966444846927,1.2344774840799793
+all,relative,gradient_boosting (+context +graph),attendance_rate,0.7950275114806363,1.709936756788355
+all,relative,gradient_boosting (+context +graph),dropout_9_12,0.4504960885059267,0.5133947933164471
+all,relative,gradient_boosting (+context +graph),graduation_4yr,2.0527917045939406,2.0575408303633322
+all,relative,gradient_boosting (+context +graph),retention_rate,1.1283052631684725,1.3324750011353748
+all,relative,gradient_boosting (+context +graph),risk_index,6.48240874640913,6.368969212123029
+all,relative,gradient_boosting (+context +graph),sat_act_above_criterion,6.057102734198737,6.148977851190163
+all,relative,gradient_boosting (+context +graph),sat_act_participation,10.52888874396016,12.576837369578927
+all,relative,gradient_boosting (+context +graph),sat_total,29.727272080195746,33.37555074503876
+all,relative,gradient_boosting (+context +graph),tsi_both,13.83954447759481,12.693153665310993
+all,relative,gradient_boosting (+context +region only),act_composite,1.1441167597595558,1.2476457296673384
+all,relative,gradient_boosting (+context +region only),attendance_rate,0.7830252938404795,1.7139620757016498
+all,relative,gradient_boosting (+context +region only),dropout_9_12,0.4569618233553971,0.5071991601283199
+all,relative,gradient_boosting (+context +region only),graduation_4yr,2.0527030006381395,2.0447957041975826
+all,relative,gradient_boosting (+context +region only),retention_rate,1.13875973134734,1.2617462082064004
+all,relative,gradient_boosting (+context +region only),risk_index,6.493994328500432,6.399189285752158
+all,relative,gradient_boosting (+context +region only),sat_act_above_criterion,5.921085356105852,6.21965754288146
+all,relative,gradient_boosting (+context +region only),sat_act_participation,10.304231571118622,12.75447503955309
+all,relative,gradient_boosting (+context +region only),sat_total,30.06128947914599,33.48408758581233
+all,relative,gradient_boosting (+context +region only),tsi_both,14.075814649699762,12.661873978571224
+all,relative,gradient_boosting (+context),act_composite,1.155206480612919,1.2383361356559581
+all,relative,gradient_boosting (+context),attendance_rate,0.8105342018580604,1.5407960909140996
+all,relative,gradient_boosting (+context),dropout_9_12,0.4555043075726853,0.5185880314075065
+all,relative,gradient_boosting (+context),graduation_4yr,2.034822564796044,2.0294141428150394
+all,relative,gradient_boosting (+context),retention_rate,1.1566629401444228,1.2727897520431009
+all,relative,gradient_boosting (+context),risk_index,6.492574787284765,6.359873752242035
+all,relative,gradient_boosting (+context),sat_act_above_criterion,5.910319976729013,6.216160635547421
+all,relative,gradient_boosting (+context),sat_act_participation,10.208757278457364,12.824321970670402
+all,relative,gradient_boosting (+context),sat_total,29.51958995630032,33.51315349551187
+all,relative,gradient_boosting (+context),tsi_both,14.147268450587282,12.763281584364702
+all,relative,knn (own lags),act_composite,1.2620921288425064,1.2844121554626802
+all,relative,knn (own lags),attendance_rate,0.7573581073779649,2.1035655999209415
+all,relative,knn (own lags),dropout_9_12,0.4521111222139,0.5167485084717582
+all,relative,knn (own lags),graduation_4yr,2.1462810040646807,2.215685814400187
+all,relative,knn (own lags),retention_rate,1.1625002130414641,1.4160878991674999
+all,relative,knn (own lags),risk_index,7.251444899200313,7.180715551330262
+all,relative,knn (own lags),sat_act_above_criterion,6.316526961805005,6.8604513477595335
+all,relative,knn (own lags),sat_act_participation,10.17956845234045,13.124946933380809
+all,relative,knn (own lags),sat_total,32.16196936077534,35.54109119200549
+all,relative,knn (own lags),tsi_both,14.806756452127905,13.162667389010576
+all,relative,linear_regression (own lags),act_composite,1.1944415935333643,1.2186749759154039
+all,relative,linear_regression (own lags),attendance_rate,0.7317469368590341,1.9217323500579606
+all,relative,linear_regression (own lags),dropout_9_12,0.41934424672883275,0.4835999555705673
+all,relative,linear_regression (own lags),graduation_4yr,2.0948375447759244,2.2494666467515474
+all,relative,linear_regression (own lags),retention_rate,1.0236530152823624,1.2828860597180347
+all,relative,linear_regression (own lags),risk_index,7.203320222024537,7.119330335659955
+all,relative,linear_regression (own lags),sat_act_above_criterion,6.338647490302412,6.682908449621026
+all,relative,linear_regression (own lags),sat_act_participation,10.146345882753021,12.927486920199915
+all,relative,linear_regression (own lags),sat_total,30.273838026758433,33.1771486117804
+all,relative,linear_regression (own lags),tsi_both,14.338408801645183,12.74384311027676
+all,relative,persistence (last year's value),act_composite,1.275903614457831,1.2935754189944133
+all,relative,persistence (last year's value),attendance_rate,0.7283041641520819,1.3505160898603523
+all,relative,persistence (last year's value),dropout_9_12,0.4485489721886336,0.49951278928136417
+all,relative,persistence (last year's value),graduation_4yr,2.2149032258064514,2.198826597131682
+all,relative,persistence (last year's value),retention_rate,1.0709036144578312,1.232181818181818
+all,relative,persistence (last year's value),risk_index,7.672463795359084,7.593783925038112
+all,relative,persistence (last year's value),sat_act_above_criterion,6.751066580478346,7.167171052631578
+all,relative,persistence (last year's value),sat_act_participation,8.66652119700748,12.05056818181818
+all,relative,persistence (last year's value),sat_total,30.842063492063495,34.13365539452496
+all,relative,persistence (last year's value),tsi_both,14.414837905236908,12.707891414141416
+all,relative,random_forest (+context +graph),act_composite,1.1458214777327846,1.1918078341020428
+all,relative,random_forest (+context +graph),attendance_rate,0.7456902761236988,1.6526806009966015
+all,relative,random_forest (+context +graph),dropout_9_12,0.43386692892396317,0.49593436738027463
+all,relative,random_forest (+context +graph),graduation_4yr,1.998086481094424,2.0948322087541102
+all,relative,random_forest (+context +graph),retention_rate,1.1300195245586933,1.2909464662631167
+all,relative,random_forest (+context +graph),risk_index,6.459893046907865,6.330179272016808
+all,relative,random_forest (+context +graph),sat_act_above_criterion,5.908249276778231,6.200506577728019
+all,relative,random_forest (+context +graph),sat_act_participation,10.12269662945786,12.902438750054802
+all,relative,random_forest (+context +graph),sat_total,29.80075489436815,33.06238768818742
+all,relative,random_forest (+context +graph),tsi_both,13.972220361264618,12.615776998504383
+all,relative,random_forest (+context),act_composite,1.1550657829496636,1.1889644843421932
+all,relative,random_forest (+context),attendance_rate,0.757213121186872,1.58207374791104
+all,relative,random_forest (+context),dropout_9_12,0.43477548208148525,0.49682124320452486
+all,relative,random_forest (+context),graduation_4yr,1.9900936676346057,2.062574484183327
+all,relative,random_forest (+context),retention_rate,1.1359953304460217,1.2510377840068845
+all,relative,random_forest (+context),risk_index,6.464671822380876,6.3358158426668
+all,relative,random_forest (+context),sat_act_above_criterion,5.874246934162015,6.1317628780090985
+all,relative,random_forest (+context),sat_act_participation,10.118446761368634,12.79746122614933
+all,relative,random_forest (+context),sat_total,29.70987270183838,33.00413107738513
+all,relative,random_forest (+context),tsi_both,14.063910639251606,12.657098054065473
+all,relative,random_forest (own lags),act_composite,1.214193435639417,1.2340093896974036
+all,relative,random_forest (own lags),attendance_rate,0.7936776770399507,2.1666952287493797
+all,relative,random_forest (own lags),dropout_9_12,0.44638718265161337,0.5176979734587182
+all,relative,random_forest (own lags),graduation_4yr,2.150921194970228,2.291979107401587
+all,relative,random_forest (own lags),retention_rate,1.1885585112956565,1.6302521947652668
+all,relative,random_forest (own lags),risk_index,7.141716554632784,7.095578363930011
+all,relative,random_forest (own lags),sat_act_above_criterion,6.289735722837903,6.833512327479157
+all,relative,random_forest (own lags),sat_act_participation,10.346778491780164,13.082370119409106
+all,relative,random_forest (own lags),sat_total,30.965313795013294,34.247846731686785
+all,relative,random_forest (own lags),tsi_both,14.443067155355674,12.869189921490053
+all,relative,xgboost (+context +graph),act_composite,1.1408825434667889,1.1929150733438578
+all,relative,xgboost (+context +graph),attendance_rate,0.7755639760479747,1.764958945192967
+all,relative,xgboost (+context +graph),dropout_9_12,0.45624650909321496,0.5165999789938293
+all,relative,xgboost (+context +graph),graduation_4yr,2.0311635776456307,2.0388147338345988
+all,relative,xgboost (+context +graph),retention_rate,1.1278891097805457,1.322950024679639
+all,relative,xgboost (+context +graph),risk_index,6.481834883233927,6.37965789862843
+all,relative,xgboost (+context +graph),sat_act_above_criterion,5.966379779255375,6.2505194171812
+all,relative,xgboost (+context +graph),sat_act_participation,10.356104837550758,12.771473914087329
+all,relative,xgboost (+context +graph),sat_total,29.764188952886286,33.54753564573177
+all,relative,xgboost (+context +graph),tsi_both,13.856448252488857,12.72944196834553
+all,relative,xgboost (+context),act_composite,1.1433769052807095,1.2036076015677373
+all,relative,xgboost (+context),attendance_rate,0.7855588884976614,1.6107766915929826
+all,relative,xgboost (+context),dropout_9_12,0.45465229211152447,0.5136028076752875
+all,relative,xgboost (+context),graduation_4yr,2.0503277786336396,2.037159845159513
+all,relative,xgboost (+context),retention_rate,1.1343117937720342,1.2377154780078534
+all,relative,xgboost (+context),risk_index,6.444190737124717,6.357513460712541
+all,relative,xgboost (+context),sat_act_above_criterion,5.8828741230081345,6.198991024345231
+all,relative,xgboost (+context),sat_act_participation,10.142866626272681,12.942725521358488
+all,relative,xgboost (+context),sat_total,29.513038596144916,33.13633583363573
+all,relative,xgboost (+context),tsi_both,14.117976498298328,12.869534847077214
+all,zscore,gradient_boosting (+context +academic only),act_composite,1.1546252203912217,1.218745812219511
+all,zscore,gradient_boosting (+context +academic only),attendance_rate,0.8071210720416333,1.5471718998894681
+all,zscore,gradient_boosting (+context +academic only),dropout_9_12,0.45373585687008083,0.5108225225414166
+all,zscore,gradient_boosting (+context +academic only),graduation_4yr,2.0701159155595006,1.9954167385217172
+all,zscore,gradient_boosting (+context +academic only),retention_rate,1.1653903072262772,1.310557800488753
+all,zscore,gradient_boosting (+context +academic only),sat_act_above_criterion,5.970403175017791,6.194219126297187
+all,zscore,gradient_boosting (+context +academic only),sat_act_participation,10.10913360782536,13.205819301483553
+all,zscore,gradient_boosting (+context +academic only),sat_total,29.552690510216543,33.28044719881319
+all,zscore,gradient_boosting (+context +academic only),tsi_both,14.134317895353366,12.903393121345939
+all,zscore,gradient_boosting (+context +demographic only),act_composite,1.155562684286176,1.236319431218338
+all,zscore,gradient_boosting (+context +demographic only),attendance_rate,0.7910347539481759,1.5016866727989042
+all,zscore,gradient_boosting (+context +demographic only),dropout_9_12,0.4533223396727514,0.5138878924876
+all,zscore,gradient_boosting (+context +demographic only),graduation_4yr,2.0111015357405337,2.0033734599087802
+all,zscore,gradient_boosting (+context +demographic only),retention_rate,1.1587412051254289,1.3239634900392312
+all,zscore,gradient_boosting (+context +demographic only),risk_index,6.494022821041644,6.434024263016527
+all,zscore,gradient_boosting (+context +demographic only),sat_act_above_criterion,5.959268534894091,6.203810598269917
+all,zscore,gradient_boosting (+context +demographic only),sat_act_participation,10.116970308707844,13.161031782162757
+all,zscore,gradient_boosting (+context +demographic only),sat_total,29.927860293984065,33.57989190968994
+all,zscore,gradient_boosting (+context +demographic only),tsi_both,14.234728726961752,12.908338011045746
+all,zscore,gradient_boosting (+context +district only),act_composite,1.1567405364830463,1.2182155941361186
+all,zscore,gradient_boosting (+context +district only),attendance_rate,0.8048138263500132,1.4985320580755486
+all,zscore,gradient_boosting (+context +district only),dropout_9_12,0.45193704288583947,0.5113663564440871
+all,zscore,gradient_boosting (+context +district only),graduation_4yr,2.0323292482622226,1.9754702575472858
+all,zscore,gradient_boosting (+context +district only),retention_rate,1.1621000951517717,1.3427022968354796
+all,zscore,gradient_boosting (+context +district only),risk_index,6.468641942359409,6.330422108474529
+all,zscore,gradient_boosting (+context +district only),sat_act_above_criterion,5.903600876844801,6.192753327787228
+all,zscore,gradient_boosting (+context +district only),sat_act_participation,10.332940003809915,12.68845731267958
+all,zscore,gradient_boosting (+context +district only),sat_total,29.34787165664995,33.00049643513654
+all,zscore,gradient_boosting (+context +district only),tsi_both,14.179808131683407,12.946130387071666
+all,zscore,gradient_boosting (+context +geographic only),act_composite,1.1604112619857532,1.2226593225953695
+all,zscore,gradient_boosting (+context +geographic only),attendance_rate,0.7979594230190246,1.554385213473647
+all,zscore,gradient_boosting (+context +geographic only),dropout_9_12,0.45552788564437974,0.5148747713288095
+all,zscore,gradient_boosting (+context +geographic only),graduation_4yr,2.0169263558721897,2.0002647684761974
+all,zscore,gradient_boosting (+context +geographic only),retention_rate,1.160453502746255,1.3623130449364798
+all,zscore,gradient_boosting (+context +geographic only),risk_index,6.4861612609729615,6.3558141986811165
+all,zscore,gradient_boosting (+context +geographic only),sat_act_above_criterion,5.951579173902147,6.177975163330587
+all,zscore,gradient_boosting (+context +geographic only),sat_act_participation,10.137235009316843,13.056068930430039
+all,zscore,gradient_boosting (+context +geographic only),sat_total,29.449467824647265,33.56329553679442
+all,zscore,gradient_boosting (+context +geographic only),tsi_both,14.120833958533222,12.827463201517403
+all,zscore,gradient_boosting (+context +graph),act_composite,1.1768362841765876,1.2296009497389502
+all,zscore,gradient_boosting (+context +graph),attendance_rate,0.8021420202452345,1.6770884743739174
+all,zscore,gradient_boosting (+context +graph),dropout_9_12,0.4506269393188792,0.5123064485455223
+all,zscore,gradient_boosting (+context +graph),graduation_4yr,2.012603565944462,2.01496761519149
+all,zscore,gradient_boosting (+context +graph),retention_rate,1.1358372254178883,1.3183662272687071
+all,zscore,gradient_boosting (+context +graph),risk_index,6.540448292511241,6.438963727052693
+all,zscore,gradient_boosting (+context +graph),sat_act_above_criterion,5.99724633349652,6.1736398900208265
+all,zscore,gradient_boosting (+context +graph),sat_act_participation,10.18581662507949,12.681638425677578
+all,zscore,gradient_boosting (+context +graph),sat_total,30.064040305630545,33.199988527405786
+all,zscore,gradient_boosting (+context +graph),tsi_both,14.104996124648205,12.828983989547837
+all,zscore,gradient_boosting (+context +region only),act_composite,1.141833824113851,1.2348306550453731
+all,zscore,gradient_boosting (+context +region only),attendance_rate,0.7485796266548964,1.6356782873884292
+all,zscore,gradient_boosting (+context +region only),dropout_9_12,0.4542729736012426,0.5098403493531593
+all,zscore,gradient_boosting (+context +region only),graduation_4yr,2.035175164594673,1.9723509917264503
+all,zscore,gradient_boosting (+context +region only),retention_rate,1.16329157980641,1.3029648484918672
+all,zscore,gradient_boosting (+context +region only),risk_index,6.484021615350184,6.36907811680156
+all,zscore,gradient_boosting (+context +region only),sat_act_above_criterion,5.930168823352231,6.189425698513246
+all,zscore,gradient_boosting (+context +region only),sat_act_participation,10.098600911123137,12.957955281748898
+all,zscore,gradient_boosting (+context +region only),sat_total,29.637269410774774,33.22319947681567
+all,zscore,gradient_boosting (+context +region only),tsi_both,14.187370621086194,12.871455652036815
+all,zscore,gradient_boosting (+context),act_composite,1.1548279510042718,1.232318266699761
+all,zscore,gradient_boosting (+context),attendance_rate,0.7948056573016341,1.5040514640245344
+all,zscore,gradient_boosting (+context),dropout_9_12,0.45560321399684217,0.5147610258335185
+all,zscore,gradient_boosting (+context),graduation_4yr,2.027766291888614,1.9777983702704494
+all,zscore,gradient_boosting (+context),retention_rate,1.1579122160648778,1.347797282825196
+all,zscore,gradient_boosting (+context),risk_index,6.512939595973788,6.423653521077147
+all,zscore,gradient_boosting (+context),sat_act_above_criterion,5.915742840140457,6.273572838381583
+all,zscore,gradient_boosting (+context),sat_act_participation,10.039490428709405,13.18074934912284
+all,zscore,gradient_boosting (+context),sat_total,29.828403106337674,33.09141337665183
+all,zscore,gradient_boosting (+context),tsi_both,14.170181109385709,12.962450972816644
+all,zscore,knn (own lags),act_composite,1.266519934637681,1.3073571572551426
+all,zscore,knn (own lags),attendance_rate,0.7234417502176422,1.8887812663977086
+all,zscore,knn (own lags),dropout_9_12,0.4326261173949833,0.48983530157343286
+all,zscore,knn (own lags),graduation_4yr,2.1949487095915643,2.236185127779483
+all,zscore,knn (own lags),retention_rate,1.188769496616999,1.2581357891401497
+all,zscore,knn (own lags),risk_index,7.2314839372101885,7.148794260619267
+all,zscore,knn (own lags),sat_act_above_criterion,6.287685787540526,6.788762951096942
+all,zscore,knn (own lags),sat_act_participation,9.955083651003655,13.350369413886138
+all,zscore,knn (own lags),sat_total,32.17283040577517,35.693929302621505
+all,zscore,knn (own lags),tsi_both,14.882052732533216,13.234972054594426
+all,zscore,linear_regression (own lags),act_composite,1.20319085406896,1.2365360484489518
+all,zscore,linear_regression (own lags),attendance_rate,0.7368370361046652,1.890742857920419
+all,zscore,linear_regression (own lags),dropout_9_12,0.4274568916951549,0.4908965331353935
+all,zscore,linear_regression (own lags),graduation_4yr,2.0940728779181543,2.224720994981659
+all,zscore,linear_regression (own lags),retention_rate,1.0382014445409504,1.187724668815586
+all,zscore,linear_regression (own lags),risk_index,7.128800270172539,6.976365696686682
+all,zscore,linear_regression (own lags),sat_act_above_criterion,6.28569961811592,6.649123812331881
+all,zscore,linear_regression (own lags),sat_act_participation,10.404120701497941,13.282237850232784
+all,zscore,linear_regression (own lags),sat_total,30.22971754410536,33.5436136517555
+all,zscore,linear_regression (own lags),tsi_both,14.422227820990434,12.86439941865019
+all,zscore,persistence (last year's value),act_composite,1.275903614457831,1.2935754189944133
+all,zscore,persistence (last year's value),attendance_rate,0.7283041641520819,1.3505160898603523
+all,zscore,persistence (last year's value),dropout_9_12,0.4485489721886336,0.49951278928136417
+all,zscore,persistence (last year's value),graduation_4yr,2.2149032258064514,2.198826597131682
+all,zscore,persistence (last year's value),retention_rate,1.0709036144578312,1.232181818181818
+all,zscore,persistence (last year's value),risk_index,7.672463795359084,7.593783925038112
+all,zscore,persistence (last year's value),sat_act_above_criterion,6.751066580478346,7.167171052631578
+all,zscore,persistence (last year's value),sat_act_participation,8.66652119700748,12.05056818181818
+all,zscore,persistence (last year's value),sat_total,30.842063492063495,34.13365539452496
+all,zscore,persistence (last year's value),tsi_both,14.414837905236908,12.707891414141416
+all,zscore,random_forest (+context +graph),act_composite,1.1446443730033284,1.1938358638261817
+all,zscore,random_forest (+context +graph),attendance_rate,0.7515745632841249,1.5894412055693663
+all,zscore,random_forest (+context +graph),dropout_9_12,0.4392934129602197,0.5003301295824742
+all,zscore,random_forest (+context +graph),graduation_4yr,1.9843702949425102,2.0414720828540194
+all,zscore,random_forest (+context +graph),retention_rate,1.1374542193512582,1.2740320465265742
+all,zscore,random_forest (+context +graph),risk_index,6.47084734211258,6.33684843435105
+all,zscore,random_forest (+context +graph),sat_act_above_criterion,5.9100793358497175,6.176859189192471
+all,zscore,random_forest (+context +graph),sat_act_participation,10.16526777309246,13.08358563262497
+all,zscore,random_forest (+context +graph),sat_total,29.735180848967143,33.01348114724658
+all,zscore,random_forest (+context +graph),tsi_both,14.055095311191376,12.740920250797643
+all,zscore,random_forest (+context),act_composite,1.147889864419486,1.193139873679751
+all,zscore,random_forest (+context),attendance_rate,0.7483827778288651,1.5499416226731184
+all,zscore,random_forest (+context),dropout_9_12,0.4387976825445109,0.5008262697858177
+all,zscore,random_forest (+context),graduation_4yr,1.9844341049646232,2.003965905938048
+all,zscore,random_forest (+context),retention_rate,1.1483753392290128,1.2780245450491847
+all,zscore,random_forest (+context),risk_index,6.463736499300152,6.336876003015422
+all,zscore,random_forest (+context),sat_act_above_criterion,5.900662795932292,6.106377748694946
+all,zscore,random_forest (+context),sat_act_participation,9.988533307050314,13.01458570250341
+all,zscore,random_forest (+context),sat_total,29.512953726168917,32.91285891566641
+all,zscore,random_forest (+context),tsi_both,14.177829960279391,12.76167837064309
+all,zscore,random_forest (own lags),act_composite,1.2099782455558696,1.251781145099509
+all,zscore,random_forest (own lags),attendance_rate,0.7212090572280043,1.8527114109533538
+all,zscore,random_forest (own lags),dropout_9_12,0.439864871115911,0.5028055870672072
+all,zscore,random_forest (own lags),graduation_4yr,2.19430958823341,2.2678305592131967
+all,zscore,random_forest (own lags),retention_rate,1.1871880170756604,1.2869294534098685
+all,zscore,random_forest (own lags),risk_index,7.1433632057884555,7.047825685671905
+all,zscore,random_forest (own lags),sat_act_above_criterion,6.239733377225575,6.732594481977526
+all,zscore,random_forest (own lags),sat_act_participation,10.244590816868458,13.705190870693267
+all,zscore,random_forest (own lags),sat_total,30.978214857623783,34.57257455130437
+all,zscore,random_forest (own lags),tsi_both,14.45159308284254,12.885579473750454
+all,zscore,xgboost (+context +graph),act_composite,1.1372497827878143,1.1870922234838983
+all,zscore,xgboost (+context +graph),attendance_rate,0.7611042173325455,1.7058160695928997
+all,zscore,xgboost (+context +graph),dropout_9_12,0.45474172015781067,0.507547258484941
+all,zscore,xgboost (+context +graph),graduation_4yr,1.9924042995823956,2.0109291495453596
+all,zscore,xgboost (+context +graph),retention_rate,1.1155605160850082,1.2830830595109601
+all,zscore,xgboost (+context +graph),risk_index,6.495345774630808,6.4079491353207505
+all,zscore,xgboost (+context +graph),sat_act_above_criterion,5.9681869065103905,6.233303000742352
+all,zscore,xgboost (+context +graph),sat_act_participation,10.254932602196536,12.782743791569821
+all,zscore,xgboost (+context +graph),sat_total,29.670791994595827,33.16806686094754
+all,zscore,xgboost (+context +graph),tsi_both,14.018187519225538,12.82174712933222
+all,zscore,xgboost (+context),act_composite,1.1444531928046515,1.1950045244890288
+all,zscore,xgboost (+context),attendance_rate,0.7766693617044781,1.5157090965650064
+all,zscore,xgboost (+context),dropout_9_12,0.44968107377880545,0.5080070104082306
+all,zscore,xgboost (+context),graduation_4yr,2.0013758762604317,1.9869514812415914
+all,zscore,xgboost (+context),retention_rate,1.1403615863131389,1.2812187926252885
+all,zscore,xgboost (+context),risk_index,6.454273070255928,6.369918571807679
+all,zscore,xgboost (+context),sat_act_above_criterion,5.898487761286813,6.176619836289138
+all,zscore,xgboost (+context),sat_act_participation,10.053775734930031,13.012054493369709
+all,zscore,xgboost (+context),sat_total,29.52403345090072,32.887103190730585
+all,zscore,xgboost (+context),tsi_both,14.193173297390663,12.848216548684059
+existing,level,gradient_boosting (+context +academic only),act_composite,1.185910825132938,1.1974796511224048
+existing,level,gradient_boosting (+context +academic only),attendance_rate,0.9118384012421685,3.7014313940494867
+existing,level,gradient_boosting (+context +academic only),dropout_9_12,0.44798672145905477,0.6210547663984206
+existing,level,gradient_boosting (+context +academic only),graduation_4yr,2.0379823255023104,2.0961528924190316
+existing,level,gradient_boosting (+context +academic only),retention_rate,1.0966656094842266,2.0936643796301215
+existing,level,gradient_boosting (+context +academic only),sat_act_above_criterion,6.030705492337573,6.215802519523311
+existing,level,gradient_boosting (+context +academic only),sat_act_participation,9.827583163553085,13.080140615811342
+existing,level,gradient_boosting (+context +academic only),sat_total,30.360605395961,31.148047587979466
+existing,level,gradient_boosting (+context +academic only),tsi_both,13.825572816968423,13.146854977902027
+existing,level,gradient_boosting (+context +demographic only),act_composite,1.1865263140312343,1.2004369174577139
+existing,level,gradient_boosting (+context +demographic only),attendance_rate,0.9629723644903916,4.129245375131665
+existing,level,gradient_boosting (+context +demographic only),dropout_9_12,0.4475870112523566,0.6193397936986655
+existing,level,gradient_boosting (+context +demographic only),graduation_4yr,1.9945047777538094,2.1221044043570263
+existing,level,gradient_boosting (+context +demographic only),retention_rate,1.0802151089074825,2.153856564809015
+existing,level,gradient_boosting (+context +demographic only),risk_index,6.728965298457,6.580874077395626
+existing,level,gradient_boosting (+context +demographic only),sat_act_above_criterion,6.025272613199967,6.17906001209225
+existing,level,gradient_boosting (+context +demographic only),sat_act_participation,9.927547891984451,13.638489487008224
+existing,level,gradient_boosting (+context +demographic only),sat_total,30.89100853666456,31.343267492114933
+existing,level,gradient_boosting (+context +demographic only),tsi_both,13.653168433963184,13.186578941981498
+existing,level,gradient_boosting (+context +district only),act_composite,1.1746209284241245,1.2076556886476033
+existing,level,gradient_boosting (+context +district only),attendance_rate,0.939367145567447,4.043121408297854
+existing,level,gradient_boosting (+context +district only),dropout_9_12,0.4573533725058855,0.5662294284273077
+existing,level,gradient_boosting (+context +district only),graduation_4yr,2.007764262412539,2.1116907025983376
+existing,level,gradient_boosting (+context +district only),retention_rate,1.1046629233276106,1.6718882715125907
+existing,level,gradient_boosting (+context +district only),risk_index,6.703247098856349,6.603424895228317
+existing,level,gradient_boosting (+context +district only),sat_act_above_criterion,5.952287174791478,6.207065638691157
+existing,level,gradient_boosting (+context +district only),sat_act_participation,9.754853965513266,12.826759965599553
+existing,level,gradient_boosting (+context +district only),sat_total,30.119058343922184,31.167465863686846
+existing,level,gradient_boosting (+context +district only),tsi_both,13.397639259232133,12.943147434830546
+existing,level,gradient_boosting (+context +geographic only),act_composite,1.1977412336410138,1.1937530189279832
+existing,level,gradient_boosting (+context +geographic only),attendance_rate,0.9282786888222491,3.30946532948603
+existing,level,gradient_boosting (+context +geographic only),dropout_9_12,0.45396211257304203,0.5824965851933452
+existing,level,gradient_boosting (+context +geographic only),graduation_4yr,2.0255622074127886,2.085255151371027
+existing,level,gradient_boosting (+context +geographic only),retention_rate,1.0909538877146039,1.8403977594345555
+existing,level,gradient_boosting (+context +geographic only),risk_index,6.740059100140746,6.6457132096601885
+existing,level,gradient_boosting (+context +geographic only),sat_act_above_criterion,6.0229547482561205,6.210914786271495
+existing,level,gradient_boosting (+context +geographic only),sat_act_participation,9.821348986873744,13.21764714618958
+existing,level,gradient_boosting (+context +geographic only),sat_total,30.25254701784224,31.624130787982985
+existing,level,gradient_boosting (+context +geographic only),tsi_both,13.499962949727324,13.079001966027235
+existing,level,gradient_boosting (+context +graph),act_composite,1.1721940854712087,1.204803755636256
+existing,level,gradient_boosting (+context +graph),attendance_rate,0.9975495567007687,4.344478977972141
+existing,level,gradient_boosting (+context +graph),dropout_9_12,0.4644601796098514,0.7041749409243313
+existing,level,gradient_boosting (+context +graph),graduation_4yr,2.1223045352268866,2.112011698155124
+existing,level,gradient_boosting (+context +graph),retention_rate,1.062030280119179,2.8855029446865634
+existing,level,gradient_boosting (+context +graph),risk_index,6.719870638382238,6.647685951496257
+existing,level,gradient_boosting (+context +graph),sat_act_above_criterion,6.050452881978569,6.190833579784326
+existing,level,gradient_boosting (+context +graph),sat_act_participation,9.960245525317909,13.748078520833847
+existing,level,gradient_boosting (+context +graph),sat_total,30.29076812421144,31.47820675944347
+existing,level,gradient_boosting (+context +graph),tsi_both,13.590766276402457,12.880921949794654
+existing,level,gradient_boosting (+context +region only),act_composite,1.1837180313354396,1.2049193393158348
+existing,level,gradient_boosting (+context +region only),attendance_rate,0.9341522096970667,3.6930170638663142
+existing,level,gradient_boosting (+context +region only),dropout_9_12,0.4597846546241503,0.6581957979278508
+existing,level,gradient_boosting (+context +region only),graduation_4yr,2.0962504016076196,2.1013246015364806
+existing,level,gradient_boosting (+context +region only),retention_rate,1.0682238832018318,2.7908280741587124
+existing,level,gradient_boosting (+context +region only),risk_index,6.716929864119782,6.670634646267798
+existing,level,gradient_boosting (+context +region only),sat_act_above_criterion,6.01209130683446,6.205331263263619
+existing,level,gradient_boosting (+context +region only),sat_act_participation,9.911233355060052,13.834851105757213
+existing,level,gradient_boosting (+context +region only),sat_total,30.337054758560633,31.840145528056496
+existing,level,gradient_boosting (+context +region only),tsi_both,13.612843922284322,12.97441510881776
+existing,level,gradient_boosting (+context),act_composite,1.1900079241200354,1.2149680009588801
+existing,level,gradient_boosting (+context),attendance_rate,0.9324091324292334,3.359885107223248
+existing,level,gradient_boosting (+context),dropout_9_12,0.4554877508589432,0.5742171786765748
+existing,level,gradient_boosting (+context),graduation_4yr,2.017777683472261,2.127729189731677
+existing,level,gradient_boosting (+context),retention_rate,1.107030111568912,1.6247630139711038
+existing,level,gradient_boosting (+context),risk_index,6.725287777927731,6.667476991917536
+existing,level,gradient_boosting (+context),sat_act_above_criterion,5.972852504585469,6.15779289630358
+existing,level,gradient_boosting (+context),sat_act_participation,9.813237815418235,12.97609753416981
+existing,level,gradient_boosting (+context),sat_total,30.22566154329787,31.098393997547
+existing,level,gradient_boosting (+context),tsi_both,13.623844273713118,13.142638702259035
+existing,level,knn (own lags),act_composite,1.2597822057460613,1.2650046554934824
+existing,level,knn (own lags),attendance_rate,0.8755144840072424,5.585444748026716
+existing,level,knn (own lags),dropout_9_12,0.4202917170495767,0.5012454323995128
+existing,level,knn (own lags),graduation_4yr,2.210312903225806,2.3298223598435466
+existing,level,knn (own lags),retention_rate,1.081039156626506,1.5908696969696972
+existing,level,knn (own lags),risk_index,7.257645017886934,7.212645569861597
+existing,level,knn (own lags),sat_act_above_criterion,6.3320119586296055,6.670345394736842
+existing,level,knn (own lags),sat_act_participation,10.279607231920199,13.290776515151515
+existing,level,knn (own lags),sat_total,32.039523809523814,34.68494363929146
+existing,level,knn (own lags),tsi_both,14.083887157107233,13.178844696969696
+existing,level,linear_regression (own lags),act_composite,1.2085054701211848,1.203104866397818
+existing,level,linear_regression (own lags),attendance_rate,3.5614033700277306,8.62242518505478
+existing,level,linear_regression (own lags),dropout_9_12,0.4149368936435066,0.6630632380368985
+existing,level,linear_regression (own lags),graduation_4yr,2.153180176198273,2.435251269472827
+existing,level,linear_regression (own lags),retention_rate,1.042972397206213,2.5088439365967883
+existing,level,linear_regression (own lags),risk_index,7.203511448398709,7.123497749429151
+existing,level,linear_regression (own lags),sat_act_above_criterion,6.446541999495922,6.547057195914638
+existing,level,linear_regression (own lags),sat_act_participation,9.929235321103663,15.156842069181604
+existing,level,linear_regression (own lags),sat_total,30.68878536093111,31.8995834136012
+existing,level,linear_regression (own lags),tsi_both,13.606458453922091,12.899263189885968
+existing,level,persistence (last year's value),act_composite,1.275903614457831,1.2935754189944133
+existing,level,persistence (last year's value),attendance_rate,0.7283041641520819,1.3505160898603523
+existing,level,persistence (last year's value),dropout_9_12,0.4485489721886336,0.49951278928136417
+existing,level,persistence (last year's value),graduation_4yr,2.2149032258064514,2.198826597131682
+existing,level,persistence (last year's value),retention_rate,1.0709036144578312,1.232181818181818
+existing,level,persistence (last year's value),risk_index,7.672463795359084,7.593783925038112
+existing,level,persistence (last year's value),sat_act_above_criterion,6.751066580478346,7.167171052631578
+existing,level,persistence (last year's value),sat_act_participation,8.66652119700748,12.05056818181818
+existing,level,persistence (last year's value),sat_total,30.842063492063495,34.13365539452496
+existing,level,persistence (last year's value),tsi_both,14.414837905236908,12.707891414141416
+existing,level,random_forest (+context +graph),act_composite,1.1467587209038217,1.1772918473526464
+existing,level,random_forest (+context +graph),attendance_rate,0.8958236912025376,3.651250335276944
+existing,level,random_forest (+context +graph),dropout_9_12,0.45998766928412904,0.6292953547351907
+existing,level,random_forest (+context +graph),graduation_4yr,2.040947935744937,2.1460650627444124
+existing,level,random_forest (+context +graph),retention_rate,1.1324211851174621,2.3241357694552067
+existing,level,random_forest (+context +graph),risk_index,6.661327182863549,6.610125868643943
+existing,level,random_forest (+context +graph),sat_act_above_criterion,5.935611231363504,6.126134123494591
+existing,level,random_forest (+context +graph),sat_act_participation,10.044512344406058,13.92629155031554
+existing,level,random_forest (+context +graph),sat_total,29.782675130010638,31.456140021898555
+existing,level,random_forest (+context +graph),tsi_both,13.337359607763403,12.867178545799883
+existing,level,random_forest (+context),act_composite,1.1593040393406393,1.1840321543525372
+existing,level,random_forest (+context),attendance_rate,0.8599940180686584,3.510408124805631
+existing,level,random_forest (+context),dropout_9_12,0.4663544194955237,0.5798403943916397
+existing,level,random_forest (+context),graduation_4yr,2.053744613353369,2.144873704226675
+existing,level,random_forest (+context),retention_rate,1.1106914478915344,1.7680941350858705
+existing,level,random_forest (+context),risk_index,6.672615153630625,6.619375638785085
+existing,level,random_forest (+context),sat_act_above_criterion,5.905125890968877,6.045730952963309
+existing,level,random_forest (+context),sat_act_participation,10.01363235281346,13.407145577651104
+existing,level,random_forest (+context),sat_total,29.60092489297969,31.33122014463155
+existing,level,random_forest (+context),tsi_both,13.758913550523747,12.943363456064517
+existing,level,random_forest (own lags),act_composite,1.208162277823279,1.227141889103161
+existing,level,random_forest (own lags),attendance_rate,0.914055613558368,5.24816309577935
+existing,level,random_forest (own lags),dropout_9_12,0.42838386218604424,0.5651634687156517
+existing,level,random_forest (own lags),graduation_4yr,2.1717196496661586,2.2940517468597994
+existing,level,random_forest (own lags),retention_rate,1.0744069851253912,1.9674138266338737
+existing,level,random_forest (own lags),risk_index,7.142698377022919,7.093069672982949
+existing,level,random_forest (own lags),sat_act_above_criterion,6.292484274760678,6.570896316245071
+existing,level,random_forest (own lags),sat_act_participation,9.902984292414576,13.7086828366726
+existing,level,random_forest (own lags),sat_total,30.857213389492955,32.27051672809973
+existing,level,random_forest (own lags),tsi_both,13.921227621232074,13.042304602104924
+existing,level,xgboost (+context +graph),act_composite,1.163091938206175,1.1995327585813498
+existing,level,xgboost (+context +graph),attendance_rate,1.005376516191371,4.234123729712759
+existing,level,xgboost (+context +graph),dropout_9_12,0.4581725383212564,0.7133578835304654
+existing,level,xgboost (+context +graph),graduation_4yr,2.0743490430401215,2.1156850393934383
+existing,level,xgboost (+context +graph),retention_rate,1.056839768354349,2.7270148648713572
+existing,level,xgboost (+context +graph),risk_index,6.7173969301729155,6.662383653755848
+existing,level,xgboost (+context +graph),sat_act_above_criterion,6.022245883861125,6.225533548635871
+existing,level,xgboost (+context +graph),sat_act_participation,10.001847971121496,14.1556937373708
+existing,level,xgboost (+context +graph),sat_total,30.392268453931052,31.6191235528476
+existing,level,xgboost (+context +graph),tsi_both,13.397740500547048,12.973222193671296
+existing,level,xgboost (+context),act_composite,1.1757364195292475,1.202312473247393
+existing,level,xgboost (+context),attendance_rate,0.9266783078549926,3.764577333210596
+existing,level,xgboost (+context),dropout_9_12,0.4570232363495569,0.5683861177324246
+existing,level,xgboost (+context),graduation_4yr,2.0033274198347524,2.120945648357486
+existing,level,xgboost (+context),retention_rate,1.099471451983846,1.5901011109949739
+existing,level,xgboost (+context),risk_index,6.79566712871664,6.633350991042912
+existing,level,xgboost (+context),sat_act_above_criterion,5.962805931748463,6.121010668829084
+existing,level,xgboost (+context),sat_act_participation,10.101928496229977,12.827616094615724
+existing,level,xgboost (+context),sat_total,30.698971945141988,31.745393654152203
+existing,level,xgboost (+context),tsi_both,13.702702624440064,13.124945588614603
+existing,relative,gradient_boosting (+context +academic only),act_composite,1.1707221788914357,1.2153493090193417
+existing,relative,gradient_boosting (+context +academic only),attendance_rate,0.8204834249380498,1.8103405845148146
+existing,relative,gradient_boosting (+context +academic only),dropout_9_12,0.47110071231733974,0.5373188682856259
+existing,relative,gradient_boosting (+context +academic only),graduation_4yr,2.0871376964490023,2.0741992352752976
+existing,relative,gradient_boosting (+context +academic only),retention_rate,1.1776199239853589,1.5872893368409837
+existing,relative,gradient_boosting (+context +academic only),sat_act_above_criterion,6.096142751228579,6.416691298609701
+existing,relative,gradient_boosting (+context +academic only),sat_act_participation,10.464528667972049,12.882058252466937
+existing,relative,gradient_boosting (+context +academic only),sat_total,30.440806594458365,32.97837756810574
+existing,relative,gradient_boosting (+context +academic only),tsi_both,14.308591499752344,12.864504716186428
+existing,relative,gradient_boosting (+context +demographic only),act_composite,1.1706808713663386,1.2290577395403532
+existing,relative,gradient_boosting (+context +demographic only),attendance_rate,0.8334145398817696,1.8275742074362697
+existing,relative,gradient_boosting (+context +demographic only),dropout_9_12,0.46117166071851656,0.5356273317952508
+existing,relative,gradient_boosting (+context +demographic only),graduation_4yr,2.084299347739921,2.1057798444860256
+existing,relative,gradient_boosting (+context +demographic only),retention_rate,1.1681224611749934,1.5485801398324759
+existing,relative,gradient_boosting (+context +demographic only),risk_index,6.761815197993839,6.537560483852206
+existing,relative,gradient_boosting (+context +demographic only),sat_act_above_criterion,6.118006371370402,6.407020478826619
+existing,relative,gradient_boosting (+context +demographic only),sat_act_participation,10.746575642349132,12.60370507003181
+existing,relative,gradient_boosting (+context +demographic only),sat_total,30.374721855463633,32.77763411959267
+existing,relative,gradient_boosting (+context +demographic only),tsi_both,14.477178370344925,12.900422474108641
+existing,relative,gradient_boosting (+context +district only),act_composite,1.1674787345046056,1.2042825866363238
+existing,relative,gradient_boosting (+context +district only),attendance_rate,0.8271322344701822,1.849239330137912
+existing,relative,gradient_boosting (+context +district only),dropout_9_12,0.46844098990438515,0.5265942647977212
+existing,relative,gradient_boosting (+context +district only),graduation_4yr,2.071101921636452,2.0832064966516346
+existing,relative,gradient_boosting (+context +district only),retention_rate,1.1769383939471718,1.520308755141594
+existing,relative,gradient_boosting (+context +district only),risk_index,6.779867634748451,6.541089663997442
+existing,relative,gradient_boosting (+context +district only),sat_act_above_criterion,6.0879854711741865,6.395758120057362
+existing,relative,gradient_boosting (+context +district only),sat_act_participation,10.609031303352776,12.59190194654042
+existing,relative,gradient_boosting (+context +district only),sat_total,30.339108508337212,32.604668371482646
+existing,relative,gradient_boosting (+context +district only),tsi_both,14.359372206360987,12.874063742744639
+existing,relative,gradient_boosting (+context +geographic only),act_composite,1.1913109972405593,1.2139115600345745
+existing,relative,gradient_boosting (+context +geographic only),attendance_rate,0.8330521420391793,1.8735375796260854
+existing,relative,gradient_boosting (+context +geographic only),dropout_9_12,0.4733276834639205,0.5434917877491892
+existing,relative,gradient_boosting (+context +geographic only),graduation_4yr,2.056028706271332,2.085974500502947
+existing,relative,gradient_boosting (+context +geographic only),retention_rate,1.1725784800410857,1.4662020573543801
+existing,relative,gradient_boosting (+context +geographic only),risk_index,6.762026284716095,6.560573947204344
+existing,relative,gradient_boosting (+context +geographic only),sat_act_above_criterion,6.117072528548371,6.39755608430123
+existing,relative,gradient_boosting (+context +geographic only),sat_act_participation,10.387520181300928,12.872239866093034
+existing,relative,gradient_boosting (+context +geographic only),sat_total,30.35875512989987,32.87535856595132
+existing,relative,gradient_boosting (+context +geographic only),tsi_both,14.388528269019066,12.838050435791933
+existing,relative,gradient_boosting (+context +graph),act_composite,1.1807532857691887,1.2128442273938274
+existing,relative,gradient_boosting (+context +graph),attendance_rate,0.8827862104121678,2.050708652838154
+existing,relative,gradient_boosting (+context +graph),dropout_9_12,0.47862791694642437,0.5454854254037177
+existing,relative,gradient_boosting (+context +graph),graduation_4yr,2.0698695316870976,2.127569492482776
+existing,relative,gradient_boosting (+context +graph),retention_rate,1.160603597296165,1.6273761833314384
+existing,relative,gradient_boosting (+context +graph),risk_index,6.751662416335881,6.58146678377936
+existing,relative,gradient_boosting (+context +graph),sat_act_above_criterion,6.130307597716692,6.460685404308767
+existing,relative,gradient_boosting (+context +graph),sat_act_participation,10.550965313547652,12.590756498154105
+existing,relative,gradient_boosting (+context +graph),sat_total,31.026555541822326,33.33954012054948
+existing,relative,gradient_boosting (+context +graph),tsi_both,14.276816715644951,12.763087054887292
+existing,relative,gradient_boosting (+context +region only),act_composite,1.1763353032428254,1.2289547954436766
+existing,relative,gradient_boosting (+context +region only),attendance_rate,0.8681372578655064,1.974301118395354
+existing,relative,gradient_boosting (+context +region only),dropout_9_12,0.46593567494352345,0.5332366094785393
+existing,relative,gradient_boosting (+context +region only),graduation_4yr,2.1074680355691093,2.103958053779474
+existing,relative,gradient_boosting (+context +region only),retention_rate,1.163789593341741,1.5505414722492106
+existing,relative,gradient_boosting (+context +region only),risk_index,6.735089529561881,6.6025274134399385
+existing,relative,gradient_boosting (+context +region only),sat_act_above_criterion,6.0770611345678605,6.35518568210975
+existing,relative,gradient_boosting (+context +region only),sat_act_participation,10.531131653594446,12.718285983428142
+existing,relative,gradient_boosting (+context +region only),sat_total,30.507262894518455,32.60151637554771
+existing,relative,gradient_boosting (+context +region only),tsi_both,14.354526006784194,12.744812247210167
+existing,relative,gradient_boosting (+context),act_composite,1.1812131769119325,1.2195580845775862
+existing,relative,gradient_boosting (+context),attendance_rate,0.8811796119814511,1.8225065027803502
+existing,relative,gradient_boosting (+context),dropout_9_12,0.4716291012234827,0.5259860105196461
+existing,relative,gradient_boosting (+context),graduation_4yr,2.081759521800604,2.070920371580088
+existing,relative,gradient_boosting (+context),retention_rate,1.2113594890194173,1.4793617898212597
+existing,relative,gradient_boosting (+context),risk_index,6.79323641113942,6.551727691259357
+existing,relative,gradient_boosting (+context),sat_act_above_criterion,6.0839867657975235,6.4246520811454015
+existing,relative,gradient_boosting (+context),sat_act_participation,10.523938471175962,12.829886906386099
+existing,relative,gradient_boosting (+context),sat_total,30.129603219739938,32.42565365231584
+existing,relative,gradient_boosting (+context),tsi_both,14.523319865713379,12.860579551048327
+existing,relative,knn (own lags),act_composite,1.2620921288425064,1.2844121554626802
+existing,relative,knn (own lags),attendance_rate,0.7573581073779649,2.1035655999209415
+existing,relative,knn (own lags),dropout_9_12,0.4521111222139,0.5167485084717582
+existing,relative,knn (own lags),graduation_4yr,2.1462810040646807,2.215685814400187
+existing,relative,knn (own lags),retention_rate,1.1625002130414641,1.4160878991674999
+existing,relative,knn (own lags),risk_index,7.251444899200313,7.180715551330262
+existing,relative,knn (own lags),sat_act_above_criterion,6.316526961805005,6.8604513477595335
+existing,relative,knn (own lags),sat_act_participation,10.17956845234045,13.124946933380809
+existing,relative,knn (own lags),sat_total,32.16196936077534,35.54109119200549
+existing,relative,knn (own lags),tsi_both,14.806756452127905,13.162667389010576
+existing,relative,linear_regression (own lags),act_composite,1.1944415935333643,1.2186749759154039
+existing,relative,linear_regression (own lags),attendance_rate,0.7317469368590341,1.9217323500579606
+existing,relative,linear_regression (own lags),dropout_9_12,0.41934424672883275,0.4835999555705673
+existing,relative,linear_regression (own lags),graduation_4yr,2.0948375447759244,2.2494666467515474
+existing,relative,linear_regression (own lags),retention_rate,1.0236530152823624,1.2828860597180347
+existing,relative,linear_regression (own lags),risk_index,7.203320222024537,7.119330335659955
+existing,relative,linear_regression (own lags),sat_act_above_criterion,6.338647490302412,6.682908449621026
+existing,relative,linear_regression (own lags),sat_act_participation,10.146345882753021,12.927486920199915
+existing,relative,linear_regression (own lags),sat_total,30.273838026758433,33.1771486117804
+existing,relative,linear_regression (own lags),tsi_both,14.338408801645183,12.74384311027676
+existing,relative,persistence (last year's value),act_composite,1.275903614457831,1.2935754189944133
+existing,relative,persistence (last year's value),attendance_rate,0.7283041641520819,1.3505160898603523
+existing,relative,persistence (last year's value),dropout_9_12,0.4485489721886336,0.49951278928136417
+existing,relative,persistence (last year's value),graduation_4yr,2.2149032258064514,2.198826597131682
+existing,relative,persistence (last year's value),retention_rate,1.0709036144578312,1.232181818181818
+existing,relative,persistence (last year's value),risk_index,7.672463795359084,7.593783925038112
+existing,relative,persistence (last year's value),sat_act_above_criterion,6.751066580478346,7.167171052631578
+existing,relative,persistence (last year's value),sat_act_participation,8.66652119700748,12.05056818181818
+existing,relative,persistence (last year's value),sat_total,30.842063492063495,34.13365539452496
+existing,relative,persistence (last year's value),tsi_both,14.414837905236908,12.707891414141416
+existing,relative,random_forest (+context +graph),act_composite,1.1518124097329974,1.1945682035721341
+existing,relative,random_forest (+context +graph),attendance_rate,0.8328530778349645,1.78342942143688
+existing,relative,random_forest (+context +graph),dropout_9_12,0.4507032708719659,0.5134369131084056
+existing,relative,random_forest (+context +graph),graduation_4yr,2.00119146104599,2.091519474242291
+existing,relative,random_forest (+context +graph),retention_rate,1.2064490849278982,1.5247648620488101
+existing,relative,random_forest (+context +graph),risk_index,6.646549092805384,6.513711829142407
+existing,relative,random_forest (+context +graph),sat_act_above_criterion,5.94341662423295,6.325198216231322
+existing,relative,random_forest (+context +graph),sat_act_participation,10.296375734977241,12.84718825089286
+existing,relative,random_forest (+context +graph),sat_total,29.96677711394836,33.162907345355066
+existing,relative,random_forest (+context +graph),tsi_both,14.046350305026692,12.752314982450581
+existing,relative,random_forest (+context),act_composite,1.1536533690981146,1.193501152175553
+existing,relative,random_forest (+context),attendance_rate,0.8201174420318618,1.715914724931229
+existing,relative,random_forest (+context),dropout_9_12,0.45258093683991396,0.5140489121420274
+existing,relative,random_forest (+context),graduation_4yr,2.0086328432484515,2.0613385648248013
+existing,relative,random_forest (+context),retention_rate,1.1673183379589755,1.5090983304091286
+existing,relative,random_forest (+context),risk_index,6.663508243740336,6.49117628233496
+existing,relative,random_forest (+context),sat_act_above_criterion,5.965918565392123,6.270274793169446
+existing,relative,random_forest (+context),sat_act_participation,10.277515546897273,12.782249490977796
+existing,relative,random_forest (+context),sat_total,29.8928651356999,33.17736100733796
+existing,relative,random_forest (+context),tsi_both,14.24021805146568,12.813108630542947
+existing,relative,random_forest (own lags),act_composite,1.2141934356394173,1.2340093896974034
+existing,relative,random_forest (own lags),attendance_rate,0.7936776770399507,2.1666952287493797
+existing,relative,random_forest (own lags),dropout_9_12,0.44638718265161337,0.5176979734587183
+existing,relative,random_forest (own lags),graduation_4yr,2.150921194970228,2.291979107401587
+existing,relative,random_forest (own lags),retention_rate,1.1885585112956565,1.6302521947652668
+existing,relative,random_forest (own lags),risk_index,7.141716554632784,7.095578363930011
+existing,relative,random_forest (own lags),sat_act_above_criterion,6.289735722837904,6.833512327479157
+existing,relative,random_forest (own lags),sat_act_participation,10.346778491780164,13.082370119409106
+existing,relative,random_forest (own lags),sat_total,30.965313795013294,34.24784673168678
+existing,relative,random_forest (own lags),tsi_both,14.443067155355674,12.869189921490053
+existing,relative,xgboost (+context +graph),act_composite,1.1734722233570367,1.19683148531584
+existing,relative,xgboost (+context +graph),attendance_rate,0.8282539819917721,2.0532819736152135
+existing,relative,xgboost (+context +graph),dropout_9_12,0.4734969659053407,0.532040719041893
+existing,relative,xgboost (+context +graph),graduation_4yr,2.0522891594698898,2.0934332208854944
+existing,relative,xgboost (+context +graph),retention_rate,1.1471180173801248,1.6364873667914484
+existing,relative,xgboost (+context +graph),risk_index,6.714943996341416,6.561931360296333
+existing,relative,xgboost (+context +graph),sat_act_above_criterion,6.114956353350143,6.440220664785288
+existing,relative,xgboost (+context +graph),sat_act_participation,10.62804374878411,12.69883961293246
+existing,relative,xgboost (+context +graph),sat_total,30.497704036160957,33.42740506711284
+existing,relative,xgboost (+context +graph),tsi_both,14.12498306776896,12.812708714985016
+existing,relative,xgboost (+context),act_composite,1.1761137418053291,1.2146062420563475
+existing,relative,xgboost (+context),attendance_rate,0.830991471021774,1.8540937277803053
+existing,relative,xgboost (+context),dropout_9_12,0.4654999336148345,0.521545130072447
+existing,relative,xgboost (+context),graduation_4yr,2.0498580847236227,2.0499543377817218
+existing,relative,xgboost (+context),retention_rate,1.1721651140873701,1.4768743362731094
+existing,relative,xgboost (+context),risk_index,6.764216078838463,6.539514430069092
+existing,relative,xgboost (+context),sat_act_above_criterion,6.024757260602647,6.377526761045535
+existing,relative,xgboost (+context),sat_act_participation,10.45159241492722,12.889217691882774
+existing,relative,xgboost (+context),sat_total,30.381046613683765,33.01976517034478
+existing,relative,xgboost (+context),tsi_both,14.447780711492195,12.923966482920068
+existing,zscore,gradient_boosting (+context +academic only),act_composite,1.1764251712149685,1.2278978208324505
+existing,zscore,gradient_boosting (+context +academic only),attendance_rate,0.811261927502121,1.6440525973294844
+existing,zscore,gradient_boosting (+context +academic only),dropout_9_12,0.46059208916965055,0.522225459901025
+existing,zscore,gradient_boosting (+context +academic only),graduation_4yr,2.080639254502825,2.003528085279312
+existing,zscore,gradient_boosting (+context +academic only),retention_rate,1.1671245465464444,1.2806878891244193
+existing,zscore,gradient_boosting (+context +academic only),sat_act_above_criterion,6.084170720488029,6.366146893928444
+existing,zscore,gradient_boosting (+context +academic only),sat_act_participation,10.275952018957632,13.225954060269368
+existing,zscore,gradient_boosting (+context +academic only),sat_total,30.215577789266582,33.07622688957064
+existing,zscore,gradient_boosting (+context +academic only),tsi_both,14.475111449378826,13.000697769060498
+existing,zscore,gradient_boosting (+context +demographic only),act_composite,1.186885737799854,1.2209116502027066
+existing,zscore,gradient_boosting (+context +demographic only),attendance_rate,0.8457333421565295,1.6058298055641136
+existing,zscore,gradient_boosting (+context +demographic only),dropout_9_12,0.46299668595383386,0.509130430555159
+existing,zscore,gradient_boosting (+context +demographic only),graduation_4yr,2.0449460971758713,2.0418104712384504
+existing,zscore,gradient_boosting (+context +demographic only),retention_rate,1.1595189089504307,1.2371114548614852
+existing,zscore,gradient_boosting (+context +demographic only),risk_index,6.742797055520161,6.5436839863736695
+existing,zscore,gradient_boosting (+context +demographic only),sat_act_above_criterion,6.0333568509816144,6.457170334322339
+existing,zscore,gradient_boosting (+context +demographic only),sat_act_participation,10.43631696615734,13.136890025610509
+existing,zscore,gradient_boosting (+context +demographic only),sat_total,30.38516759849103,33.07915162736741
+existing,zscore,gradient_boosting (+context +demographic only),tsi_both,14.563139574651126,12.958028243271192
+existing,zscore,gradient_boosting (+context +district only),act_composite,1.1803376217115011,1.2106832068862539
+existing,zscore,gradient_boosting (+context +district only),attendance_rate,0.8084743664838946,1.7094126497349336
+existing,zscore,gradient_boosting (+context +district only),dropout_9_12,0.45678940918770994,0.513242022731727
+existing,zscore,gradient_boosting (+context +district only),graduation_4yr,2.055007939537723,2.010102688430703
+existing,zscore,gradient_boosting (+context +district only),retention_rate,1.1656000242048357,1.2615401465091214
+existing,zscore,gradient_boosting (+context +district only),risk_index,6.7384250679082385,6.598933397775926
+existing,zscore,gradient_boosting (+context +district only),sat_act_above_criterion,6.047692974699469,6.379260966408669
+existing,zscore,gradient_boosting (+context +district only),sat_act_participation,10.716731738850031,12.86046065046727
+existing,zscore,gradient_boosting (+context +district only),sat_total,30.429752288422073,33.13642924241308
+existing,zscore,gradient_boosting (+context +district only),tsi_both,14.273764947206121,12.915352228195058
+existing,zscore,gradient_boosting (+context +geographic only),act_composite,1.1924397603938206,1.2157178336691012
+existing,zscore,gradient_boosting (+context +geographic only),attendance_rate,0.8332636743227058,1.6489258136585387
+existing,zscore,gradient_boosting (+context +geographic only),dropout_9_12,0.4571477312545385,0.5177644452748684
+existing,zscore,gradient_boosting (+context +geographic only),graduation_4yr,2.0473105657056125,2.0013022712352604
+existing,zscore,gradient_boosting (+context +geographic only),retention_rate,1.177454666653258,1.267544000247305
+existing,zscore,gradient_boosting (+context +geographic only),risk_index,6.7834558904670645,6.59777363789392
+existing,zscore,gradient_boosting (+context +geographic only),sat_act_above_criterion,6.092845291890931,6.422045322109797
+existing,zscore,gradient_boosting (+context +geographic only),sat_act_participation,10.245004092290712,13.309068298554172
+existing,zscore,gradient_boosting (+context +geographic only),sat_total,30.453964935052134,33.57135932376307
+existing,zscore,gradient_boosting (+context +geographic only),tsi_both,14.369790953649112,13.046968649170287
+existing,zscore,gradient_boosting (+context +graph),act_composite,1.1656726935534176,1.2108137823321818
+existing,zscore,gradient_boosting (+context +graph),attendance_rate,0.7724058535843666,1.9239049305910823
+existing,zscore,gradient_boosting (+context +graph),dropout_9_12,0.4627919497460108,0.5134784778798207
+existing,zscore,gradient_boosting (+context +graph),graduation_4yr,2.07027695442043,2.0637164735832414
+existing,zscore,gradient_boosting (+context +graph),retention_rate,1.1599262116148714,1.2893289292716799
+existing,zscore,gradient_boosting (+context +graph),risk_index,6.77465141594986,6.658972796291818
+existing,zscore,gradient_boosting (+context +graph),sat_act_above_criterion,6.119946540383717,6.40354886968252
+existing,zscore,gradient_boosting (+context +graph),sat_act_participation,10.759928397677891,12.591813134011552
+existing,zscore,gradient_boosting (+context +graph),sat_total,30.53426742811616,33.33373333294771
+existing,zscore,gradient_boosting (+context +graph),tsi_both,14.349204246380163,12.85784818387539
+existing,zscore,gradient_boosting (+context +region only),act_composite,1.1694973072909003,1.2185067081687098
+existing,zscore,gradient_boosting (+context +region only),attendance_rate,0.7752575412460582,1.8146532115900946
+existing,zscore,gradient_boosting (+context +region only),dropout_9_12,0.4624513753127129,0.5100064777102375
+existing,zscore,gradient_boosting (+context +region only),graduation_4yr,2.096425953698469,2.0097512036232863
+existing,zscore,gradient_boosting (+context +region only),retention_rate,1.160840270761675,1.2611119726046491
+existing,zscore,gradient_boosting (+context +region only),risk_index,6.776565366482582,6.648258439056032
+existing,zscore,gradient_boosting (+context +region only),sat_act_above_criterion,6.028178989951569,6.388952693761457
+existing,zscore,gradient_boosting (+context +region only),sat_act_participation,10.284094934847152,12.984394495678776
+existing,zscore,gradient_boosting (+context +region only),sat_total,30.230080137055513,32.98839004538778
+existing,zscore,gradient_boosting (+context +region only),tsi_both,14.462622614460605,12.923852436920962
+existing,zscore,gradient_boosting (+context),act_composite,1.1918551974430727,1.2215465628607511
+existing,zscore,gradient_boosting (+context),attendance_rate,0.8236888824044384,1.5847697768893194
+existing,zscore,gradient_boosting (+context),dropout_9_12,0.45721394748127847,0.5154892202524188
+existing,zscore,gradient_boosting (+context),graduation_4yr,2.0546270483341837,2.031692200098326
+existing,zscore,gradient_boosting (+context),retention_rate,1.1768650227887414,1.2677308875683968
+existing,zscore,gradient_boosting (+context),risk_index,6.753357199179442,6.600681938179664
+existing,zscore,gradient_boosting (+context),sat_act_above_criterion,6.036447095372556,6.406882539842489
+existing,zscore,gradient_boosting (+context),sat_act_participation,10.363736962090673,13.221698125290278
+existing,zscore,gradient_boosting (+context),sat_total,30.49177083633598,32.91850023481129
+existing,zscore,gradient_boosting (+context),tsi_both,14.495290848943274,12.99337320925304
+existing,zscore,knn (own lags),act_composite,1.266519934637681,1.3073571572551426
+existing,zscore,knn (own lags),attendance_rate,0.7234417502176422,1.8887812663977086
+existing,zscore,knn (own lags),dropout_9_12,0.4326261173949833,0.48983530157343286
+existing,zscore,knn (own lags),graduation_4yr,2.1949487095915643,2.236185127779483
+existing,zscore,knn (own lags),retention_rate,1.188769496616999,1.2581357891401497
+existing,zscore,knn (own lags),risk_index,7.2314839372101885,7.148794260619267
+existing,zscore,knn (own lags),sat_act_above_criterion,6.287685787540526,6.788762951096942
+existing,zscore,knn (own lags),sat_act_participation,9.955083651003655,13.350369413886138
+existing,zscore,knn (own lags),sat_total,32.17283040577517,35.693929302621505
+existing,zscore,knn (own lags),tsi_both,14.882052732533216,13.234972054594426
+existing,zscore,linear_regression (own lags),act_composite,1.20319085406896,1.2365360484489518
+existing,zscore,linear_regression (own lags),attendance_rate,0.7368370361046652,1.890742857920419
+existing,zscore,linear_regression (own lags),dropout_9_12,0.4274568916951549,0.4908965331353935
+existing,zscore,linear_regression (own lags),graduation_4yr,2.0940728779181543,2.224720994981659
+existing,zscore,linear_regression (own lags),retention_rate,1.0382014445409504,1.187724668815586
+existing,zscore,linear_regression (own lags),risk_index,7.128800270172539,6.976365696686682
+existing,zscore,linear_regression (own lags),sat_act_above_criterion,6.28569961811592,6.649123812331881
+existing,zscore,linear_regression (own lags),sat_act_participation,10.404120701497941,13.282237850232784
+existing,zscore,linear_regression (own lags),sat_total,30.22971754410536,33.5436136517555
+existing,zscore,linear_regression (own lags),tsi_both,14.422227820990434,12.86439941865019
+existing,zscore,persistence (last year's value),act_composite,1.275903614457831,1.2935754189944133
+existing,zscore,persistence (last year's value),attendance_rate,0.7283041641520819,1.3505160898603523
+existing,zscore,persistence (last year's value),dropout_9_12,0.4485489721886336,0.49951278928136417
+existing,zscore,persistence (last year's value),graduation_4yr,2.2149032258064514,2.198826597131682
+existing,zscore,persistence (last year's value),retention_rate,1.0709036144578312,1.232181818181818
+existing,zscore,persistence (last year's value),risk_index,7.672463795359084,7.593783925038112
+existing,zscore,persistence (last year's value),sat_act_above_criterion,6.751066580478346,7.167171052631578
+existing,zscore,persistence (last year's value),sat_act_participation,8.66652119700748,12.05056818181818
+existing,zscore,persistence (last year's value),sat_total,30.842063492063495,34.13365539452496
+existing,zscore,persistence (last year's value),tsi_both,14.414837905236908,12.707891414141416
+existing,zscore,random_forest (+context +graph),act_composite,1.1528824782200302,1.2020394920693562
+existing,zscore,random_forest (+context +graph),attendance_rate,0.7893327089448463,1.690002039179502
+existing,zscore,random_forest (+context +graph),dropout_9_12,0.4409477657327868,0.4958824654331434
+existing,zscore,random_forest (+context +graph),graduation_4yr,1.9826973386699027,2.0341337642720663
+existing,zscore,random_forest (+context +graph),retention_rate,1.1263901468247473,1.2544548125006778
+existing,zscore,random_forest (+context +graph),risk_index,6.6472199316428675,6.520579175379909
+existing,zscore,random_forest (+context +graph),sat_act_above_criterion,5.945644060997736,6.292862095753906
+existing,zscore,random_forest (+context +graph),sat_act_participation,10.618088354655326,13.165028560484572
+existing,zscore,random_forest (+context +graph),sat_total,29.81414398326508,33.32576402105103
+existing,zscore,random_forest (+context +graph),tsi_both,14.130060184591049,12.7854395157525
+existing,zscore,random_forest (+context),act_composite,1.1533359558100362,1.1953835703274711
+existing,zscore,random_forest (+context),attendance_rate,0.7770688109844229,1.6295487838369183
+existing,zscore,random_forest (+context),dropout_9_12,0.44088230157016906,0.496378455043167
+existing,zscore,random_forest (+context),graduation_4yr,1.9899248475748355,1.9877435507447907
+existing,zscore,random_forest (+context),retention_rate,1.1454795864072485,1.2502191547372805
+existing,zscore,random_forest (+context),risk_index,6.6639126673801625,6.5224453851125475
+existing,zscore,random_forest (+context),sat_act_above_criterion,5.972091185741382,6.229297190641256
+existing,zscore,random_forest (+context),sat_act_participation,10.350817832268953,13.17050703070926
+existing,zscore,random_forest (+context),sat_total,29.670790050397567,33.186830694935864
+existing,zscore,random_forest (+context),tsi_both,14.303368388644373,12.844987716813586
+existing,zscore,random_forest (own lags),act_composite,1.2099782455558696,1.251781145099509
+existing,zscore,random_forest (own lags),attendance_rate,0.7212090572280044,1.8527114109533538
+existing,zscore,random_forest (own lags),dropout_9_12,0.439864871115911,0.5028055870672072
+existing,zscore,random_forest (own lags),graduation_4yr,2.1943095882334105,2.2678305592131967
+existing,zscore,random_forest (own lags),retention_rate,1.1871880170756604,1.2869294534098688
+existing,zscore,random_forest (own lags),risk_index,7.1433632057884555,7.047825685671905
+existing,zscore,random_forest (own lags),sat_act_above_criterion,6.239733377225575,6.732594481977526
+existing,zscore,random_forest (own lags),sat_act_participation,10.244590816868458,13.705190870693267
+existing,zscore,random_forest (own lags),sat_total,30.978214857623783,34.57257455130437
+existing,zscore,random_forest (own lags),tsi_both,14.45159308284254,12.885579473750454
+existing,zscore,xgboost (+context +graph),act_composite,1.1648564393169498,1.207046289165158
+existing,zscore,xgboost (+context +graph),attendance_rate,0.7759184792147152,1.83115742958881
+existing,zscore,xgboost (+context +graph),dropout_9_12,0.4570026498337694,0.4982598924703502
+existing,zscore,xgboost (+context +graph),graduation_4yr,2.0008113124133886,2.0523966520645525
+existing,zscore,xgboost (+context +graph),retention_rate,1.1193867088970315,1.247039593676759
+existing,zscore,xgboost (+context +graph),risk_index,6.741044426225857,6.586443732210226
+existing,zscore,xgboost (+context +graph),sat_act_above_criterion,6.200485554313831,6.45843820863845
+existing,zscore,xgboost (+context +graph),sat_act_participation,10.720409461283731,12.789064000023492
+existing,zscore,xgboost (+context +graph),sat_total,30.206583071980297,33.41582237743284
+existing,zscore,xgboost (+context +graph),tsi_both,14.269809652760983,12.865071984299584
+existing,zscore,xgboost (+context),act_composite,1.1746299166448424,1.209542063414696
+existing,zscore,xgboost (+context),attendance_rate,0.7994248902856991,1.59372630628406
+existing,zscore,xgboost (+context),dropout_9_12,0.4553887688153081,0.5058850581488293
+existing,zscore,xgboost (+context),graduation_4yr,2.0291762207061588,2.0092080991554817
+existing,zscore,xgboost (+context),retention_rate,1.146598325298038,1.2316081043944214
+existing,zscore,xgboost (+context),risk_index,6.763065714279499,6.576274452249218
+existing,zscore,xgboost (+context),sat_act_above_criterion,6.058182273885248,6.406811276775636
+existing,zscore,xgboost (+context),sat_act_participation,10.326371359889453,13.229152001252888
+existing,zscore,xgboost (+context),sat_total,30.486548100697632,33.44411543583566
+existing,zscore,xgboost (+context),tsi_both,14.448936520165091,12.952027791416

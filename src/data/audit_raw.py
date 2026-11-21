@@ -191,7 +191,26 @@ def main() -> int:
             except (ValueError, KeyError, OSError) as exc:
                 rec(source, f"{year}: verified source", False, str(exc))
     rec("staar_eoc", "2020 is intentionally absent", 2020 not in SRC.get("staar_eoc", {}))
-    rec("finance", "finance remains staged", "finance_peims" not in SRC)
+    # PEIMS actual financial data: year evidence is inside each archive (see finance_archive) and TEA's download
+    # labels; a campus must sit in exactly one of the district and charter archives.
+    for year, entry in SRC.get("finance_peims", {}).items():
+        try:
+            finance_ids = {}
+            for kind, key in (("district", "file"), ("charter", "charter_file")):
+                sums, evidence = new_sources.finance_archive(RAW / entry[key], kind, year)
+                finance_ids[kind] = set(sums.campus_id)
+                source_manifest.append({"source": f"finance_peims_{kind}", "year": year, "file": entry[key],
+                                        "sha256": hashlib.sha256((RAW / entry[key]).read_bytes()).hexdigest(),
+                                        "rows_after_selection": len(finance_ids[kind]), "year_evidence": evidence,
+                                        "definition_file": "source_definitions/finance_campus_reports/oracle.csv"})
+                rec("finance", f"{year}/{kind}: archive CRC, year stamp, single DTUPDATE, campus-coded rows", True, evidence)
+            both = finance_ids["district"] & finance_ids["charter"]
+            rec("finance", f"{year}: no campus id in both the district and the charter archive", not both,
+                f"{len(finance_ids['district'])} district + {len(finance_ids['charter'])} charter campus ids; {len(both)} in both")
+        except (ValueError, KeyError, OSError) as exc:
+            rec("finance", f"{year}: verified source", False, str(exc))
+    rec("finance", "every finance year has both archives", all("charter_file" in e for e in SRC.get("finance_peims", {}).values())
+        and len(SRC.get("finance_peims", {})) == 7)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(source_manifest).to_csv(OUT.parent / "addition_sources.csv", index=False)
