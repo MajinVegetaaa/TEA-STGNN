@@ -36,7 +36,7 @@ predicted on its own.
 - **Why it is new.** Earlier graph models in education (APP-TGN, APP-DGNN) predict individual students in online
   courses. We predict institutions statewide, with a campus–district–region hierarchy, typed relationships and
   yearly graphs.
-- **Success** = the proposed model beats every baseline on the 2023 test year, consistently across seeds, and
+- **Success** = the proposed model beats every baseline on the 2024 test year (2023 is the validation year; corrected 2026-11-21), consistently across seeds, and
   ablations show which relationships matter.
 
 ## 2. Where we are
@@ -219,7 +219,7 @@ specific GPU.
 
 ## 5. Expected experiments and results
 
-All results are on the 2023 test year, averaged over 5 seeds, with every model scored on the same schools.
+All results are on the 2024 test year (corrected 2026-11-21; 2023 is validation), averaged over 5 seeds, with every model scored on the same schools.
 
 | # | Result | What it shows | Phase |
 |---|---|---|---|

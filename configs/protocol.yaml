@@ -1,0 +1,35 @@
+# Evaluation protocol, locked in S1 (2026-11-21). Every model from S2 on is trained and scored by these rules,
+# read through src/eval/protocol.py. Changing any value here is a decision: log it in DECISIONS.md first.
+
+split: configs/split.yaml          # years and seeds live in one place (train 2018-2022, validate 2023, test 2024)
+
+# D2: the ten forecast targets
+targets: [act_composite, sat_total, sat_act_above_criterion, sat_act_participation, dropout_9_12,
+          attendance_rate, retention_rate, graduation_4yr, risk_index, tsi_both]
+
+# D1: what is known when year t is forecast
+forecast_rule:
+  name: retrospective
+  rule: "Every source's values for years up to t-1 may be inputs for year t; nothing observed in year t is."
+  note: "Research benchmark (as in last year's paper and Phase 3). Publication dates are not enforced, so this is
+         not a deployable forecast; the paper must say so."
+
+# Every model is scored on exactly the same rows: the target is observed in year t AND its year t-1 value is
+# observed, so last year's value (persistence) is defined. This is the reference every result is compared with.
+reference_model: "persistence (last year's value)"
+metrics: [mae, rmse, r2]           # mae is primary
+
+# D6: neural models predict the change from last year; the forecast is last year's value plus that change.
+neural_target: change_from_last_year
+
+# Final-model rule (fixed before any 2024 number is seen)
+selection:
+  year: 2023
+  score: "mean over targets of (model MAE / persistence MAE) on 2023, per seed; then mean and SD over seeds"
+  tie_rule: "candidates within one seed SD of the best score count as tied; the simpler one (lower complexity rank) wins"
+  test_year_used_once: true
+
+significance:
+  method: paired bootstrap of MAE differences on seed-averaged predictions, identical schools
+  n_boot: 2000
+  seed: 0

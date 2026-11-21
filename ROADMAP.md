@@ -19,7 +19,7 @@ History of everything done so far: [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md).
 
 | ID | Decision | Chosen |
 |---|---|---|
-| D1 | What is known on forecast day | **One rule for all inputs and baselines** (exact rule written down in S1) |
+| D1 | What is known on forecast day | **Retrospective:** every source's values up to t−1 are inputs for year t, nothing from year t. A research benchmark, not a deployable forecast (publication dates not enforced). In `configs/protocol.yaml` |
 | D2 | Targets | **The current 10**; accountability ratings later only if the professor asks |
 | D3 | MTGNN | **Wu et al., KDD 2020** ("Connecting the Dots"), as the main graph baseline |
 | D4 | Graph settings | **Freeze, do not tune on 2023.** Keep k=5 geographic (≤100 km), k=10 academic and demographic. Fix the kernel width σ from the training years. Per-school geographic scale (σᵢ = distance to 5th neighbour). Raw distances as GAT edge features. Robustness check over k in S7. Applied in S1b |
@@ -35,9 +35,10 @@ scale, rural and town schools get about half the geographic weight of city schoo
 | Step | What | Depends on | Done when | Status |
 |---|---|---|---|---|
 | **S0** | Clean the repo: folder layout, one command (`make`), docs into `docs/`, no science changes | — | validators give the same counts; data and results byte-identical | **done 2026-11-21** |
-| **S1** | Lock the protocol: one config for targets, split, metrics, persistence shortcut and forecast-timing rule; fix the "2023 test year" wording | D1, D2, D6 | Phase 3 "numbers to beat" reproduce exactly | not started |
+| **S1** | Lock the protocol: one config for targets, split, metrics, persistence shortcut and forecast-timing rule (`configs/protocol.yaml`, `src/eval/protocol.py`); fix the "2023 test year" wording | D1, D2, D6 | Phase 3 "numbers to beat" reproduce exactly | **done 2026-11-21** (19/19, max diff 4e-15; bar = 0.953) |
 | **S1b** | Graph v2: σ fixed from training years, per-school geographic scale, raw distances stored as edge features; old graph archived | D4 | graph validator passes; v1 vs v2 differences documented | not started |
-| **S2** | One training harness for every neural model: data loading, masks, single/multi-task loss, early stopping on 2023, 5 seeds, equal tuning budget | S1, S1b | Phase 5 GCN+LSTM reproduces within tolerance on the harness | not started |
+| **S1c** | Numbers to beat under D1: rerun the tabular baselines (persistence, LR, KNN, RF, GB, XGBoost; level/relative/zscore) for all 10 targets with every source at lag 1 and graph v2, select on 2023 | S1, S1b | one `results/s1c/numbers_to_beat.csv` that every later step compares against | not started |
+| **S2** | One training harness for every neural model: data loading, masks, single/multi-task loss, early stopping on 2023, 5 seeds, equal tuning budget | S1, S1b, S1c | Phase 5 GCN+LSTM reproduces within tolerance on the harness | not started |
 | **S3** | Go/no-go diagnostic: GConvGRU and GraphWaveNet with the change-from-last-year target | S2 | we know whether the shortcut closes the gap to Phase 3 | not started |
 | **S4** | MTGNN baseline (graph learning layer, mix-hop propagation, dilated inception convolutions; 7 annual steps) | S2, D3 | tuned on 2023 with the shared budget; tests pass | not started |
 | **S5** | Proposed model, in versions: v0 GRU only → v1 + relation-aware GAT → v2 + multi-task heads → v3 (optional) hierarchy nodes | S2 | each version compared on 2023; best beats MTGNN and Phase 3, or the result is documented honestly | not started |
@@ -58,6 +59,7 @@ make data        # audit raw files, rebuild the master table, validate it
 make features    # rebuild the publication-filtered (expanded) features
 make graph       # rebuild and validate the expanded graph
 make test        # unit tests
+make protocol    # check the locked protocol reproduces the stored baseline numbers
 ```
 
 ## Where things are

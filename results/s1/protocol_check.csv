@@ -1,0 +1,20 @@
+check,passed,detail
+"config: 10 targets, test year disjoint from train/validation",True,"targets 10; train [2018, 2019, 2020, 2021, 2022], val [2023], test [2024]"
+"Phase 3 act_composite: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 2.2e-16
+Phase 3 act_composite: every model scored on the same schools,True,
+"Phase 3 attendance_rate: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 5.6e-17
+Phase 3 attendance_rate: every model scored on the same schools,True,
+"Phase 3 dropout_9_12: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 8.0e-17
+Phase 3 dropout_9_12: every model scored on the same schools,True,
+"Phase 3 retention_rate: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 9.5e-17
+Phase 3 retention_rate: every model scored on the same schools,True,
+"Phase 3 sat_act_above_criterion: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 0.0e+00
+Phase 3 sat_act_above_criterion: every model scored on the same schools,True,
+"Phase 3 sat_total: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 0.0e+00
+Phase 3 sat_total: every model scored on the same schools,True,
+"Phase 3 tsi_both: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 3.6e-15
+Phase 3 tsi_both: every model scored on the same schools,True,
+"Phase 3 risk_index: MAE, RMSE, R2 and bootstrap CI reproduce",True,max abs diff 1.1e-16
+Phase 3 risk_index: every model scored on the same schools,True,
+"Phase 3 bar in the final-model score (2023, 8 targets)",True,score 0.9534 +/- 0.0006 (1.0 = persistence)
+expanded 10-target selection (Phase 5 comparator): test MAE reproduces,True,10 targets; max abs diff 7.1e-15
