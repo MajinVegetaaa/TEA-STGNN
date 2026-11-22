@@ -5,7 +5,7 @@ schools (a spatio-temporal graph neural network) beats predicting each school on
 **Baseline to beat:** MTGNN (Wu et al., KDD 2020) plus the Phase 3 tabular models. **Final model:** our proposed
 heterogeneous STGNN (relation-aware graph attention + GRU + multi-task heads).
 
-History of everything done so far: [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md). Every decision: [`DECISIONS.md`](DECISIONS.md).
+Every decision, dated: [`DECISIONS.md`](DECISIONS.md). Details: [`docs/DATA.md`](docs/DATA.md), [`docs/GRAPH.md`](docs/GRAPH.md), [`docs/MODELS.md`](docs/MODELS.md).
 
 ## How we work
 
@@ -68,7 +68,7 @@ make protocol    # check the locked protocol reproduces the stored baseline numb
 
 ```
 ROADMAP.md  DECISIONS.md  README.md  Makefile
-docs/                 DATA_PIPELINE.md, GRAPH_DATA_DOCUMENTATION.md, DATA_LEAD_HANDOFF.md, PROJECT_LOG.md
+docs/                 DATA.md (sources, cleaning, features, checks), GRAPH.md (graph), MODELS.md (protocol, baselines, results)
 docs/references/      PPT, project brief, papers, team division (not in git)
 configs/              data_sources, split, graph, risk_index, feature/finance availability
 src/data/             audit, cleaning, master table, sources, validation
