@@ -52,6 +52,10 @@ GCN + LSTM, T-GCN, GConvGRU, A3TGCN and a fixed-support GraphWaveNet, each with 
 single relation (width 32, Adam 0.003, 1–30 epochs chosen on 2023). **None beat the tabular baselines on any target;
 against persistence 0–3 of 10.** Details: `results/phase5/README.md`.
 
+These baselines are our own re-implementations; T-GCN, GConvGRU and A3TGCN were checked once against PyTorch Geometric
+Temporal with identical weights on a fixed graph and match it to float32 rounding (≤6e-8; see `DECISIONS.md`,
+2026-11-22). GraphWaveNet (fixed supports) is not in that library.
+
 ### S3 go/no-go (2023, 5 seeds; bar 0.930)
 
 | Model | A: v1, Phase 5 inputs, level | B: v2, D1 inputs, level | C: v2, D1 inputs, change |
