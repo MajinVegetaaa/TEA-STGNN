@@ -17,6 +17,7 @@ from torch import nn
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "models"))
 from phase5_cells import GConvGRU, GraphWaveNet, GraphWindow  # noqa: E402  (Phase 5 cells, reused unchanged)
 from phase5_gcn_lstm import graph_inputs  # noqa: E402  (Phase 5 graph normalisation, reused unchanged)
+from mtgnn import MTGNN, yearly_supports  # noqa: E402
 
 
 class GCNLSTM(nn.Module):
@@ -56,14 +57,20 @@ def windows(family: str):
 @dataclass
 class Family:
     prepare: Callable[[list, list[str]], torch.Tensor]       # (snapshots, relations) -> model input
-    build: Callable[[int, int, int], nn.Module]              # (input features, hidden, outputs) -> model
+    build: Callable[..., nn.Module]       # (input features, hidden, outputs, dropout, schools, **model_args) -> model
     features: Callable[[torch.Tensor], int] = lambda x: x.shape[-1]
 
 
 FAMILIES = {
+    # Phase 5 models (no dropout)
     "gcn_lstm": Family(prepare=lambda snaps, rel: torch.stack([graph_inputs(s, rel, "gcn_lstm") for s in snaps]),
-                       build=GCNLSTM),
+                       build=lambda f, h, o, d, n, **kw: GCNLSTM(f, h, o)),
     # GConvGRU's window holds [X, -A X]; its cell takes the original feature count
-    "gconvgru": Family(prepare=windows("gconvgru"), build=lambda f, h, o: Keep3D(GConvGRU(f // 2, h, o))),
-    "graphwavenet": Family(prepare=windows("graphwavenet"), build=lambda f, h, o: Keep3D(GraphWaveNet(f, h, o))),
+    "gconvgru": Family(prepare=windows("gconvgru"), build=lambda f, h, o, d, n, **kw: Keep3D(GConvGRU(f // 2, h, o))),
+    "graphwavenet": Family(prepare=windows("graphwavenet"),
+                           build=lambda f, h, o, d, n, **kw: Keep3D(GraphWaveNet(f, h, o))),
+    # S4: MTGNN with its learned graph plus the yearly v2 relations
+    "mtgnn": Family(prepare=lambda snaps, rel: GraphWindow(torch.stack([s["campus"].x for s in snaps]),
+                                                           yearly_supports(snaps, rel)),
+                    build=lambda f, h, o, d, n, **kw: MTGNN(f, h, o, n, dropout=d, **kw)),
 }

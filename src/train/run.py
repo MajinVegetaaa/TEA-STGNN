@@ -15,6 +15,7 @@ predictions.csv (standard format + graph), per_seed.csv, comparison.csv.
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -51,11 +52,19 @@ def main() -> None:
     panel = D.load(cfg["graph"])
     family = FAMILIES[cfg["model"]]
     targets = args.targets or cfg.get("targets") or panel.targets
-    epochs = args.max_epochs or cfg["max_epochs"]
+    # training budget: the shared file (configs/budget.yaml, S4/S5) or the config's own fixed settings (Phase 5)
+    if "budget" in cfg:
+        budget = yaml.safe_load((ROOT / cfg["budget"]).read_text())
+        points = [{"hidden": h, "dropout": d} for h, d in itertools.product(budget["grid"]["hidden"], budget["grid"]["dropout"])]
+    else:
+        budget = {"lr": cfg["lr"], "weight_decay": 0.0, "max_epochs": cfg["max_epochs"], "patience": None}
+        points = [{"hidden": cfg["hidden"], "dropout": 0.0}]
+    epochs = args.max_epochs or budget["max_epochs"]
     val, test = panel.val_index, panel.val_index + 1
     (out / "protocol.json").write_text(json.dumps(
-        {"config": cfg, "snapshot": str(panel.path.relative_to(ROOT)), "snapshot_sha256": panel.sha256,
-         "targets": targets, "torch_version": torch.__version__, "device": device, "test_run": args.test}, indent=2))
+        {"config": cfg, "budget": budget, "grid_points": points, "snapshot": str(panel.path.relative_to(ROOT)),
+         "snapshot_sha256": panel.sha256, "targets": targets, "torch_version": torch.__version__, "device": device,
+         "test_run": args.test}, indent=2))
 
     cache = {}
 
@@ -65,12 +74,14 @@ def main() -> None:
             cache[key] = family.prepare(panel.snapshots, relations).to(device)
         return cache[key]
 
-    def train(target_list, relations, stop, n_epochs, seed, tune):
+    def train(target_list, relations, stop, n_epochs, seed, tune, hidden, dropout):
         j = [panel.targets.index(t) for t in target_list]
         x = inputs(relations)
-        build = lambda: family.build(family.features(x), cfg["hidden"], len(j))
+        build = lambda: family.build(family.features(x), hidden, len(j), dropout, len(panel.campus_ids),
+                                     **cfg.get("model_args", {}))
         return fit(build, x, panel.y[..., j].to(device), panel.y_lag1[..., j].to(device),
-                   panel.eval_mask[..., j].to(device), stop, n_epochs, cfg["lr"], seed, cfg["label"], tune, device)
+                   panel.eval_mask[..., j].to(device), stop, n_epochs, budget["lr"], seed, cfg["label"], tune, device,
+                   weight_decay=budget["weight_decay"], patience=budget["patience"] if tune else None)
 
     # ---- selection on 2023
     groups = [[t] for t in targets] if cfg["tasks"] == "single" else [targets]
@@ -81,16 +92,19 @@ def main() -> None:
         if cfg.get("graphs") == "combined+single":
             candidates += [(r, [r]) for r in relations]
         rows = []
-        for name, rel in candidates:
-            f = train(group, rel, val, epochs, 0, True)
-            rows.append({"targets": group, "graph": name, "relations": rel, "epochs": f.best_epoch,
+        for (name, rel), point in itertools.product(candidates, points):
+            f = train(group, rel, val, epochs, 0, True, point["hidden"], point["dropout"])
+            rows.append({"targets": group, "graph": name, "relations": rel, **point, "epochs": f.best_epoch,
                          "val_ratio": f.val_ratio, "val_mae": dict(zip(group, f.val_mae))})
         grid += rows
-        locked.append(rows[0])
-        if len(rows) > 1:
-            locked.append(min(rows[1:], key=lambda r: r["val_ratio"]))
-        print("selected:", ", ".join(group), "|", ", ".join(f"{r['graph']} ({r['epochs']} ep)" for r in locked[-2:]),
-              flush=True)
+        new = [min([r for r in rows if r["graph"] == "combined"], key=lambda r: r["val_ratio"])]
+        singles = [r for r in rows if r["graph"] != "combined"]
+        if singles:
+            new.append(min(singles, key=lambda r: r["val_ratio"]))
+        locked += new
+        print("selected:", ", ".join(group), "|", ", ".join(
+            f"{r['graph']} (width {r['hidden']}, dropout {r['dropout']}, {r['epochs']} ep, 2023 ratio {r['val_ratio']:.3f})"
+            for r in new), flush=True)
     pd.DataFrame([{**{k: v for k, v in r.items() if k != "val_mae"}, "target": t, "val_mae": r["val_mae"][t]}
                   for r in grid for t in r["targets"]]).drop(columns="targets").to_csv(out / "validation_grid.csv",
                                                                                      index=False)
@@ -101,7 +115,7 @@ def main() -> None:
         rows = []
         for row in locked:
             for seed in panel.split["seeds"]:
-                f = train(row["targets"], row["relations"], val, row["epochs"], seed, False)
+                f = train(row["targets"], row["relations"], val, row["epochs"], seed, False, row["hidden"], row["dropout"])
                 for k, t in enumerate(row["targets"]):
                     j = panel.targets.index(t)
                     mask = panel.eval_mask[val, :, j]
@@ -117,7 +131,7 @@ def main() -> None:
     preds = []
     for row in locked:
         for seed in panel.split["seeds"]:
-            f = train(row["targets"], row["relations"], test, row["epochs"], seed, False)
+            f = train(row["targets"], row["relations"], test, row["epochs"], seed, False, row["hidden"], row["dropout"])
             for k, t in enumerate(row["targets"]):
                 j = panel.targets.index(t)
                 mask = panel.eval_mask[test, :, j].numpy()

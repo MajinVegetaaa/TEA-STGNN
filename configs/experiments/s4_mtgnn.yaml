@@ -1,0 +1,13 @@
+# S4: MTGNN baseline (Wu et al. 2020) - learned graph + yearly v2 relations, one model per target, change label (D6),
+# shared budget B. 2023 only (--val-seeds); 2024 is not touched.
+name: MTGNN
+model: mtgnn
+graph: v2
+label: change
+tasks: single
+graphs: combined          # the target's v2 relations as fixed supports, plus MTGNN's learned graph
+budget: configs/budget.yaml
+model_args: {embedding: 40, alpha: 3.0, top_k: 20, beta: 0.05, depth: 2, kernels: [1, 2, 3], dilations: [1, 2]}
+threads: 2
+device: cpu
+out: s4/mtgnn

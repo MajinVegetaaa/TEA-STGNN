@@ -1,0 +1,3 @@
+model,setting,score_2023,sd_over_seeds,score_combined_graph_only,bar,gap_to_bar,targets_beating_persistence,targets_at_or_better_than_bar
+GraphWaveNet,"S3 best: v2, D1 inputs, change",1.0328187510288938,0.05876201838060749,1.0379091111845657,0.9302015050213098,0.10261724600758393,5,1
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",1.0106062662949333,0.04796001736064527,1.0106062662949333,0.9302015050213098,0.0804047612736235,6,2

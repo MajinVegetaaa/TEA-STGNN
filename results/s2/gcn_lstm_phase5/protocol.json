@@ -13,6 +13,18 @@
     "device": "cpu",
     "out": "s2/gcn_lstm_phase5"
   },
+  "budget": {
+    "lr": 0.003,
+    "weight_decay": 0.0,
+    "max_epochs": 30,
+    "patience": null
+  },
+  "grid_points": [
+    {
+      "hidden": 32,
+      "dropout": 0.0
+    }
+  ],
   "snapshot": "data/graph_expanded/pyg/snapshots.pt",
   "snapshot_sha256": "8b30664e696becb6abc361e5b32b8203d5c5a68a0bd97f8c90de01424cadc00f",
   "targets": [

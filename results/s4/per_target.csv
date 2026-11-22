@@ -1,0 +1,21 @@
+model,setting,target,graph,ratio_2023,bar_ratio_2023
+GraphWaveNet,"S3 best: v2, D1 inputs, change",act_composite,region,0.950021310816578,0.9075212483435484
+GraphWaveNet,"S3 best: v2, D1 inputs, change",sat_total,combined,0.8995309643020348,0.9110771652817232
+GraphWaveNet,"S3 best: v2, D1 inputs, change",sat_act_above_criterion,combined,0.9064917493909778,0.832717350296961
+GraphWaveNet,"S3 best: v2, D1 inputs, change",sat_act_participation,geographic,1.0187398701607862,1.0
+GraphWaveNet,"S3 best: v2, D1 inputs, change",dropout_9_12,combined,1.1110397146496234,0.9681432907179608
+GraphWaveNet,"S3 best: v2, D1 inputs, change",attendance_rate,academic_attendance,1.414986827109911,1.0
+GraphWaveNet,"S3 best: v2, D1 inputs, change",retention_rate,combined,1.0812033833025791,0.96391997616729
+GraphWaveNet,"S3 best: v2, D1 inputs, change",graduation_4yr,demographic,1.0498392309455544,0.8970016072660465
+GraphWaveNet,"S3 best: v2, D1 inputs, change",risk_index,region,0.8985742325522166,0.8298940027678482
+GraphWaveNet,"S3 best: v2, D1 inputs, change",tsi_both,geographic,0.9977602270586761,0.9917404093717208
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",act_composite,combined,0.9214188497467168,0.9075212483435484
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",sat_total,combined,0.877162099895026,0.9110771652817232
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",sat_act_above_criterion,combined,0.8757320642463319,0.832717350296961
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",sat_act_participation,combined,1.0178568014272946,1.0
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",dropout_9_12,combined,1.0148437061851452,0.9681432907179608
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",attendance_rate,combined,1.4824501019467915,1.0
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",retention_rate,combined,1.0404779625496223,0.96391997616729
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",graduation_4yr,combined,0.9906228063270165,0.8970016072660465
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",risk_index,combined,0.9043087491251353,0.8298940027678482
+MTGNN,"v2 + learned graph, D1 inputs, change, budget B",tsi_both,combined,0.9811895215002563,0.9917404093717208

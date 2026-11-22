@@ -1,0 +1,81 @@
+{
+  "config": {
+    "name": "MTGNN",
+    "model": "mtgnn",
+    "graph": "v2",
+    "label": "change",
+    "tasks": "single",
+    "graphs": "combined",
+    "budget": "configs/budget.yaml",
+    "model_args": {
+      "embedding": 40,
+      "alpha": 3.0,
+      "top_k": 20,
+      "beta": 0.05,
+      "depth": 2,
+      "kernels": [
+        1,
+        2,
+        3
+      ],
+      "dilations": [
+        1,
+        2
+      ]
+    },
+    "threads": 2,
+    "device": "cpu",
+    "out": "s4/mtgnn"
+  },
+  "budget": {
+    "grid": {
+      "hidden": [
+        32,
+        64
+      ],
+      "dropout": [
+        0.0,
+        0.2
+      ]
+    },
+    "lr": 0.003,
+    "weight_decay": 0.0001,
+    "max_epochs": 100,
+    "patience": 20
+  },
+  "grid_points": [
+    {
+      "hidden": 32,
+      "dropout": 0.0
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.2
+    },
+    {
+      "hidden": 64,
+      "dropout": 0.0
+    },
+    {
+      "hidden": 64,
+      "dropout": 0.2
+    }
+  ],
+  "snapshot": "data/graph_v2/pyg/snapshots.pt",
+  "snapshot_sha256": "0a4ff7abf6e4d04b3ad313a9750e137f391f69233ab994cc188db2af1643c8d8",
+  "targets": [
+    "act_composite",
+    "sat_total",
+    "sat_act_above_criterion",
+    "dropout_9_12",
+    "attendance_rate",
+    "retention_rate",
+    "risk_index",
+    "tsi_both",
+    "sat_act_participation",
+    "graduation_4yr"
+  ],
+  "torch_version": "2.12.1",
+  "device": "cpu",
+  "test_run": false
+}
