@@ -104,7 +104,7 @@ preprocessing and the representation-selection protocol.
 - Added inputs use the assumed August 1 Y−1 cutoff with source-year publication
   checks. Existing inputs, graph structure and persistence remain retrospective;
   downloaded data revisions are not archived historical vintages. See
-  [availability policy](../../configs/feature_availability.md). Static metadata
+  [availability policy](../../docs/DATA.md#history-features-model-inputs). Static metadata
   and cohort-selection limitations from the original pipeline also remain.
 - Early years have limited added history. Training-empty columns are dropped;
   STAAR 2020 remains missing and 2023 assessment redesign is not harmonized away.
@@ -121,7 +121,7 @@ and tuning grids; `selected_test_predictions.csv` contains only locked test runs
 Large predictions, raw/processed data, graph tensors and the frozen snapshot are
 local and gitignored: preserve them separately when sharing the project.
 
-Run the commands in [DATA_PIPELINE.md](../../docs/DATA_PIPELINE.md). The experiment
+Run the commands in [DATA.md](../../docs/DATA.md). The experiment
 reuses existing model families/grids, caches identical feature tables/predictions,
 and reuses deterministic HGB seed outputs only where early stopping and binning
 subsampling cannot apply, after checking seed equivalence. No stochastic forest

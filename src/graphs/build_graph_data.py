@@ -1,7 +1,7 @@
 """Build graph node and edge tables (one snapshot per year; years from configs/data_sources.yaml) from data/processed/.
 
 Run from the repo root:  python3 src/graphs/build_graph_data.py
-Writes data/graph/*.csv. See docs/GRAPH_DATA_DOCUMENTATION.md for every rule and parameter.
+Writes data/graph/*.csv. See docs/GRAPH.md for every rule and parameter.
 No model is trained here.
 """
 from __future__ import annotations
