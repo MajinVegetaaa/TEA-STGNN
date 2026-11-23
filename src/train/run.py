@@ -23,6 +23,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+import torch_geometric
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -71,7 +72,8 @@ def main() -> None:
     val, test = panel.val_index, panel.val_index + 1
     (out / "protocol.json").write_text(json.dumps(
         {"config": cfg, "budget": budget, "grid_points": points, "snapshot": str(panel.path.relative_to(ROOT)),
-         "snapshot_sha256": panel.sha256, "targets": targets, "torch_version": torch.__version__, "device": device,
+         "snapshot_sha256": panel.sha256, "targets": targets, "torch_version": torch.__version__,
+         "pyg_version": torch_geometric.__version__, "device": device,
          "test_run": args.test}, indent=2))
 
     cache = {}

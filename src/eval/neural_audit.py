@@ -23,8 +23,9 @@ def validate_s5_comparators(records: dict[str, dict], expected_seeds: list[int])
             raise ValueError(f"{run} does not score the same targets as S4 MTGNN")
         if cfg.get("through_year") != 2023:
             raise ValueError(f"{run} does not cap its input panel at 2023")
-        if record.get("device") != reference.get("device") or record.get("torch_version") != reference.get("torch_version"):
-            raise ValueError(f"{run} does not use the same device and PyTorch version as the S4 comparator")
+        runtime = ("device", "torch_version", "pyg_version")
+        if any(record.get(key) != reference.get(key) for key in runtime):
+            raise ValueError(f"{run} does not use the same device, PyTorch and PyG versions as the S4 comparator")
         if record.get("test_run") is not False or cfg.get("label") != "change" or cfg.get("graph") != "v2":
             raise ValueError(f"{run} is not a 2023-only graph-v2 change-label run")
     for run in sorted(required - {comparator}):
