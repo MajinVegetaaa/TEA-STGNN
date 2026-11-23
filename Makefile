@@ -3,7 +3,7 @@
 # frozen and never rebuilt here; `check` still validates v1.
 PY ?= python3
 NN ?= .venv-expanded/bin/python   # environment with torch + PyG (requirements-gpu.txt) for snapshots and neural models
-TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features tests.test_harness
+TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features tests.test_harness tests.test_mtgnn
 
 .PHONY: help check data features graph snapshot test protocol s1c s2
 
