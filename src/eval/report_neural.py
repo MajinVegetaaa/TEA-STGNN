@@ -1,13 +1,15 @@
-"""S3 go/no-go: can graph models get close to the tabular bar on 2023?
+"""2023 scores of neural runs next to the bar (S3 go/no-go, S4 MTGNN, later S5 versions). 2024 is never read.
 
-For every S3 run (results/s3/<run>/validation_seeds.csv) and every target, the graph choice (combined or best single
-relation, both locked on 2023 at seed 0) with the lower 5-seed mean 2023 MAE is kept -- the same "best on 2023" rule
-the bar used. Score = protocol selection score (mean over targets of MAE / persistence MAE; mean and SD over seeds).
-Writes results/s3/summary.csv (per run) and results/s3/per_target.csv (ratios next to the bar's).
-Run from the repo root:  python3 src/eval/report_s3.py
+For every run (results/<run>/validation_seeds.csv) and target, the locked graph choice with the lower 5-seed mean
+2023 MAE is kept (the same "best on 2023" rule as the bar). Score = protocol selection score: mean over targets of
+MAE / persistence MAE, mean and SD over seeds.
+
+    python3 src/eval/report_neural.py --step s3      # writes results/s3/summary.csv, per_target.csv
+    python3 src/eval/report_neural.py --step s4      # writes results/s4/summary.csv, per_target.csv
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -16,26 +18,30 @@ import pandas as pd
 from protocol import load, selection_score
 
 ROOT = Path(__file__).resolve().parents[2]
-S3 = ROOT / "results" / "s3"
-RUNS = {  # run folder -> (model, setting)
-    "gconvgru_phase5": ("GConvGRU", "A: v1, Phase 5 inputs, level"),
-    "gconvgru_v2_level": ("GConvGRU", "B: v2, D1 inputs, level"),
-    "gconvgru_v2_change": ("GConvGRU", "C: v2, D1 inputs, change"),
-    "graphwavenet_phase5": ("GraphWaveNet", "A: v1, Phase 5 inputs, level"),
-    "graphwavenet_v2_level": ("GraphWaveNet", "B: v2, D1 inputs, level"),
-    "graphwavenet_v2_change": ("GraphWaveNet", "C: v2, D1 inputs, change"),
+STEPS = {  # step -> {run folder under results/: (model, setting)}
+    "s3": {"s3/gconvgru_phase5": ("GConvGRU", "A: v1, Phase 5 inputs, level"),
+           "s3/gconvgru_v2_level": ("GConvGRU", "B: v2, D1 inputs, level"),
+           "s3/gconvgru_v2_change": ("GConvGRU", "C: v2, D1 inputs, change"),
+           "s3/graphwavenet_phase5": ("GraphWaveNet", "A: v1, Phase 5 inputs, level"),
+           "s3/graphwavenet_v2_level": ("GraphWaveNet", "B: v2, D1 inputs, level"),
+           "s3/graphwavenet_v2_change": ("GraphWaveNet", "C: v2, D1 inputs, change")},
+    "s4": {"s3/graphwavenet_v2_change": ("GraphWaveNet", "S3 best: v2, D1 inputs, change"),
+           "s4/mtgnn": ("MTGNN", "v2 + learned graph, D1 inputs, change, budget B")},
 }
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--step", choices=sorted(STEPS), required=True)
+    step = ap.parse_args().step
     targets = load()["targets"]
     bar = json.loads((ROOT / "results/s1c/bar.json").read_text())["score_2023"]
     bar_t = pd.read_csv(ROOT / "results/s1c/numbers_to_beat.csv").set_index("target").val_ratio
     summary, per_target = [], []
-    for run, (model, setting) in RUNS.items():
-        v = pd.read_csv(S3 / run / "validation_seeds.csv")
+    for run, (model, setting) in STEPS[step].items():
+        v = pd.read_csv(ROOT / "results" / run / "validation_seeds.csv")
         mean = v.groupby(["target", "graph"]).val_mae.mean()
-        pick = mean.groupby(level="target").idxmin().map(lambda ix: ix[1])          # best graph per target, 2023
+        pick = mean.groupby(level="target").idxmin().map(lambda ix: ix[1])          # best locked graph per target
         chosen = v[v.apply(lambda r: pick[r.target] == r.graph, axis=1)]
         model_mae = chosen.pivot(index="seed", columns="target", values="val_mae")[targets]
         persistence = chosen.groupby("target").persistence_mae.first()[targets]
@@ -50,10 +56,10 @@ def main() -> None:
         for t in targets:
             per_target.append({"model": model, "setting": setting, "target": t, "graph": pick[t],
                                "ratio_2023": ratios[t], "bar_ratio_2023": bar_t[t]})
-    s = pd.DataFrame(summary)
-    s.to_csv(S3 / "summary.csv", index=False)
-    pt = pd.DataFrame(per_target)
-    pt.to_csv(S3 / "per_target.csv", index=False)
+    out = ROOT / "results" / step
+    s, pt = pd.DataFrame(summary), pd.DataFrame(per_target)
+    s.to_csv(out / "summary.csv", index=False)
+    pt.to_csv(out / "per_target.csv", index=False)
     pd.set_option("display.width", 220)
     print(s.round(4).to_string(index=False))
     print("\nratio to persistence on 2023 per target (bar in the last column)")

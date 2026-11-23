@@ -1,0 +1,23 @@
+name: MTGNN
+model: mtgnn
+graph: v2
+label: change
+tasks: single
+graphs: combined
+budget: configs/budget.yaml
+model_args:
+  embedding: 40
+  alpha: 3.0
+  top_k: 20
+  beta: 0.05
+  depth: 2
+  kernels:
+  - 1
+  - 2
+  - 3
+  dilations:
+  - 1
+  - 2
+threads: 2
+device: cpu
+out: s4/mtgnn

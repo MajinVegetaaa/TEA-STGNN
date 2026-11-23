@@ -24,15 +24,17 @@ class Fit:
     scale: torch.Tensor
 
 
-def fit(build, x, y, y_lag1, eval_mask, stop, epochs, lr, seed, label="level", tune=False, device="cpu") -> Fit:
+def fit(build, x, y, y_lag1, eval_mask, stop, epochs, lr, seed, label="level", tune=False, device="cpu",
+        weight_decay=0.0, patience=None) -> Fit:
     """Train on label years 1..stop-1 and forecast year index `stop`.
 
     tune=True scores every epoch on year `stop` (the validation year) and returns the best epoch; the model returned
-    is the one after the final epoch, so callers refit with best_epoch epochs for a forecast.
+    is the one after the final epoch, so callers refit with best_epoch epochs for a forecast. With `patience`, tuning
+    stops after that many epochs without a better 2023 score. Dropout is on while training and off when forecasting.
     """
     torch.manual_seed(seed)
     model = build().to(device)
-    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     raw = y[1:stop]
     labels = raw - y_lag1[1:stop] if label == "change" else raw
     observed = labels.isfinite()
@@ -45,11 +47,13 @@ def fit(build, x, y, y_lag1, eval_mask, stop, epochs, lr, seed, label="level", t
                                for k in range(truth.shape[-1])])
 
     def forecast():
+        model.eval()
         out = model(x[:stop + 1])[-1] * scale + center
         return out + y_lag1[stop] if label == "change" else out
 
     best = (float("inf"), 0, [float("nan")] * truth.shape[-1])
     for epoch in range(1, epochs + 1):
+        model.train()
         pred = model(x[:stop])[1:]
         loss = ((pred[observed] - scaled[observed]) ** 2).mean()
         opt.zero_grad()
@@ -62,6 +66,8 @@ def fit(build, x, y, y_lag1, eval_mask, stop, epochs, lr, seed, label="level", t
                 ratio = float(np.mean([e / p.item() for e, p in zip(errors, persistence)]))
                 if (ratio, epoch) < best[:2]:
                     best = (ratio, epoch, errors)
+                if patience and epoch - best[1] >= patience:
+                    break
     with torch.no_grad():
         final = forecast().cpu().numpy()
     ratio, epoch, errors = best if tune else (float("nan"), epochs, [float("nan")] * truth.shape[-1])
