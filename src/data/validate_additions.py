@@ -49,6 +49,22 @@ def gate_files() -> list[Path]:
         paths += [RAW / entry["file"], RAW / entry["charter_file"]]
     paths.append(RAW / "source_definitions/finance_campus_reports/oracle.csv")
     paths += list((RAW / "source_definitions").glob("*.html"))
+    # The pre-expansion files are the independent reference for the unchanged-column checks above.
+    # Include them (and the manifest) in the gate fingerprint so a previously saved PASS cannot
+    # remain valid after the reference archive is removed or changed.
+    frozen_required = [
+        FROZEN / "manifest.json",
+        FROZEN / "data/processed/master_school_year.csv",
+        FROZEN / "data/processed/temporal_features.csv",
+        FROZEN / "data/processed/school_metadata.csv",
+        FROZEN / "data/processed/risk_index_components.csv",
+        FROZEN / "data/processed/subgroup_school_year.csv",
+    ]
+    paths.extend(frozen_required)
+    frozen_manifest = FROZEN / "manifest.json"
+    if frozen_manifest.exists():
+        manifest = json.loads(frozen_manifest.read_text())
+        paths.extend(FROZEN / rel for rel in manifest["files"])
     return sorted(set(paths))
 
 

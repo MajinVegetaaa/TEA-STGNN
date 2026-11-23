@@ -16,7 +16,7 @@ from pathlib import Path
 import pandas as pd
 
 from protocol import choose, load, selection_score
-from neural_audit import validate_s5_comparators
+from neural_audit import validate_s5_comparators, validate_validation_seed_coverage
 
 ROOT = Path(__file__).resolve().parents[2]
 STEPS = {  # step -> {run folder under results/: (model, setting)}
@@ -28,7 +28,7 @@ STEPS = {  # step -> {run folder under results/: (model, setting)}
            "s3/graphwavenet_v2_change": ("GraphWaveNet", "C: v2, D1 inputs, change")},
     "s4": {"s3/graphwavenet_v2_change": ("GraphWaveNet", "S3 best: v2, D1 inputs, change"),
            "s4/mtgnn": ("MTGNN", "v2 + learned graph, D1 inputs, change, budget B")},
-    "s5": {"s4/mtgnn": ("MTGNN", "S4 comparator"),
+    "s5": {"s4/mtgnn_corrected_snapshot": ("MTGNN", "S4 comparator on corrected snapshot"),
            "s5/proposed_v0": ("Proposed STGNN v0", "temporal only"),
            "s5/proposed_v1": ("Proposed STGNN v1", "+ relation-aware attention"),
            "s5/proposed_v2": ("Proposed STGNN v2", "+ gated persistence"),
@@ -50,8 +50,8 @@ def main() -> None:
     summary, per_target = [], []
     for run, (model, setting) in STEPS[step].items():
         v = pd.read_csv(ROOT / "results" / run / "validation_seeds.csv")
-        if step == "s5" and sorted(v.seed.unique().tolist()) != sorted(load()["split"]["seeds"]):
-            raise ValueError(f"{run} does not contain validation scores for every protocol seed")
+        if step == "s5":
+            validate_validation_seed_coverage(run, v.to_dict("records"), targets, load()["split"]["seeds"])
         mean = v.groupby(["target", "graph"]).val_mae.mean()
         pick = mean.groupby(level="target").idxmin().map(lambda ix: ix[1])          # best locked graph per target
         chosen = v[v.apply(lambda r: pick[r.target] == r.graph, axis=1)]

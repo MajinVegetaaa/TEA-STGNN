@@ -3,6 +3,7 @@
 name: MTGNN
 model: mtgnn
 graph: v2
+through_year: 2023       # validation-only comparator rerun; keep the reserved test year outside the model panel
 label: change
 tasks: single
 graphs: combined          # the target's v2 relations as fixed supports, plus MTGNN's learned graph

@@ -16,6 +16,7 @@ Writes data/graph/pyg/snapshots.pt. Run from the repo root:  python3 src/graphs/
 """
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import sys
 
@@ -84,7 +85,23 @@ def build_features(nodes: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, 
     return out, scaler
 
 
+def row_check_years(split: dict, include_test: bool = False) -> list[int]:
+    """Years used when comparing optional persisted evaluation rows.
+
+    S5 preparation must not consult the reserved test year. Test-year row
+    comparisons therefore require an explicit opt-in after S6.
+    """
+    years = list(split["val_years"])
+    if include_test:
+        years.extend(split["test_years"])
+    return years
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--include-test-row-check", action="store_true",
+                        help="also compare persisted test-year rows (reserved for after S6)")
+    args = parser.parse_args()
     nodes = pd.read_csv(G / "nodes.csv", dtype=ID, low_memory=False)
     cat = pd.read_csv(G / "node_feature_catalog.csv")
     sets = pd.read_csv(G / "academic_edge_sets.csv").set_index("target").edge_set
@@ -153,11 +170,11 @@ def main() -> None:
                 "academic_relation": {t: f"academic_{sets[t].removeprefix('excl_')}" for t in TARGETS if t in sets},
                 "split": SPLIT, "scaler": scaler, "year_stats": y_stats, "snapshots": snaps,
                 **({"edge_attr": ["weight", "distance_z"], "edge_distance_stats": dist_stats} if V2 else {})}, OUT)
-    check(snaps, nodes, edges, campuses, names)
+    check(snaps, nodes, edges, campuses, names, include_test_row_checks=args.include_test_row_check)
     print(f"wrote {OUT.relative_to(ROOT)}: {len(snaps)} years x {n} campuses x {len(names)} features")
 
 
-def check(snaps, nodes, edges, campuses, names) -> None:
+def check(snaps, nodes, edges, campuses, names, include_test_row_checks: bool = False) -> None:
     """Self-checks: counts, round-trips, and the evaluation rows equal Phase 3's."""
     ok = []
     rec = lambda name, cond, detail="": (ok.append(bool(cond)), print(f"{'PASS' if cond else 'FAIL'}  {name}  {detail}"))
@@ -189,14 +206,15 @@ def check(snaps, nodes, edges, campuses, names) -> None:
         for t in TARGETS:
             if t not in set(p.target):
                 continue
-            for y in SPLIT["val_years"] + SPLIT["test_years"]:
+            for y in row_check_years(SPLIT, include_test=include_test_row_checks):
                 s = snaps[[x.year for x in snaps].index(y)]
                 m = s["campus"].eval_mask[:, TARGETS.index(t)]
                 mine = {campuses[i] for i in m.nonzero().flatten().tolist()}
                 theirs = set(p[(p.target == t) & (p.year == y)].campus_id)
                 rec(f"eval rows = Phase 3 rows: {t} {y}", mine == theirs, f"{len(mine)} vs {len(theirs)}")
     else:
-        print(f"SKIP  eval rows = Phase 3 rows ({len(TARGETS) * len(SPLIT['val_years'] + SPLIT['test_years'])} checks): "
+        years = row_check_years(SPLIT, include_test=include_test_row_checks)
+        print(f"SKIP  eval rows = Phase 3 rows ({len(TARGETS) * len(years)} checks): "
               f"{pred.relative_to(ROOT)} not found (gitignored; upload it or run Phase 3 to enable)")
     print(f"\n{sum(ok)}/{len(ok)} checks passed")
     assert all(ok), "converter self-checks failed"
