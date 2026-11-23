@@ -33,6 +33,16 @@ class Linear(nn.Module):
         return self.lin(x)
 
 
+class BiasHeads(nn.Module):
+    """Constant per-target predictions, useful for inspecting loss gradients."""
+    def __init__(self, outputs=2):
+        super().__init__()
+        self.bias = nn.Parameter(torch.ones(outputs))
+
+    def forward(self, x):
+        return self.bias.expand(x.shape[0], x.shape[1], -1)
+
+
 def panel(seed=0):
     g = torch.Generator().manual_seed(seed)
     lag = torch.randn(T, N, K, generator=g) * 3 + 50
@@ -70,6 +80,22 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(1 <= f.best_epoch <= 20)
         self.assertTrue(np.isfinite(f.val_ratio))
         self.assertEqual(f.forecast.shape, (N, K))
+
+    def test_equal_target_loss_does_not_weight_targets_by_observation_count(self):
+        x = torch.zeros(3, 10, 1)
+        y = torch.full((3, 10, 2), float("nan"))
+        lag = torch.zeros_like(y)
+        mask = torch.zeros_like(y, dtype=torch.bool)
+        y[1, :, 0] = torch.arange(10, dtype=torch.float32)
+        y[1, :2, 1] = torch.tensor([0.0, 1.0])
+        y[2, :2, :] = torch.tensor([[1.0, 1.0], [2.0, 2.0]])
+        mask[2, :2, :] = True
+        equal = fit(lambda: BiasHeads(), x, y, lag, mask, stop=2, epochs=1, lr=0.0,
+                    seed=0, label="change", equal_target_loss=True)
+        pooled = fit(lambda: BiasHeads(), x, y, lag, mask, stop=2, epochs=1, lr=0.0,
+                     seed=0, label="change", equal_target_loss=False)
+        torch.testing.assert_close(equal.model.bias.grad, torch.ones(2))
+        self.assertGreater(pooled.model.bias.grad[0], pooled.model.bias.grad[1] * 4.9)
 
     def test_same_seed_same_result(self):
         x, y, lag, m = panel()

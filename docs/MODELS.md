@@ -82,8 +82,12 @@ S5 configs are `configs/experiments/s5_proposed_v0.yaml` through `s5_proposed_v3
 history with a GRU; v1 adds relation-specific GATv2 layers and relation attention; v2 adds the zero-initialized,
 per-target gated change correction; v3 shares one model across all targets with equal standardized target losses.
 `make s5` uses the shared budget in `configs/budget.yaml`, selects on 2023, and scores five seeds on 2023 only.
+For a CUDA runtime, use `make s5 DEVICE=cuda` with `NN` pointing at that runtime's configured Python.
 `src/eval/report_neural.py --step s5` compares the four versions with MTGNN and the S1c bar, then applies the fixed
 simpler-model tie rule among proposed versions. It never scores 2024.
+The S5 loader requires snapshot metadata showing categorical vocabularies were fit on training years only and limits
+its panel to 2023. Rebuild the graph v2 snapshot after this preprocessing fix, then verify S4's stored comparator uses
+the same feature schema before scoring S5.
 
 **Environments.** Data, graph and tabular models: `requirements.txt` (Python 3.13; 3.12 works). Neural models:
 `requirements-gpu.txt` (torch 2.12.1 + PyG 2.8.1); the laptop's `.venv-expanded` has these and runs every neural

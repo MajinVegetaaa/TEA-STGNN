@@ -22,6 +22,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import graph_version  # noqa: E402
 from edge_features import distance_stats, edge_attributes  # noqa: E402
+from feature_encoding import train_only_onehot  # noqa: E402
 
 EXPANDED = graph_version.expanded()
 V2 = graph_version.name() == "v2"     # v2 also stores edge_attr = [weight, distance_z] per edge (configs/graph_v2.yaml)
@@ -74,10 +75,11 @@ def build_features(nodes: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, 
     X = X.fillna(med)
     mu, sd = X[train].mean(), X[train].std().replace(0, 1).fillna(1)
     X = (X - mu) / sd
-    onehot = pd.get_dummies(nodes[STATIC_CAT].astype(str), prefix=STATIC_CAT, dtype=float)
+    onehot, category_vocabulary = train_only_onehot(nodes, train, STATIC_CAT)
     out = pd.concat([X, ind, onehot], axis=1)
     scaler = {"columns": cols, "median": med.to_dict(), "mean": mu.to_dict(), "sd": sd.to_dict(),
-              "fit_years": SPLIT["train_years"],
+              "fit_years": SPLIT["train_years"], "category_vocabulary": category_vocabulary,
+              "categories_fit_years": SPLIT["train_years"], "unknown_category": "all_zero",
               **({"signed_log": [c for c in cols if c.startswith("finance_")]} if V2 else {})}
     return out, scaler
 

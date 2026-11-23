@@ -32,6 +32,7 @@ import data as D  # noqa: E402
 from families import FAMILIES  # noqa: E402
 from protocol import metrics  # noqa: E402
 from trainer import fit  # noqa: E402
+from run_guards import validate_run_request  # noqa: E402
 
 
 def main() -> None:
@@ -41,15 +42,22 @@ def main() -> None:
     ap.add_argument("--test", action="store_true", help="refit the locked choices and score 2024")
     ap.add_argument("--targets", nargs="*", help="subset of targets (smoke tests)")
     ap.add_argument("--max-epochs", type=int, help="override (smoke tests)")
+    ap.add_argument("--device", choices=["cpu", "cuda"], help="override the device in the experiment config")
     args = ap.parse_args()
     cfg = yaml.safe_load(args.config.read_text())
+    try:
+        validate_run_request(cfg, args.test)
+    except ValueError as exc:
+        ap.error(str(exc))
     torch.set_num_threads(cfg.get("threads", 2))
-    device = cfg.get("device", "cpu")
+    device = args.device or cfg.get("device", "cpu")
+    cfg["device"] = device
     out = ROOT / "results" / cfg["out"]
     out.mkdir(parents=True, exist_ok=True)
     (out / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False))
 
-    panel = D.load(cfg["graph"])
+    panel = D.load(cfg["graph"], through_year=cfg.get("through_year"),
+                   require_train_only_categories=cfg.get("validation_only", False))
     family = FAMILIES[cfg["model"]]
     targets = args.targets or cfg.get("targets") or panel.targets
     # training budget: the shared file (configs/budget.yaml, S4/S5) or the config's own fixed settings (Phase 5)

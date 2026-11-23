@@ -39,7 +39,12 @@ class ProposedSTGNN(nn.Module):
     def __init__(self, features: int, hidden: int, outputs: int, dropout: float = 0.0,
                  version: int = 0, relations: int = 5):
         super().__init__()
+        if version not in (0, 1, 2, 3):
+            raise ValueError(f"unsupported proposed model version: {version}")
+        if version >= 1 and relations < 1:
+            raise ValueError("graph versions require at least one relation")
         self.version = version
+        self.relations = relations
         self.input = nn.Linear(features, hidden)
         if version >= 1:
             self.relation_gat = nn.ModuleList(
@@ -50,25 +55,46 @@ class ProposedSTGNN(nn.Module):
             self.relation_score = nn.Parameter(torch.zeros(relations, hidden))
         self.gru = nn.GRU(hidden, hidden)
         self.dropout = nn.Dropout(dropout)
-        self.head = nn.Linear(hidden, outputs)
+        # One independent scalar head per target; the encoder remains shared in v3.
+        self.heads = nn.ModuleList(nn.Linear(hidden, 1) for _ in range(outputs))
         if version >= 2:
             self.alpha = nn.Parameter(torch.zeros(outputs))
 
     def forward(self, window: ProposedWindow) -> torch.Tensor:
+        if window.x.ndim != 3:
+            raise ValueError("window.x must have shape [years, schools, features]")
+        if not self.heads:
+            raise ValueError("model must have at least one output head")
+        if len(window.edges) != window.x.shape[0] or len(window.edge_attrs) != window.x.shape[0]:
+            raise ValueError("one edge list and edge-attribute list are required per year")
         encoded = self.input(window.x).relu()
         if self.version >= 1:
             frames = []
             for t, frame in enumerate(encoded):
+                if len(window.edges[t]) != self.relations or len(window.edge_attrs[t]) != self.relations:
+                    raise ValueError(f"year index {t} has a relation count different from model setup")
                 messages = []
-                for k, (conv, edge, attr) in enumerate(zip(self.relation_gat, window.edges[t], window.edge_attrs[t])):
+                available = []
+                for conv, edge, attr in zip(self.relation_gat, window.edges[t], window.edge_attrs[t]):
+                    if edge.ndim != 2 or edge.shape[0] != 2 or attr.ndim != 2 or attr.shape != (edge.shape[1], 2):
+                        raise ValueError("edge_index must be [2, E] and v2 edge_attr must be [E, 2]")
                     messages.append(conv(frame, edge, attr))
-                stack = torch.stack(messages, dim=0)  # [relations, schools, hidden]
+                    # Relations with no incoming edge for a node contribute no message.
+                    available.append(torch.bincount(edge[1], minlength=frame.shape[0]) > 0)
+                available = torch.stack(available, dim=0)  # [relations, schools]
+                stack = torch.stack(messages, dim=0).masked_fill(~available.unsqueeze(-1), 0.0)
                 scores = torch.einsum("rnh,rh->rn", stack.tanh(), self.relation_score)
+                has_relation = available.any(dim=0)
+                scores = scores.masked_fill(~available, float("-inf"))
+                # Avoid softmax(-inf,...) when a school has no neighbours in any relation.
+                scores = torch.where(has_relation.unsqueeze(0), scores, torch.zeros_like(scores))
                 weights = scores.softmax(dim=0)
-                frames.append((stack * weights.unsqueeze(-1)).sum(dim=0))
+                # Residual path preserves each school's own encoded features.
+                frames.append(frame + (stack * weights.unsqueeze(-1)).sum(dim=0))
             encoded = torch.stack(frames)
         states, _ = self.gru(self.dropout(encoded))
-        prediction = self.head(self.dropout(states))
+        states = self.dropout(states)
+        prediction = torch.cat([head(states) for head in self.heads], dim=-1)
         if self.version >= 2:
             prediction = self.alpha * prediction
         return prediction

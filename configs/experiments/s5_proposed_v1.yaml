@@ -2,6 +2,8 @@
 name: Proposed STGNN v1
 model: proposed
 graph: v2
+through_year: 2023
+validation_only: true
 label: change
 tasks: single
 graphs: combined

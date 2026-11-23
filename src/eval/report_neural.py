@@ -16,6 +16,7 @@ from pathlib import Path
 import pandas as pd
 
 from protocol import choose, load, selection_score
+from neural_audit import validate_s5_comparators
 
 ROOT = Path(__file__).resolve().parents[2]
 STEPS = {  # step -> {run folder under results/: (model, setting)}
@@ -42,9 +43,15 @@ def main() -> None:
     targets = load()["targets"]
     bar = json.loads((ROOT / "results/s1c/bar.json").read_text())["score_2023"]
     bar_t = pd.read_csv(ROOT / "results/s1c/numbers_to_beat.csv").set_index("target").val_ratio
+    protocols = {run: json.loads((ROOT / "results" / run / "protocol.json").read_text())
+                 for run in STEPS[step]}
+    if step == "s5":
+        validate_s5_comparators(protocols, load()["split"]["seeds"])
     summary, per_target = [], []
     for run, (model, setting) in STEPS[step].items():
         v = pd.read_csv(ROOT / "results" / run / "validation_seeds.csv")
+        if step == "s5" and sorted(v.seed.unique().tolist()) != sorted(load()["split"]["seeds"]):
+            raise ValueError(f"{run} does not contain validation scores for every protocol seed")
         mean = v.groupby(["target", "graph"]).val_mae.mean()
         pick = mean.groupby(level="target").idxmin().map(lambda ix: ix[1])          # best locked graph per target
         chosen = v[v.apply(lambda r: pick[r.target] == r.graph, axis=1)]

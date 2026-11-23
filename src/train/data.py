@@ -45,14 +45,33 @@ class Panel:
         return rel
 
 
-def load(graph: str) -> Panel:
+def load(graph: str, through_year: int | None = None,
+         require_train_only_categories: bool = False) -> Panel:
     path = SNAPSHOTS[graph]
     data = torch.load(path, weights_only=False, map_location="cpu")
-    snaps = data["snapshots"]
     split = data["split"]
     assert data["years"] == split["train_years"] + split["val_years"] + split["test_years"], "years out of order"
+    if require_train_only_categories:
+        scaler = data.get("scaler", {})
+        if (scaler.get("categories_fit_years") != split["train_years"]
+                or scaler.get("fit_years") != split["train_years"]
+                or not scaler.get("category_vocabulary")
+                or scaler.get("unknown_category") != "all_zero"
+                or data.get("edge_attr") != ["weight", "distance_z"]):
+            raise ValueError("S5 requires a snapshot whose categorical vocabulary was fit on training years only; rebuild it")
+    years = data["years"]
+    snaps = data["snapshots"]
+    if through_year is not None:
+        validation_cutoff = max(split["train_years"] + split["val_years"])
+        if through_year > validation_cutoff:
+            raise ValueError(f"through_year={through_year} exceeds the validation cutoff {validation_cutoff}")
+        keep = [i for i, year in enumerate(years) if year <= through_year]
+        if not keep or years[keep[-1]] != through_year:
+            raise ValueError(f"snapshot does not contain requested through_year={through_year}")
+        years = [years[i] for i in keep]
+        snaps = [snaps[i] for i in keep]
     stack = lambda key: torch.stack([s["campus"][key] for s in snaps])
-    return Panel(years=data["years"], campus_ids=data["campus_ids"], targets=data["targets"], snapshots=snaps,
+    return Panel(years=years, campus_ids=data["campus_ids"], targets=data["targets"], snapshots=snaps,
                  y=stack("y"), y_lag1=stack("y_lag1"), eval_mask=stack("eval_mask"), present=stack("present"),
                  split=split, academic_relation=data["academic_relation"],
                  sha256=hashlib.sha256(path.read_bytes()).hexdigest(), path=path)
