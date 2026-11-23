@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from protocol import load, selection_score
+from protocol import choose, load, selection_score
 
 ROOT = Path(__file__).resolve().parents[2]
 STEPS = {  # step -> {run folder under results/: (model, setting)}
@@ -27,6 +27,11 @@ STEPS = {  # step -> {run folder under results/: (model, setting)}
            "s3/graphwavenet_v2_change": ("GraphWaveNet", "C: v2, D1 inputs, change")},
     "s4": {"s3/graphwavenet_v2_change": ("GraphWaveNet", "S3 best: v2, D1 inputs, change"),
            "s4/mtgnn": ("MTGNN", "v2 + learned graph, D1 inputs, change, budget B")},
+    "s5": {"s4/mtgnn": ("MTGNN", "S4 comparator"),
+           "s5/proposed_v0": ("Proposed STGNN v0", "temporal only"),
+           "s5/proposed_v1": ("Proposed STGNN v1", "+ relation-aware attention"),
+           "s5/proposed_v2": ("Proposed STGNN v2", "+ gated persistence"),
+           "s5/proposed_v3": ("Proposed STGNN v3", "+ multi-task")},
 }
 
 
@@ -56,6 +61,15 @@ def main() -> None:
         for t in targets:
             per_target.append({"model": model, "setting": setting, "target": t, "graph": pick[t],
                                "ratio_2023": ratios[t], "bar_ratio_2023": bar_t[t]})
+    if step == "s5":
+        proposed = pd.DataFrame(summary)
+        proposed = proposed[proposed.model.str.startswith("Proposed STGNN")].copy()
+        proposed["complexity"] = proposed.model.map({"Proposed STGNN v0": 0, "Proposed STGNN v1": 1,
+                                                       "Proposed STGNN v2": 2, "Proposed STGNN v3": 3})
+        winner = choose(proposed.set_index("model").rename(columns={"score_2023": "score", "sd_over_seeds": "sd"})
+                        [["score", "sd", "complexity"]])
+        for row in summary:
+            row["selected_proposed"] = row["model"] == winner
     out = ROOT / "results" / step
     s, pt = pd.DataFrame(summary), pd.DataFrame(per_target)
     s.to_csv(out / "summary.csv", index=False)

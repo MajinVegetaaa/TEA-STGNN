@@ -3,9 +3,9 @@
 # frozen and never rebuilt here; `check` still validates v1.
 PY ?= python3
 NN ?= .venv-expanded/bin/python   # environment with torch + PyG (requirements-gpu.txt) for snapshots and neural models
-TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features tests.test_harness tests.test_mtgnn
+TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features tests.test_harness tests.test_mtgnn tests.test_proposed
 
-.PHONY: help check data features graph snapshot test protocol s1c s2
+.PHONY: help check data features graph snapshot test protocol s1c s2 s5
 
 help:            ## list targets
 	@grep -E '^[a-z0-9]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/'
@@ -48,3 +48,10 @@ s1c:             ## numbers to beat under D1 on graph v2 (~2.5 h on the laptop: 
 s2:              ## harness reproduces the Phase 5 GCN + LSTM benchmark (~1 min on the laptop CPU)
 	$(NN) src/train/run.py configs/experiments/s2_gcn_lstm_phase5.yaml --test
 	$(NN) src/train/check_reproduction.py
+
+s5:              ## proposed STGNN v0-v3: shared budget B, 2023 selection and 5 validation seeds only
+	$(NN) src/train/run.py configs/experiments/s5_proposed_v0.yaml --val-seeds
+	$(NN) src/train/run.py configs/experiments/s5_proposed_v1.yaml --val-seeds
+	$(NN) src/train/run.py configs/experiments/s5_proposed_v2.yaml --val-seeds
+	$(NN) src/train/run.py configs/experiments/s5_proposed_v3.yaml --val-seeds
+	$(NN) src/eval/report_neural.py --step s5

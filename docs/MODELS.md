@@ -73,9 +73,17 @@ proposed model (S5); design options under research (see `DECISIONS.md`, 2026-11-
 ```bash
 make s1c                                   # tabular bar (~2.5 h on the laptop)
 make s2                                    # harness reproduces Phase 5 GCN + LSTM (~1 min)
+make s5                                    # proposed STGNN v0-v3, shared budget B, 2023 only
 .venv-expanded/bin/python src/train/run.py configs/experiments/<name>.yaml --val-seeds
 python3 src/eval/report_s3.py              # S3 table
 ```
+
+S5 configs are `configs/experiments/s5_proposed_v0.yaml` through `s5_proposed_v3.yaml`. v0 encodes each school's
+history with a GRU; v1 adds relation-specific GATv2 layers and relation attention; v2 adds the zero-initialized,
+per-target gated change correction; v3 shares one model across all targets with equal standardized target losses.
+`make s5` uses the shared budget in `configs/budget.yaml`, selects on 2023, and scores five seeds on 2023 only.
+`src/eval/report_neural.py --step s5` compares the four versions with MTGNN and the S1c bar, then applies the fixed
+simpler-model tie rule among proposed versions. It never scores 2024.
 
 **Environments.** Data, graph and tabular models: `requirements.txt` (Python 3.13; 3.12 works). Neural models:
 `requirements-gpu.txt` (torch 2.12.1 + PyG 2.8.1); the laptop's `.venv-expanded` has these and runs every neural

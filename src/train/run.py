@@ -77,17 +77,26 @@ def main() -> None:
     def train(target_list, relations, stop, n_epochs, seed, tune, hidden, dropout):
         j = [panel.targets.index(t) for t in target_list]
         x = inputs(relations)
+        model_args = dict(cfg.get("model_args", {}))
+        if cfg["model"] == "proposed" and model_args.get("version", 0) >= 1:
+            model_args["relations"] = len(relations)
         build = lambda: family.build(family.features(x), hidden, len(j), dropout, len(panel.campus_ids),
-                                     **cfg.get("model_args", {}))
+                                     **model_args)
         return fit(build, x, panel.y[..., j].to(device), panel.y_lag1[..., j].to(device),
                    panel.eval_mask[..., j].to(device), stop, n_epochs, budget["lr"], seed, cfg["label"], tune, device,
-                   weight_decay=budget["weight_decay"], patience=budget["patience"] if tune else None)
+                   weight_decay=budget["weight_decay"], patience=budget["patience"] if tune else None,
+                   equal_target_loss=cfg.get("loss") == "equal_targets")
 
     # ---- selection on 2023
     groups = [[t] for t in targets] if cfg["tasks"] == "single" else [targets]
     grid, locked = [], []
     for group in groups:
-        relations = panel.relations(group[0]) if len(group) == 1 else cfg["relations"]
+        if len(group) == 1:
+            relations = panel.relations(group[0])
+        elif cfg.get("relations") == "all_target_relations":
+            relations = list(dict.fromkeys(r for target in group for r in panel.relations(target)))
+        else:
+            relations = cfg["relations"]
         candidates = [("combined", relations)]
         if cfg.get("graphs") == "combined+single":
             candidates += [(r, [r]) for r in relations]

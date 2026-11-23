@@ -1,0 +1,12 @@
+# S5 v0: temporal encoder without graph messages; shared budget B; 2023 only.
+name: Proposed STGNN v0
+model: proposed
+graph: v2
+label: change
+tasks: single
+graphs: combined
+budget: configs/budget.yaml
+model_args: {version: 0}
+threads: 2
+device: cpu
+out: s5/proposed_v0
