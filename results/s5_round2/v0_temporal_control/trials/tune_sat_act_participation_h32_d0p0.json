@@ -1,0 +1,19 @@
+{
+  "config_hash": "e4447d5a029133c430bfbf19fa65eb770f257a4a8f2f5c48d6e2db2323a23a6e",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 6,
+    "status": "completed",
+    "targets": [
+      "sat_act_participation"
+    ],
+    "trial_id": "tune_sat_act_participation_h32_d0p0",
+    "val_mae": {
+      "sat_act_participation": 12.037251472473145
+    },
+    "val_ratio": 0.9988949769926027
+  },
+  "status": "completed"
+}

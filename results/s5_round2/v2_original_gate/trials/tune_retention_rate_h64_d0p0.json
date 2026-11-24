@@ -1,0 +1,19 @@
+{
+  "config_hash": "a1cf8a09a3f26e971984914ba79c4d7ca6e8ac9315370a3d7595efa31b61a1f4",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 10,
+    "status": "completed",
+    "targets": [
+      "retention_rate"
+    ],
+    "trial_id": "tune_retention_rate_h64_d0p0",
+    "val_mae": {
+      "retention_rate": 1.229501724243164
+    },
+    "val_ratio": 0.9978248483909751
+  },
+  "status": "completed"
+}

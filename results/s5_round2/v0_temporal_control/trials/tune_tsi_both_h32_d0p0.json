@@ -1,0 +1,19 @@
+{
+  "config_hash": "e4447d5a029133c430bfbf19fa65eb770f257a4a8f2f5c48d6e2db2323a23a6e",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 6,
+    "status": "completed",
+    "targets": [
+      "tsi_both"
+    ],
+    "trial_id": "tune_tsi_both_h32_d0p0",
+    "val_mae": {
+      "tsi_both": 12.308209419250488
+    },
+    "val_ratio": 0.9685485160061508
+  },
+  "status": "completed"
+}

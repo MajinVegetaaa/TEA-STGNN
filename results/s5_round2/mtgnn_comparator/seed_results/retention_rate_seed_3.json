@@ -1,0 +1,50 @@
+{
+  "config_hash": "199169734b295c931c9e62db3218f16a23a7103ab5e1654fb76b9b359f0dd02b",
+  "metrics": [
+    {
+      "dropout": 0.2,
+      "hidden": 32,
+      "model": "MTGNN corrected Graph V2 comparator, Round 2",
+      "n": 1650,
+      "normalized_mae": 1.065360388944158,
+      "persistence_mae": 1.2321819067001343,
+      "seed": 3,
+      "selected_epoch": 1,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "retention_rate",
+      "val_mae": 1.3127177953720093,
+      "variant": "mtgnn"
+    }
+  ],
+  "seed": 3,
+  "selected_config": {
+    "dropout": 0.2,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 1,
+    "status": "completed",
+    "targets": [
+      "retention_rate"
+    ],
+    "trial_id": "tune_retention_rate_h32_d0p2",
+    "val_mae": {
+      "retention_rate": 1.2619881629943848
+    },
+    "val_ratio": 1.0241898181852658
+  },
+  "status": "completed",
+  "targets": [
+    "retention_rate"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.7647161483764648,
+      "train_loss": 1.0079821348190308,
+      "val_ratio": 1.065360388944158,
+      "validation_loss": 0.5050574541091919
+    }
+  ]
+}

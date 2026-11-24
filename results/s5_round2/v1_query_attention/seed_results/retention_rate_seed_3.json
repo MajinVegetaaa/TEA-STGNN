@@ -1,0 +1,86 @@
+{
+  "config_hash": "656def7061f546e865c8169f2f531b46e9dfdc545bd4d5a6658fe224cefd55e9",
+  "metrics": [
+    {
+      "dropout": 0.2,
+      "hidden": 64,
+      "model": "S5 Round 2 V1 query-aware relation attention",
+      "n": 1650,
+      "normalized_mae": 1.1630658424767646,
+      "persistence_mae": 1.2321819067001343,
+      "seed": 3,
+      "selected_epoch": 5,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "retention_rate",
+      "val_mae": 1.4331086874008179,
+      "variant": "v1_query"
+    }
+  ],
+  "seed": 3,
+  "selected_config": {
+    "dropout": 0.2,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 5,
+    "status": "completed",
+    "targets": [
+      "retention_rate"
+    ],
+    "trial_id": "tune_retention_rate_h64_d0p2",
+    "val_mae": {
+      "retention_rate": 1.2526530027389526
+    },
+    "val_ratio": 1.016613696344269
+  },
+  "status": "completed",
+  "targets": [
+    "retention_rate"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 1.0965725183486938,
+      "train_loss": 1.058876872062683,
+      "val_ratio": 1.5502210609202083,
+      "validation_loss": 0.7168377041816711
+    },
+    {
+      "epoch": 2,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 3.090555429458618,
+      "train_loss": 1.21570885181427,
+      "val_ratio": 1.094097679718963,
+      "validation_loss": 0.5068952441215515
+    },
+    {
+      "epoch": 3,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.5244738459587097,
+      "train_loss": 0.9708316326141357,
+      "val_ratio": 1.039067882280017,
+      "validation_loss": 0.4717692732810974
+    },
+    {
+      "epoch": 4,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.4800448715686798,
+      "train_loss": 0.9425013065338135,
+      "val_ratio": 1.117240313764386,
+      "validation_loss": 0.4893378019332886
+    },
+    {
+      "epoch": 5,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.6176398992538452,
+      "train_loss": 0.9250505566596985,
+      "val_ratio": 1.1630658424767646,
+      "validation_loss": 0.5043771266937256
+    }
+  ]
+}

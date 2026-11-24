@@ -1,0 +1,305 @@
+{
+  "config_hash": "b5807c615794e4a1266631501e9d569113b8b0b1d4c81311f51744053050b5e2",
+  "metrics": [
+    {
+      "dropout": 0.2,
+      "hidden": 64,
+      "model": "S5 Round 2 V2 positive nonzero gate",
+      "n": 1520,
+      "normalized_mae": 0.8999345803277796,
+      "persistence_mae": 7.167171001434326,
+      "seed": 0,
+      "selected_epoch": 24,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "sat_act_above_criterion",
+      "val_mae": 6.449985027313232,
+      "variant": "v2_positive"
+    }
+  ],
+  "seed": 0,
+  "selected_config": {
+    "dropout": 0.2,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 24,
+    "status": "completed",
+    "targets": [
+      "sat_act_above_criterion"
+    ],
+    "trial_id": "tune_sat_act_above_criterion_h64_d0p2",
+    "val_mae": {
+      "sat_act_above_criterion": 6.447385311126709
+    },
+    "val_ratio": 0.8995718547578159
+  },
+  "status": "completed",
+  "targets": [
+    "sat_act_above_criterion"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.00021181479678489268,
+      "gate_values": [
+        0.10028567910194397
+      ],
+      "prediction_grad_norm": 0.028928201645612717,
+      "train_loss": 0.9999279975891113,
+      "val_ratio": 0.967598733441082,
+      "validation_loss": 0.8397338390350342
+    },
+    {
+      "epoch": 2,
+      "gate_grad_norm": 0.0056776562705636024,
+      "gate_values": [
+        0.10049933940172195
+      ],
+      "prediction_grad_norm": 0.03204726055264473,
+      "train_loss": 0.9932129979133606,
+      "val_ratio": 0.9658113187010513,
+      "validation_loss": 0.8369174599647522
+    },
+    {
+      "epoch": 3,
+      "gate_grad_norm": 0.008941917680203915,
+      "gate_values": [
+        0.10074317455291748
+      ],
+      "prediction_grad_norm": 0.03890353441238403,
+      "train_loss": 0.9875891804695129,
+      "val_ratio": 0.9676832274751712,
+      "validation_loss": 0.8347454071044922
+    },
+    {
+      "epoch": 4,
+      "gate_grad_norm": 0.01258790958672762,
+      "gate_values": [
+        0.10100030153989792
+      ],
+      "prediction_grad_norm": 0.046308908611536026,
+      "train_loss": 0.9796239733695984,
+      "val_ratio": 0.9699750782517879,
+      "validation_loss": 0.8313301801681519
+    },
+    {
+      "epoch": 5,
+      "gate_grad_norm": 0.01366916112601757,
+      "gate_values": [
+        0.10126852989196777
+      ],
+      "prediction_grad_norm": 0.052048321813344955,
+      "train_loss": 0.9727219343185425,
+      "val_ratio": 0.9685893760927258,
+      "validation_loss": 0.822078287601471
+    },
+    {
+      "epoch": 6,
+      "gate_grad_norm": 0.018934549763798714,
+      "gate_values": [
+        0.10154233127832413
+      ],
+      "prediction_grad_norm": 0.06213921681046486,
+      "train_loss": 0.9613402485847473,
+      "val_ratio": 0.9611708664304338,
+      "validation_loss": 0.8066340684890747
+    },
+    {
+      "epoch": 7,
+      "gate_grad_norm": 0.024730250239372253,
+      "gate_values": [
+        0.10181985050439835
+      ],
+      "prediction_grad_norm": 0.07378677278757095,
+      "train_loss": 0.9497115015983582,
+      "val_ratio": 0.9464584591734474,
+      "validation_loss": 0.7871701121330261
+    },
+    {
+      "epoch": 8,
+      "gate_grad_norm": 0.03664999455213547,
+      "gate_values": [
+        0.10209648311138153
+      ],
+      "prediction_grad_norm": 0.08879635483026505,
+      "train_loss": 0.933147668838501,
+      "val_ratio": 0.9256761867935559,
+      "validation_loss": 0.7638476490974426
+    },
+    {
+      "epoch": 9,
+      "gate_grad_norm": 0.04747958853840828,
+      "gate_values": [
+        0.10237486660480499
+      ],
+      "prediction_grad_norm": 0.10342751443386078,
+      "train_loss": 0.9179772138595581,
+      "val_ratio": 0.9151538852585653,
+      "validation_loss": 0.7502894401550293
+    },
+    {
+      "epoch": 10,
+      "gate_grad_norm": 0.0567840151488781,
+      "gate_values": [
+        0.10265786945819855
+      ],
+      "prediction_grad_norm": 0.13738176226615906,
+      "train_loss": 0.9041012525558472,
+      "val_ratio": 0.9133457129290575,
+      "validation_loss": 0.7352487444877625
+    },
+    {
+      "epoch": 11,
+      "gate_grad_norm": 0.05491132661700249,
+      "gate_values": [
+        0.10294859856367111
+      ],
+      "prediction_grad_norm": 0.1990893930196762,
+      "train_loss": 0.8955782651901245,
+      "val_ratio": 0.9244120362882583,
+      "validation_loss": 0.7419821619987488
+    },
+    {
+      "epoch": 12,
+      "gate_grad_norm": 0.06647441536188126,
+      "gate_values": [
+        0.10324583947658539
+      ],
+      "prediction_grad_norm": 0.13507995009422302,
+      "train_loss": 0.8776634335517883,
+      "val_ratio": 0.9337258070128318,
+      "validation_loss": 0.7462108731269836
+    },
+    {
+      "epoch": 13,
+      "gate_grad_norm": 0.05678080767393112,
+      "gate_values": [
+        0.10354924201965332
+      ],
+      "prediction_grad_norm": 0.1829310953617096,
+      "train_loss": 0.8721927404403687,
+      "val_ratio": 0.9223370091786468,
+      "validation_loss": 0.7299470901489258
+    },
+    {
+      "epoch": 14,
+      "gate_grad_norm": 0.054278213530778885,
+      "gate_values": [
+        0.1038573682308197
+      ],
+      "prediction_grad_norm": 0.13619135320186615,
+      "train_loss": 0.8562525510787964,
+      "val_ratio": 0.9166308010560025,
+      "validation_loss": 0.7193083167076111
+    },
+    {
+      "epoch": 15,
+      "gate_grad_norm": 0.03902694582939148,
+      "gate_values": [
+        0.10416455566883087
+      ],
+      "prediction_grad_norm": 0.17615914344787598,
+      "train_loss": 0.8526431322097778,
+      "val_ratio": 0.9194568271079748,
+      "validation_loss": 0.7229288220405579
+    },
+    {
+      "epoch": 16,
+      "gate_grad_norm": 0.037005867809057236,
+      "gate_values": [
+        0.1044701412320137
+      ],
+      "prediction_grad_norm": 0.18360669910907745,
+      "train_loss": 0.8410840630531311,
+      "val_ratio": 0.9208330153718599,
+      "validation_loss": 0.7250229716300964
+    },
+    {
+      "epoch": 17,
+      "gate_grad_norm": 0.0344834066927433,
+      "gate_values": [
+        0.10477326810359955
+      ],
+      "prediction_grad_norm": 0.11558141559362411,
+      "train_loss": 0.8336626887321472,
+      "val_ratio": 0.9231075681572457,
+      "validation_loss": 0.7263404726982117
+    },
+    {
+      "epoch": 18,
+      "gate_grad_norm": 0.031580787152051926,
+      "gate_values": [
+        0.10507280379533768
+      ],
+      "prediction_grad_norm": 0.19959668815135956,
+      "train_loss": 0.8259845972061157,
+      "val_ratio": 0.9303797102014304,
+      "validation_loss": 0.7340148687362671
+    },
+    {
+      "epoch": 19,
+      "gate_grad_norm": 0.0430266372859478,
+      "gate_values": [
+        0.10537505894899368
+      ],
+      "prediction_grad_norm": 0.10145233571529388,
+      "train_loss": 0.8133274912834167,
+      "val_ratio": 0.9318309451349632,
+      "validation_loss": 0.7349820137023926
+    },
+    {
+      "epoch": 20,
+      "gate_grad_norm": 0.04096511751413345,
+      "gate_values": [
+        0.10567877441644669
+      ],
+      "prediction_grad_norm": 0.206246018409729,
+      "train_loss": 0.8112963438034058,
+      "val_ratio": 0.9224695384037693,
+      "validation_loss": 0.7208337187767029
+    },
+    {
+      "epoch": 21,
+      "gate_grad_norm": 0.05255375802516937,
+      "gate_values": [
+        0.10598865151405334
+      ],
+      "prediction_grad_norm": 0.10007821023464203,
+      "train_loss": 0.7960698008537292,
+      "val_ratio": 0.9109240606874741,
+      "validation_loss": 0.7055360674858093
+    },
+    {
+      "epoch": 22,
+      "gate_grad_norm": 0.05557471513748169,
+      "gate_values": [
+        0.10630486905574799
+      ],
+      "prediction_grad_norm": 0.19146409630775452,
+      "train_loss": 0.7869930863380432,
+      "val_ratio": 0.9020195870477166,
+      "validation_loss": 0.7002282738685608
+    },
+    {
+      "epoch": 23,
+      "gate_grad_norm": 0.059149812906980515,
+      "gate_values": [
+        0.1066277027130127
+      ],
+      "prediction_grad_norm": 0.112214095890522,
+      "train_loss": 0.778967559337616,
+      "val_ratio": 0.9014420337328127,
+      "validation_loss": 0.7020095586776733
+    },
+    {
+      "epoch": 24,
+      "gate_grad_norm": 0.06517484784126282,
+      "gate_values": [
+        0.10695798695087433
+      ],
+      "prediction_grad_norm": 0.17770496010780334,
+      "train_loss": 0.7688746452331543,
+      "val_ratio": 0.8999345803277796,
+      "validation_loss": 0.6938896179199219
+    }
+  ]
+}

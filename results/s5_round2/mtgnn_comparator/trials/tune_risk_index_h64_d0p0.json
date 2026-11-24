@@ -1,0 +1,19 @@
+{
+  "config_hash": "199169734b295c931c9e62db3218f16a23a7103ab5e1654fb76b9b359f0dd02b",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 17,
+    "status": "completed",
+    "targets": [
+      "risk_index"
+    ],
+    "trial_id": "tune_risk_index_h64_d0p0",
+    "val_mae": {
+      "risk_index": 6.664762020111084
+    },
+    "val_ratio": 0.8776602214373226
+  },
+  "status": "completed"
+}

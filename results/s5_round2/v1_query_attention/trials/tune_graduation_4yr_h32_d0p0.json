@@ -1,0 +1,19 @@
+{
+  "config_hash": "656def7061f546e865c8169f2f531b46e9dfdc545bd4d5a6658fe224cefd55e9",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 7,
+    "status": "completed",
+    "targets": [
+      "graduation_4yr"
+    ],
+    "trial_id": "tune_graduation_4yr_h32_d0p0",
+    "val_mae": {
+      "graduation_4yr": 2.309964418411255
+    },
+    "val_ratio": 1.0505442857102583
+  },
+  "status": "completed"
+}

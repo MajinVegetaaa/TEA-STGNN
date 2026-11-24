@@ -1,0 +1,50 @@
+{
+  "config_hash": "656def7061f546e865c8169f2f531b46e9dfdc545bd4d5a6658fe224cefd55e9",
+  "metrics": [
+    {
+      "dropout": 0.2,
+      "hidden": 32,
+      "model": "S5 Round 2 V1 query-aware relation attention",
+      "n": 1584,
+      "normalized_mae": 1.066529783065007,
+      "persistence_mae": 12.707891464233398,
+      "seed": 2,
+      "selected_epoch": 1,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "tsi_both",
+      "val_mae": 13.5533447265625,
+      "variant": "v1_query"
+    }
+  ],
+  "seed": 2,
+  "selected_config": {
+    "dropout": 0.2,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 1,
+    "status": "completed",
+    "targets": [
+      "tsi_both"
+    ],
+    "trial_id": "tune_tsi_both_h32_d0p2",
+    "val_mae": {
+      "tsi_both": 12.342425346374512
+    },
+    "val_ratio": 0.9712410104471306
+  },
+  "status": "completed",
+  "targets": [
+    "tsi_both"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.8206881284713745,
+      "train_loss": 1.0381542444229126,
+      "val_ratio": 1.066529783065007,
+      "validation_loss": 1.7546318769454956
+    }
+  ]
+}

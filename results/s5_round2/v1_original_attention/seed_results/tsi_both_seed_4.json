@@ -1,0 +1,50 @@
+{
+  "config_hash": "9189fe48332cc2828762a8dd351941d57e9bb889ed42ff70c8e7698238301153",
+  "metrics": [
+    {
+      "dropout": 0.2,
+      "hidden": 32,
+      "model": "S5 Round 2 V1 original attention control",
+      "n": 1584,
+      "normalized_mae": 0.9838557649084179,
+      "persistence_mae": 12.707891464233398,
+      "seed": 4,
+      "selected_epoch": 1,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "tsi_both",
+      "val_mae": 12.502732276916504,
+      "variant": "v1_original"
+    }
+  ],
+  "seed": 4,
+  "selected_config": {
+    "dropout": 0.2,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 1,
+    "status": "completed",
+    "targets": [
+      "tsi_both"
+    ],
+    "trial_id": "tune_tsi_both_h32_d0p2",
+    "val_mae": {
+      "tsi_both": 12.340286254882812
+    },
+    "val_ratio": 0.971072682640923
+  },
+  "status": "completed",
+  "targets": [
+    "tsi_both"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.7963842749595642,
+      "train_loss": 1.03433096408844,
+      "val_ratio": 0.9838557649084179,
+      "validation_loss": 1.5557615756988525
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "config_hash": "b5807c615794e4a1266631501e9d569113b8b0b1d4c81311f51744053050b5e2",
+  "metrics": [
+    {
+      "dropout": 0.2,
+      "hidden": 64,
+      "model": "S5 Round 2 V2 positive nonzero gate",
+      "n": 1647,
+      "normalized_mae": 1.594114086684314,
+      "persistence_mae": 1.3505157232284546,
+      "seed": 4,
+      "selected_epoch": 1,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "attendance_rate",
+      "val_mae": 2.152876138687134,
+      "variant": "v2_positive"
+    }
+  ],
+  "seed": 4,
+  "selected_config": {
+    "dropout": 0.2,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 1,
+    "status": "completed",
+    "targets": [
+      "attendance_rate"
+    ],
+    "trial_id": "tune_attendance_rate_h64_d0p2",
+    "val_mae": {
+      "attendance_rate": 2.094846487045288
+    },
+    "val_ratio": 1.5511455742532823
+  },
+  "status": "completed",
+  "targets": [
+    "attendance_rate"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 6.160355951578822e-06,
+      "gate_values": [
+        0.1002858579158783
+      ],
+      "prediction_grad_norm": 0.12064302712678909,
+      "train_loss": 0.9997554421424866,
+      "val_ratio": 1.594114086684314,
+      "validation_loss": 0.5156445503234863
+    }
+  ]
+}

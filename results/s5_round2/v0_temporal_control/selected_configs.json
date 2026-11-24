@@ -1,0 +1,102 @@
+{
+  "act_composite": {
+    "dropout": 0.2,
+    "epochs": 8,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 0.9428349440624471,
+    "targets": [
+      "act_composite"
+    ]
+  },
+  "attendance_rate": {
+    "dropout": 0.0,
+    "epochs": 37,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 1.0887802723412865,
+    "targets": [
+      "attendance_rate"
+    ]
+  },
+  "dropout_9_12": {
+    "dropout": 0.0,
+    "epochs": 8,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 1.037595604380656,
+    "targets": [
+      "dropout_9_12"
+    ]
+  },
+  "graduation_4yr": {
+    "dropout": 0.0,
+    "epochs": 7,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 1.0137919615689637,
+    "targets": [
+      "graduation_4yr"
+    ]
+  },
+  "retention_rate": {
+    "dropout": 0.0,
+    "epochs": 3,
+    "hidden": 32,
+    "relations": [],
+    "selection_val_ratio": 1.05839251236251,
+    "targets": [
+      "retention_rate"
+    ]
+  },
+  "risk_index": {
+    "dropout": 0.0,
+    "epochs": 9,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 0.8887477230440407,
+    "targets": [
+      "risk_index"
+    ]
+  },
+  "sat_act_above_criterion": {
+    "dropout": 0.0,
+    "epochs": 10,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 0.8937286598507702,
+    "targets": [
+      "sat_act_above_criterion"
+    ]
+  },
+  "sat_act_participation": {
+    "dropout": 0.2,
+    "epochs": 7,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 0.9751876710993155,
+    "targets": [
+      "sat_act_participation"
+    ]
+  },
+  "sat_total": {
+    "dropout": 0.2,
+    "epochs": 22,
+    "hidden": 64,
+    "relations": [],
+    "selection_val_ratio": 0.884244774742949,
+    "targets": [
+      "sat_total"
+    ]
+  },
+  "tsi_both": {
+    "dropout": 0.0,
+    "epochs": 6,
+    "hidden": 32,
+    "relations": [],
+    "selection_val_ratio": 0.9685485160061508,
+    "targets": [
+      "tsi_both"
+    ]
+  }
+}

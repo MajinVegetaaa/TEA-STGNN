@@ -1,0 +1,77 @@
+{
+  "config_hash": "199169734b295c931c9e62db3218f16a23a7103ab5e1654fb76b9b359f0dd02b",
+  "metrics": [
+    {
+      "dropout": 0.0,
+      "hidden": 64,
+      "model": "MTGNN corrected Graph V2 comparator, Round 2",
+      "n": 1584,
+      "normalized_mae": 0.9884363374931239,
+      "persistence_mae": 12.707891464233398,
+      "seed": 4,
+      "selected_epoch": 4,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "tsi_both",
+      "val_mae": 12.560941696166992,
+      "variant": "mtgnn"
+    }
+  ],
+  "seed": 4,
+  "selected_config": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 4,
+    "status": "completed",
+    "targets": [
+      "tsi_both"
+    ],
+    "trial_id": "tune_tsi_both_h64_d0p0",
+    "val_mae": {
+      "tsi_both": 12.211320877075195
+    },
+    "val_ratio": 0.9609242344762063
+  },
+  "status": "completed",
+  "targets": [
+    "tsi_both"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.572961151599884,
+      "train_loss": 1.0056564807891846,
+      "val_ratio": 0.9717020920527212,
+      "validation_loss": 1.510097622871399
+    },
+    {
+      "epoch": 2,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 1.809246301651001,
+      "train_loss": 1.0491694211959839,
+      "val_ratio": 1.0088412998238674,
+      "validation_loss": 1.6239160299301147
+    },
+    {
+      "epoch": 3,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.7886962294578552,
+      "train_loss": 0.9804356098175049,
+      "val_ratio": 0.9703914165576626,
+      "validation_loss": 1.5131447315216064
+    },
+    {
+      "epoch": 4,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.4055151343345642,
+      "train_loss": 0.9597282409667969,
+      "val_ratio": 0.9884363374931239,
+      "validation_loss": 1.550245761871338
+    }
+  ]
+}

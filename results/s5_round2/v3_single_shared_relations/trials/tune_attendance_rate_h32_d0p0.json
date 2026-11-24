@@ -1,0 +1,19 @@
+{
+  "config_hash": "4bb0524f843ba0c16550c1095360064f9062019a232960badc56041e45aa207a",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 39,
+    "status": "completed",
+    "targets": [
+      "attendance_rate"
+    ],
+    "trial_id": "tune_attendance_rate_h32_d0p0",
+    "val_mae": {
+      "attendance_rate": 1.4213825464248657
+    },
+    "val_ratio": 1.0524738971768515
+  },
+  "status": "completed"
+}
