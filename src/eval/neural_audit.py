@@ -51,3 +51,12 @@ def validate_validation_seed_coverage(run: str, rows: list[dict], targets: list[
         missing, extra = required - actual, actual - required
         raise ValueError(f"{run} validation rows differ from protocol (missing={sorted(missing)[:5]}, "
                          f"extra={sorted(extra)[:5]})")
+
+
+def require_fresh_report_outputs(paths) -> None:
+    """Refuse to replace a previously written comparison report."""
+    from pathlib import Path
+
+    existing = [str(Path(path)) for path in paths if Path(path).exists()]
+    if existing:
+        raise FileExistsError(f"refusing to overwrite existing report output(s): {existing}")

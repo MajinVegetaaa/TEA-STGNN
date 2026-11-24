@@ -61,6 +61,7 @@ def load(graph: str, through_year: int | None = None,
             raise ValueError("S5 requires a snapshot whose categorical vocabulary was fit on training years only; rebuild it")
     years = data["years"]
     snaps = data["snapshots"]
+    panel_split = dict(split)
     if through_year is not None:
         validation_cutoff = max(split["train_years"] + split["val_years"])
         if through_year > validation_cutoff:
@@ -70,8 +71,16 @@ def load(graph: str, through_year: int | None = None,
             raise ValueError(f"snapshot does not contain requested through_year={through_year}")
         years = [years[i] for i in keep]
         snaps = [snaps[i] for i in keep]
+        # A validation panel must not carry a test split year that downstream
+        # code could use to infer an index, even though the source snapshot does.
+        panel_split["test_years"] = []
     stack = lambda key: torch.stack([s["campus"][key] for s in snaps])
-    return Panel(years=years, campus_ids=data["campus_ids"], targets=data["targets"], snapshots=snaps,
+    campus_ids, targets = data["campus_ids"], data["targets"]
+    academic_relation = data["academic_relation"]
+    # Drop the deserialized full-snapshot container before exposing the panel;
+    # for a 2023 cutoff, only the selected snapshots remain referenced below.
+    del data
+    return Panel(years=years, campus_ids=campus_ids, targets=targets, snapshots=snaps,
                  y=stack("y"), y_lag1=stack("y_lag1"), eval_mask=stack("eval_mask"), present=stack("present"),
-                 split=split, academic_relation=data["academic_relation"],
+                 split=panel_split, academic_relation=academic_relation,
                  sha256=hashlib.sha256(path.read_bytes()).hexdigest(), path=path)

@@ -52,6 +52,7 @@ s2:              ## harness reproduces the Phase 5 GCN + LSTM benchmark (~1 min 
 	$(NN) src/train/check_reproduction.py
 
 s5:              ## proposed STGNN v0-v3: shared budget B, 2023 selection and 5 validation seeds only
+	$(NN) src/train/run.py configs/experiments/s4_mtgnn_comparable.yaml --val-seeds $(RUN_DEVICE)
 	$(NN) src/train/run.py configs/experiments/s5_proposed_v0.yaml --val-seeds $(RUN_DEVICE)
 	$(NN) src/train/run.py configs/experiments/s5_proposed_v1.yaml --val-seeds $(RUN_DEVICE)
 	$(NN) src/train/run.py configs/experiments/s5_proposed_v2.yaml --val-seeds $(RUN_DEVICE)

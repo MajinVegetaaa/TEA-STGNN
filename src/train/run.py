@@ -33,7 +33,7 @@ import data as D  # noqa: E402
 from families import FAMILIES  # noqa: E402
 from protocol import metrics  # noqa: E402
 from trainer import fit  # noqa: E402
-from run_guards import validate_run_request  # noqa: E402
+from run_guards import require_fresh_output, validate_run_request  # noqa: E402
 
 
 def main() -> None:
@@ -47,13 +47,14 @@ def main() -> None:
     args = ap.parse_args()
     cfg = yaml.safe_load(args.config.read_text())
     try:
-        validate_run_request(cfg, args.test)
+        validate_run_request(cfg, args.test, args.val_seeds)
     except ValueError as exc:
         ap.error(str(exc))
     torch.set_num_threads(cfg.get("threads", 2))
     device = args.device or cfg.get("device", "cpu")
     cfg["device"] = device
     out = ROOT / "results" / cfg["out"]
+    require_fresh_output(out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False))
 

@@ -16,7 +16,8 @@ from pathlib import Path
 import pandas as pd
 
 from protocol import choose, load, selection_score
-from neural_audit import validate_s5_comparators, validate_validation_seed_coverage
+from neural_audit import (require_fresh_report_outputs, validate_s5_comparators,
+                          validate_validation_seed_coverage)
 
 ROOT = Path(__file__).resolve().parents[2]
 STEPS = {  # step -> {run folder under results/: (model, setting)}
@@ -40,6 +41,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--step", choices=sorted(STEPS), required=True)
     step = ap.parse_args().step
+    out = ROOT / "results" / step
+    require_fresh_report_outputs([out / "summary.csv", out / "per_target.csv"])
     targets = load()["targets"]
     bar = json.loads((ROOT / "results/s1c/bar.json").read_text())["score_2023"]
     bar_t = pd.read_csv(ROOT / "results/s1c/numbers_to_beat.csv").set_index("target").val_ratio
@@ -77,7 +80,7 @@ def main() -> None:
                         [["score", "sd", "complexity"]])
         for row in summary:
             row["selected_proposed"] = row["model"] == winner
-    out = ROOT / "results" / step
+    out.mkdir(parents=True, exist_ok=True)
     s, pt = pd.DataFrame(summary), pd.DataFrame(per_target)
     s.to_csv(out / "summary.csv", index=False)
     pt.to_csv(out / "per_target.csv", index=False)

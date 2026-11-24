@@ -1,10 +1,12 @@
 """S5 report must refuse unfair baseline comparisons."""
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src/eval"))
-from neural_audit import validate_s5_comparators, validate_validation_seed_coverage  # noqa: E402
+from neural_audit import (require_fresh_report_outputs, validate_s5_comparators,
+                          validate_validation_seed_coverage)  # noqa: E402
 
 
 def protocols():
@@ -72,6 +74,13 @@ class NeuralAuditTests(unittest.TestCase):
         rows = [{"target": "a", "graph": "combined", "seed": 0}]
         with self.assertRaisesRegex(ValueError, "duplicate"):
             validate_validation_seed_coverage("s4/mtgnn_corrected_snapshot", rows * 2, ["a"], [0])
+
+    def test_existing_comparison_report_is_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            summary = Path(tmp) / "summary.csv"
+            summary.write_text("existing result")
+            with self.assertRaisesRegex(FileExistsError, "refusing to overwrite"):
+                require_fresh_report_outputs([summary, Path(tmp) / "per_target.csv"])
 
 
 if __name__ == "__main__":
