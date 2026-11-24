@@ -33,3 +33,6 @@ docs/references/minor_report_updated.docx
 # S5 Round 2 model checkpoints and per-seed predictions (~200 MB): keep in a Kaggle dataset or Drive, not git.
 results/s5_round2/*/checkpoints/
 results/s5_round2/*/predictions/
+# Phase A per-school residuals and run log (prediction-level data stays out of git)
+results/phase_a/rolling_residuals.csv
+results/phase_a/run.log

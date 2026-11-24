@@ -5,7 +5,7 @@ PY ?= python3
 NN ?= .venv-expanded/bin/python   # environment with torch + PyG (requirements-gpu.txt) for snapshots and neural models
 DEVICE ?=
 RUN_DEVICE = $(if $(DEVICE),--device $(DEVICE),)
-TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features tests.test_harness tests.test_mtgnn tests.test_proposed tests.test_data_window tests.test_feature_encoding tests.test_neural_audit
+TESTS = tests.test_new_sources tests.test_expanded_features tests.test_finance tests.test_phase5_models tests.test_protocol tests.test_graph_v2 tests.test_d1_features tests.test_harness tests.test_mtgnn tests.test_proposed tests.test_data_window tests.test_feature_encoding tests.test_neural_audit tests.test_phase_a
 
 .PHONY: help check data features graph snapshot test protocol s1c s2 s5
 
