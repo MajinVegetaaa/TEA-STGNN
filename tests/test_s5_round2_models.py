@@ -12,8 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src/models"), str(ROOT / "src/train")]
 from proposed import ProposedSTGNN, ProposedWindow  # noqa: E402
 from proposed_round2 import PositiveGateSTGNN, QueryAwareRelationSTGNN  # noqa: E402
-from run_s5_round2 import (_atomic_torch_save, _masked_standardized_loss, fit_trial,
-                           seed_everything, validate_config)  # noqa: E402
+from run_s5_round2 import (_atomic_torch_save, _build_model, _group_relations, _masked_standardized_loss,
+                           fit_trial, seed_everything, validate_config)  # noqa: E402
 
 
 def window(seed=0, years=4, nodes=6, features=5, relations=2):
@@ -92,6 +92,23 @@ class S5Round2ModelTests(unittest.TestCase):
         torch.testing.assert_close(loss, expected_equal)
         loss.backward()
         self.assertTrue(torch.isfinite(pred.grad).all())
+
+    def test_planned_v3_keeps_the_v2_gate_and_starts_at_mean_change(self):
+        model = _build_model("v3_planned", 5, 8, 10, 0.0, schools=6, relations=2)
+        self.assertEqual(model.version, 3)
+        self.assertEqual(tuple(model.alpha.shape), (10,))
+        out = model(window(relations=2))
+        self.assertEqual(tuple(out.shape), (4, 6, 10))
+        torch.testing.assert_close(out, torch.zeros_like(out))  # alpha=0: standardized change 0 at init
+        shared = _build_model("v3_multi_shared", 5, 8, 10, 0.0, schools=6, relations=2)
+        self.assertFalse(hasattr(shared, "alpha"))  # the shared-relation run is an ungated V1 ablation
+
+    def test_union_relation_policy_matches_round1_v3(self):
+        academic = {"act": "academic_act", "sat": "academic_sat", "risk_index": None}
+        panel = SimpleNamespace(relations=lambda t: ["district", "geographic", "demographic", "region"]
+                                + ([academic[t]] if academic[t] else []))
+        self.assertEqual(_group_relations(panel, ["act", "sat", "risk_index", "act"], "union_targets"),
+                         ["district", "geographic", "demographic", "region", "academic_act", "academic_sat"])
 
     def test_seed_setup_is_repeatable(self):
         seed_everything(19)

@@ -15,11 +15,26 @@ RUNS = {
     "V1_query": "v1_query_attention",
     "V2_original": "v2_original_gate",
     "V2_positive": "v2_positive_gate",
-    "V3_single": "v3_single_shared_relations",
-    "V3_multi": "v3_multi_shared_relations",
+    # The two "v3 shared" runs build the V1 model (no gate) on the four shared relations only, so they are
+    # relation ablations of V1, not the roadmap's v3. Their folder names are kept so completed results still load.
+    "V1_shared4_single": "v3_single_shared_relations",
+    "V1_shared4_multi": "v3_multi_shared_relations",
+    "V3_planned": "v3_planned",
 }
-COMPLEXITY = {"V0": 0, "V1_original": 1, "V1_query": 2, "V2_original": 3,
-              "V2_positive": 4, "V3_single": 5, "V3_multi": 6}
+# Simplicity order for the tie rule ("within one seed SD, the simpler wins"), by what each model contains:
+# graph attention (G), each target's academic relation (A), query-aware relation pooling (Q), per-target gate (P),
+# one shared multi-task model (M). Ties in component count go to the roadmap-planned version first.
+COMPLEXITY = {
+    "V0": 0,                 # GRU only
+    "V1_shared4_single": 1,  # G
+    "V1_original": 2,        # G + A               (planned v1)
+    "V1_shared4_multi": 3,   # G + M
+    "V2_original": 4,        # G + A + P           (planned v2)
+    "V1_query": 5,           # G + A + Q
+    "V2_positive": 6,        # G + A + P (gate starts at 0.1 instead of 0)
+    "V3_planned": 7,         # G + A + P + M       (planned v3)
+}
+MULTI_TASK = {"V1_shared4_multi", "V3_planned"}
 SEEDS = [0, 1, 2, 3, 4]
 
 
@@ -64,8 +79,8 @@ def build_report(results_root: Path | None = None) -> dict[str, pd.DataFrame]:
     seed_score = long.groupby(["model", "seed"], as_index=False).normalized_mae.mean()
     summary = seed_score.groupby("model").normalized_mae.agg(["mean", "std"]).reset_index()
     summary = summary.rename(columns={"mean": "mean_normalized_mae", "std": "sd_over_seeds"})
-    summary["fit_count"] = summary.model.map({"MTGNN": 90, "V0": 90, "V1_original": 90,
-        "V1_query": 90, "V2_original": 90, "V2_positive": 90, "V3_single": 90, "V3_multi": 9})
+    # 4 grid points + 5 seeds, per target (10) for single-task runs, once for multi-task runs.
+    summary["fit_count"] = summary.model.map(lambda m: 9 if m in MULTI_TASK else 90)
     target_summary = long.groupby(["model", "target"], as_index=False).agg(
         mean_normalized_mae=("normalized_mae", "mean"), sd_over_seeds=("normalized_mae", "std"),
         mean_val_mae=("val_mae", "mean"), mean_persistence_mae=("persistence_mae", "mean"))

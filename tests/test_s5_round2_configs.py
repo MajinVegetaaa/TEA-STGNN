@@ -14,7 +14,7 @@ class Round2ConfigTests(unittest.TestCase):
     def test_all_round2_configs_share_the_locked_budget_and_cutoff(self):
         budget = yaml.safe_load((ROOT / "configs/budget.yaml").read_text())
         configs = sorted((ROOT / "configs/experiments").glob("s5_round2_*.yaml"))
-        self.assertEqual(len(configs), 8)
+        self.assertEqual(len(configs), 9)
         outputs = set()
         for path in configs:
             cfg = yaml.safe_load(path.read_text())
@@ -28,7 +28,7 @@ class Round2ConfigTests(unittest.TestCase):
             self.assertEqual(cfg.get("gradient_clip_norm"), None)
             self.assertEqual(cfg["out"].split("/")[0], "s5_round2")
             outputs.add(cfg["out"])
-        self.assertEqual(len(outputs), 8)
+        self.assertEqual(len(outputs), 9)
         self.assertEqual(budget["grid"], {"hidden": [32, 64], "dropout": [0.0, 0.2]})
 
     def test_v3_pair_has_same_relations_but_different_task_sharing(self):
@@ -40,6 +40,16 @@ class Round2ConfigTests(unittest.TestCase):
         self.assertEqual(multi["tasks"], "multi")
         self.assertEqual(single["variant"], "v3_single_shared")
         self.assertEqual(multi["variant"], "v3_multi_shared")
+
+    def test_planned_v3_is_multitask_v2_over_all_target_relations(self):
+        cfg = yaml.safe_load((ROOT / "configs/experiments/s5_round2_v3_planned.yaml").read_text())
+        self.assertEqual(cfg["variant"], "v3_planned")
+        self.assertEqual(cfg["tasks"], "multi")
+        self.assertEqual(cfg["relation_policy"], "union_targets")
+        self.assertEqual(cfg["loss"], "equal_targets")
+        bad = dict(cfg, relation_policy="shared_four")
+        with self.assertRaises(ValueError):
+            validate_config(bad)
 
     def test_original_round1_configs_are_not_retargeted(self):
         for version in range(4):
