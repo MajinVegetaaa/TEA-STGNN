@@ -1,0 +1,19 @@
+{
+  "config_hash": "199169734b295c931c9e62db3218f16a23a7103ab5e1654fb76b9b359f0dd02b",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 30,
+    "status": "completed",
+    "targets": [
+      "sat_act_above_criterion"
+    ],
+    "trial_id": "tune_sat_act_above_criterion_h32_d0p0",
+    "val_mae": {
+      "sat_act_above_criterion": 6.185896873474121
+    },
+    "val_ratio": 0.8630876634917978
+  },
+  "status": "completed"
+}

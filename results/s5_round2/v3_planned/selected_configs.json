@@ -1,0 +1,33 @@
+{
+  "all_targets": {
+    "dropout": 0.0,
+    "epochs": 31,
+    "hidden": 64,
+    "relations": [
+      "district",
+      "geographic",
+      "demographic",
+      "region",
+      "academic_act",
+      "academic_sat",
+      "academic_criterion",
+      "academic_dropout",
+      "academic_attendance",
+      "academic_retention",
+      "academic_participation"
+    ],
+    "selection_val_ratio": 1.0096819070279301,
+    "targets": [
+      "act_composite",
+      "sat_total",
+      "sat_act_above_criterion",
+      "dropout_9_12",
+      "attendance_rate",
+      "retention_rate",
+      "risk_index",
+      "tsi_both",
+      "sat_act_participation",
+      "graduation_4yr"
+    ]
+  }
+}

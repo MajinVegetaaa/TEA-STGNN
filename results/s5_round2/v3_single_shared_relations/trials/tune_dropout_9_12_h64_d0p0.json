@@ -1,0 +1,19 @@
+{
+  "config_hash": "4bb0524f843ba0c16550c1095360064f9062019a232960badc56041e45aa207a",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 8,
+    "status": "completed",
+    "targets": [
+      "dropout_9_12"
+    ],
+    "trial_id": "tune_dropout_9_12_h64_d0p0",
+    "val_mae": {
+      "dropout_9_12": 0.5323597192764282
+    },
+    "val_ratio": 1.0657578673277621
+  },
+  "status": "completed"
+}

@@ -15,6 +15,7 @@ that learns from related schools (same district, nearby, academically or demogra
 | [`docs/DATA.md`](docs/DATA.md) | sources, years, cohort, cleaning, history features, checks, limitations |
 | [`docs/GRAPH.md`](docs/GRAPH.md) | graph versions, nodes, the 7 edge types and their weights, leakage safeguards |
 | [`docs/MODELS.md`](docs/MODELS.md) | evaluation protocol, the bar to beat, neural harness, results so far, environments |
+| [`docs/KAGGLE_S5_ROUND2.md`](docs/KAGGLE_S5_ROUND2.md) | Round 2 Kaggle preflight, run order, resume and result backup commands |
 
 ## Setup and run
 

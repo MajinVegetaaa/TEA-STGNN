@@ -49,8 +49,9 @@ Settings were frozen rather than tuned on the single validation year; a robustne
 
 ## PyG snapshot (what neural models read)
 
-One `HeteroData` per year: 1,670 schools × 583 inputs (history, static, missing-value flags; medians and scaling
-from training years only; finance on a signed log scale), targets with `y_mask` / `eval_mask`, one relation per
+One `HeteroData` per year: 1,670 schools × the feature count recorded in the snapshot (history, static, missing-value flags; medians and scaling
+from training years only; categorical vocabularies also fit on training years, with unseen later categories all-zero;
+finance on a signed log scale), targets with `y_mask` / `eval_mask`, one relation per
 edge type (academic: one per set), `edge_weight`, and in v2 `edge_attr = [weight, standardised raw distance]`
 for attention models. 63 self-checks, including that the scored rows equal the tabular baselines' rows.
 

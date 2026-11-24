@@ -1,0 +1,77 @@
+{
+  "config_hash": "199169734b295c931c9e62db3218f16a23a7103ab5e1654fb76b9b359f0dd02b",
+  "metrics": [
+    {
+      "dropout": 0.0,
+      "hidden": 64,
+      "model": "MTGNN corrected Graph V2 comparator, Round 2",
+      "n": 1584,
+      "normalized_mae": 0.9610498612027296,
+      "persistence_mae": 12.707891464233398,
+      "seed": 1,
+      "selected_epoch": 4,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "tsi_both",
+      "val_mae": 12.21291732788086,
+      "variant": "mtgnn"
+    }
+  ],
+  "seed": 1,
+  "selected_config": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 4,
+    "status": "completed",
+    "targets": [
+      "tsi_both"
+    ],
+    "trial_id": "tune_tsi_both_h64_d0p0",
+    "val_mae": {
+      "tsi_both": 12.211320877075195
+    },
+    "val_ratio": 0.9609242344762063
+  },
+  "status": "completed",
+  "targets": [
+    "tsi_both"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.4985670745372772,
+      "train_loss": 1.0074999332427979,
+      "val_ratio": 1.040678819589064,
+      "validation_loss": 1.6497044563293457
+    },
+    {
+      "epoch": 2,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.8420552015304565,
+      "train_loss": 0.9771986603736877,
+      "val_ratio": 1.0859700311965532,
+      "validation_loss": 1.8378742933273315
+    },
+    {
+      "epoch": 3,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 2.781487226486206,
+      "train_loss": 1.1484235525131226,
+      "val_ratio": 0.9637280969352032,
+      "validation_loss": 1.50444757938385
+    },
+    {
+      "epoch": 4,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.5221824645996094,
+      "train_loss": 0.9717966914176941,
+      "val_ratio": 0.9610498612027296,
+      "validation_loss": 1.4893604516983032
+    }
+  ]
+}

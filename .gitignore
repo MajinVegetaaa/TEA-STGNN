@@ -30,3 +30,6 @@ docs/references/minor_report_updated.docx
 !/data/graph_expanded/pyg/snapshots.pt
 !/results/expanded/selected_test_predictions.csv
 /HANDOFF_INVENTORY.csv
+# S5 Round 2 model checkpoints and per-seed predictions (~200 MB): keep in a Kaggle dataset or Drive, not git.
+results/s5_round2/*/checkpoints/
+results/s5_round2/*/predictions/

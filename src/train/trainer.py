@@ -25,7 +25,7 @@ class Fit:
 
 
 def fit(build, x, y, y_lag1, eval_mask, stop, epochs, lr, seed, label="level", tune=False, device="cpu",
-        weight_decay=0.0, patience=None) -> Fit:
+        weight_decay=0.0, patience=None, equal_target_loss=False) -> Fit:
     """Train on label years 1..stop-1 and forecast year index `stop`.
 
     tune=True scores every epoch on year `stop` (the validation year) and returns the best epoch; the model returned
@@ -55,7 +55,11 @@ def fit(build, x, y, y_lag1, eval_mask, stop, epochs, lr, seed, label="level", t
     for epoch in range(1, epochs + 1):
         model.train()
         pred = model(x[:stop])[1:]
-        loss = ((pred[observed] - scaled[observed]) ** 2).mean()
+        if equal_target_loss:
+            loss = torch.stack([(pred[..., k][observed[..., k]] - scaled[..., k][observed[..., k]]).square().mean()
+                                for k in range(labels.shape[-1])]).mean()
+        else:
+            loss = (pred[observed] - scaled[observed]).square().mean()
         opt.zero_grad()
         loss.backward()
         opt.step()

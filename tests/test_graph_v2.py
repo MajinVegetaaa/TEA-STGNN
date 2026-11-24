@@ -11,6 +11,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src/graphs"))
 import edge_features as ef
 import graph_version as gv
+from to_pyg import row_check_years
+from validate_graph import same_edge_pairs
 
 
 class EdgeFeatureTests(unittest.TestCase):
@@ -58,6 +60,23 @@ class GraphVersionTests(unittest.TestCase):
         with patch.dict(os.environ, {"TEA_GRAPH": "v3"}, clear=True):
             with self.assertRaises(ValueError):
                 gv.name()
+
+
+class SnapshotCheckBoundaryTests(unittest.TestCase):
+    def test_test_year_is_excluded_from_default_persisted_row_checks(self):
+        split = {"val_years": [2023], "test_years": [2024]}
+        self.assertEqual(row_check_years(split), [2023])
+        self.assertEqual(row_check_years(split, include_test=True), [2023, 2024])
+
+    def test_leakage_and_stored_topology_checks_are_independent(self):
+        left = pd.DataFrame({"src_campus_id": ["001", "002"], "dst_campus_id": ["003", "004"]})
+        shuffled_rebuild = left.iloc[::-1].reset_index(drop=True)
+        stored_with_one_different_edge = pd.DataFrame(
+            {"src_campus_id": ["001", "002"], "dst_campus_id": ["004", "003"]})
+        leakage_invariant = same_edge_pairs(left, shuffled_rebuild)
+        stored_graph_matches = same_edge_pairs(left, stored_with_one_different_edge)
+        self.assertTrue(leakage_invariant)
+        self.assertFalse(stored_graph_matches)
 
 
 if __name__ == "__main__":

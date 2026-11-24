@@ -23,6 +23,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+import torch_geometric
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,6 +33,7 @@ import data as D  # noqa: E402
 from families import FAMILIES  # noqa: E402
 from protocol import metrics  # noqa: E402
 from trainer import fit  # noqa: E402
+from run_guards import require_fresh_output, validate_run_request  # noqa: E402
 
 
 def main() -> None:
@@ -41,15 +43,23 @@ def main() -> None:
     ap.add_argument("--test", action="store_true", help="refit the locked choices and score 2024")
     ap.add_argument("--targets", nargs="*", help="subset of targets (smoke tests)")
     ap.add_argument("--max-epochs", type=int, help="override (smoke tests)")
+    ap.add_argument("--device", choices=["cpu", "cuda"], help="override the device in the experiment config")
     args = ap.parse_args()
     cfg = yaml.safe_load(args.config.read_text())
+    try:
+        validate_run_request(cfg, args.test, args.val_seeds)
+    except ValueError as exc:
+        ap.error(str(exc))
     torch.set_num_threads(cfg.get("threads", 2))
-    device = cfg.get("device", "cpu")
+    device = args.device or cfg.get("device", "cpu")
+    cfg["device"] = device
     out = ROOT / "results" / cfg["out"]
+    require_fresh_output(out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False))
 
-    panel = D.load(cfg["graph"])
+    panel = D.load(cfg["graph"], through_year=cfg.get("through_year"),
+                   require_train_only_categories=cfg.get("validation_only", False))
     family = FAMILIES[cfg["model"]]
     targets = args.targets or cfg.get("targets") or panel.targets
     # training budget: the shared file (configs/budget.yaml, S4/S5) or the config's own fixed settings (Phase 5)
@@ -63,7 +73,8 @@ def main() -> None:
     val, test = panel.val_index, panel.val_index + 1
     (out / "protocol.json").write_text(json.dumps(
         {"config": cfg, "budget": budget, "grid_points": points, "snapshot": str(panel.path.relative_to(ROOT)),
-         "snapshot_sha256": panel.sha256, "targets": targets, "torch_version": torch.__version__, "device": device,
+         "snapshot_sha256": panel.sha256, "targets": targets, "torch_version": torch.__version__,
+         "pyg_version": torch_geometric.__version__, "device": device,
          "test_run": args.test}, indent=2))
 
     cache = {}
@@ -77,17 +88,26 @@ def main() -> None:
     def train(target_list, relations, stop, n_epochs, seed, tune, hidden, dropout):
         j = [panel.targets.index(t) for t in target_list]
         x = inputs(relations)
+        model_args = dict(cfg.get("model_args", {}))
+        if cfg["model"] == "proposed" and model_args.get("version", 0) >= 1:
+            model_args["relations"] = len(relations)
         build = lambda: family.build(family.features(x), hidden, len(j), dropout, len(panel.campus_ids),
-                                     **cfg.get("model_args", {}))
+                                     **model_args)
         return fit(build, x, panel.y[..., j].to(device), panel.y_lag1[..., j].to(device),
                    panel.eval_mask[..., j].to(device), stop, n_epochs, budget["lr"], seed, cfg["label"], tune, device,
-                   weight_decay=budget["weight_decay"], patience=budget["patience"] if tune else None)
+                   weight_decay=budget["weight_decay"], patience=budget["patience"] if tune else None,
+                   equal_target_loss=cfg.get("loss") == "equal_targets")
 
     # ---- selection on 2023
     groups = [[t] for t in targets] if cfg["tasks"] == "single" else [targets]
     grid, locked = [], []
     for group in groups:
-        relations = panel.relations(group[0]) if len(group) == 1 else cfg["relations"]
+        if len(group) == 1:
+            relations = panel.relations(group[0])
+        elif cfg.get("relations") == "all_target_relations":
+            relations = list(dict.fromkeys(r for target in group for r in panel.relations(target)))
+        else:
+            relations = cfg["relations"]
         candidates = [("combined", relations)]
         if cfg.get("graphs") == "combined+single":
             candidates += [(r, [r]) for r in relations]

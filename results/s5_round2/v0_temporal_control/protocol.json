@@ -1,0 +1,76 @@
+{
+  "budget": {
+    "grid": {
+      "dropout": [
+        0.0,
+        0.2
+      ],
+      "hidden": [
+        32,
+        64
+      ]
+    },
+    "lr": 0.003,
+    "max_epochs": 100,
+    "patience": 20,
+    "weight_decay": 0.0001
+  },
+  "config": {
+    "budget": "configs/budget.yaml",
+    "device": "cuda",
+    "gradient_clip_norm": null,
+    "graph": "v2",
+    "label": "change",
+    "name": "S5 Round 2 V0 temporal control",
+    "out": "s5_round2/v0_temporal_control",
+    "relation_policy": "none",
+    "snapshot_bundle": "data/graph_v2/pyg/s5_validation",
+    "tasks": "single",
+    "through_year": 2023,
+    "validation_only": true,
+    "variant": "v0_temporal"
+  },
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "13.0",
+    "device": "cuda",
+    "git_commit": null,
+    "gpu_name": "Tesla T4",
+    "pyg": "2.8.1",
+    "python": "3.13.16",
+    "torch": "2.12.1+cu130"
+  },
+  "fit_count_formula": "grid trials plus locked seed fits; V3 multi is one shared fit per seed",
+  "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+  "snapshot_path": "data/graph_v2/pyg/s5_validation",
+  "targets": [
+    "act_composite",
+    "sat_total",
+    "sat_act_above_criterion",
+    "dropout_9_12",
+    "attendance_rate",
+    "retention_rate",
+    "risk_index",
+    "tsi_both",
+    "sat_act_participation",
+    "graduation_4yr"
+  ],
+  "training_years": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_years": [
+    2023
+  ],
+  "years": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ]
+}

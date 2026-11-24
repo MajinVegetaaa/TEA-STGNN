@@ -1,0 +1,19 @@
+{
+  "config_hash": "b5807c615794e4a1266631501e9d569113b8b0b1d4c81311f51744053050b5e2",
+  "result": {
+    "dropout": 0.0,
+    "hidden": 32,
+    "seed": 0,
+    "selected_epoch": 13,
+    "status": "completed",
+    "targets": [
+      "sat_total"
+    ],
+    "trial_id": "tune_sat_total_h32_d0p0",
+    "val_mae": {
+      "sat_total": 31.115554809570312
+    },
+    "val_ratio": 0.9115799146015063
+  },
+  "status": "completed"
+}

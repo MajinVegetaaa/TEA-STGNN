@@ -1,0 +1,52 @@
+{
+  "config_hash": "b5807c615794e4a1266631501e9d569113b8b0b1d4c81311f51744053050b5e2",
+  "metrics": [
+    {
+      "dropout": 0.0,
+      "hidden": 64,
+      "model": "S5 Round 2 V2 positive nonzero gate",
+      "n": 1642,
+      "normalized_mae": 1.0440657939633082,
+      "persistence_mae": 0.49951282143592834,
+      "seed": 2,
+      "selected_epoch": 1,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "dropout_9_12",
+      "val_mae": 0.5215242505073547,
+      "variant": "v2_positive"
+    }
+  ],
+  "seed": 2,
+  "selected_config": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 1,
+    "status": "completed",
+    "targets": [
+      "dropout_9_12"
+    ],
+    "trial_id": "tune_dropout_9_12_h64_d0p0",
+    "val_mae": {
+      "dropout_9_12": 0.5178609490394592
+    },
+    "val_ratio": 1.0367320453372675
+  },
+  "status": "completed",
+  "targets": [
+    "dropout_9_12"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 9.607197716832161e-05,
+      "gate_values": [
+        0.1002858579158783
+      ],
+      "prediction_grad_norm": 0.026716135442256927,
+      "train_loss": 0.9998919367790222,
+      "val_ratio": 1.0440659132888634,
+      "validation_loss": 0.8797299861907959
+    }
+  ]
+}

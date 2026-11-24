@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "models"))
 from phase5_cells import GConvGRU, GraphWaveNet, GraphWindow  # noqa: E402  (Phase 5 cells, reused unchanged)
 from phase5_gcn_lstm import graph_inputs  # noqa: E402  (Phase 5 graph normalisation, reused unchanged)
 from mtgnn import MTGNN, yearly_supports  # noqa: E402
+from proposed import ProposedSTGNN, prepare_proposed  # noqa: E402
 
 
 class GCNLSTM(nn.Module):
@@ -73,4 +74,6 @@ FAMILIES = {
     "mtgnn": Family(prepare=lambda snaps, rel: GraphWindow(torch.stack([s["campus"].x for s in snaps]),
                                                            yearly_supports(snaps, rel)),
                     build=lambda f, h, o, d, n, **kw: MTGNN(f, h, o, n, dropout=d, **kw)),
+    "proposed": Family(prepare=prepare_proposed,
+                       build=lambda f, h, o, d, n, **kw: ProposedSTGNN(f, h, o, dropout=d, **kw)),
 }

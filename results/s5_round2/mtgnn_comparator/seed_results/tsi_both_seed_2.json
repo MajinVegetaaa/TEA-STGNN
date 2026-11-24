@@ -1,0 +1,77 @@
+{
+  "config_hash": "199169734b295c931c9e62db3218f16a23a7103ab5e1654fb76b9b359f0dd02b",
+  "metrics": [
+    {
+      "dropout": 0.0,
+      "hidden": 64,
+      "model": "MTGNN corrected Graph V2 comparator, Round 2",
+      "n": 1584,
+      "normalized_mae": 0.9788529844602591,
+      "persistence_mae": 12.707891464233398,
+      "seed": 2,
+      "selected_epoch": 4,
+      "snapshot_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "target": "tsi_both",
+      "val_mae": 12.439157485961914,
+      "variant": "mtgnn"
+    }
+  ],
+  "seed": 2,
+  "selected_config": {
+    "dropout": 0.0,
+    "hidden": 64,
+    "seed": 0,
+    "selected_epoch": 4,
+    "status": "completed",
+    "targets": [
+      "tsi_both"
+    ],
+    "trial_id": "tune_tsi_both_h64_d0p0",
+    "val_mae": {
+      "tsi_both": 12.211320877075195
+    },
+    "val_ratio": 0.9609242344762063
+  },
+  "status": "completed",
+  "targets": [
+    "tsi_both"
+  ],
+  "training_history": [
+    {
+      "epoch": 1,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.5232759714126587,
+      "train_loss": 1.0101008415222168,
+      "val_ratio": 0.9807526196624589,
+      "validation_loss": 1.523532748222351
+    },
+    {
+      "epoch": 2,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.9604648351669312,
+      "train_loss": 1.002495288848877,
+      "val_ratio": 1.076329118008824,
+      "validation_loss": 1.7466752529144287
+    },
+    {
+      "epoch": 3,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 1.7616689205169678,
+      "train_loss": 1.045166254043579,
+      "val_ratio": 0.9941092021952408,
+      "validation_loss": 1.5948433876037598
+    },
+    {
+      "epoch": 4,
+      "gate_grad_norm": 0.0,
+      "gate_values": [],
+      "prediction_grad_norm": 0.2589918375015259,
+      "train_loss": 0.9646860361099243,
+      "val_ratio": 0.9788529844602591,
+      "validation_loss": 1.5537673234939575
+    }
+  ]
+}

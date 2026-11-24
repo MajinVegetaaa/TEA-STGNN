@@ -36,6 +36,14 @@ def rec(check, value, passed=None, scope="all", detail=""):
     print(f"{flag}[{scope}] {check}: {value}" + (f" ({detail})" if detail else ""))
 
 
+def same_edge_pairs(left: pd.DataFrame, right: pd.DataFrame) -> bool:
+    """Compare graph topology independently of CSV row order."""
+    keys = ["src_campus_id", "dst_campus_id"]
+    a = left[keys].sort_values(keys, kind="stable").reset_index(drop=True)
+    b = right[keys].sort_values(keys, kind="stable").reset_index(drop=True)
+    return a.equals(b)
+
+
 def unit_vec(lat, lon):
     la, lo = np.radians(lat), np.radians(lon)
     return np.stack([np.cos(la) * np.cos(lo), np.cos(la) * np.sin(lo), np.sin(la)], axis=-1)
@@ -209,22 +217,28 @@ def main() -> int:
         w_ok = all(np.allclose(np.exp(-(g.distance ** 2) / (2 * np.median(g.distance[g.year.isin(train)]) ** 2)), g.weight,
                                atol=1e-5) for _, g in e.groupby("edge_set"))
         rec("v2 academic weight == exp(-d^2 / 2 sigma^2), one sigma per set = median training-year distance", w_ok, w_ok, "academic")
-    # leakage: scramble every indicator in year t, rebuild year-t academic edges, they must be identical
+    # Separate the two properties: shuffling current-year values must not change a fresh rebuild, and
+    # the stored graph must independently match the unshuffled rebuild. A stale near-tie edge is not
+    # evidence of leakage, but remains visible as a graph-reconstruction failure.
     leak_ok = True
+    academic_graph_mismatches = []
     for y in B.YEARS[1:]:
         scr = master.copy()
         mask = scr.year == y
         for f in B.ACAD_FEATURES:
             scr.loc[mask, f] = rng.permutation(scr.loc[mask, f].to_numpy())
         for es in B.ACAD_EDGE_SETS:
-            rebuilt, _ = B.academic_edges(scr, nodes[nodes.year == y], y, es)
+            baseline, _ = B.academic_edges(master, nodes[nodes.year == y], y, es)
+            shuffled, _ = B.academic_edges(scr, nodes[nodes.year == y], y, es)
             orig = e[(e.year == y) & (e.edge_set == es)]
-            same = rebuilt[["src_campus_id", "dst_campus_id"]].reset_index(drop=True).equals(
-                orig[["src_campus_id", "dst_campus_id"]].reset_index(drop=True))
-            leak_ok &= same
+            leak_ok &= same_edge_pairs(baseline, shuffled)
+            if not same_edge_pairs(baseline, orig):
+                academic_graph_mismatches.append(f"{y}/{es}")
     rec("leakage test: scrambling year-t values leaves year-t academic edges unchanged", leak_ok, leak_ok, "academic")
-    rec("prediction-time target excluded from academic similarity", bool(leak_ok and self_excl), leak_ok and self_excl,
-        "academic", "year-t values never used (shuffle test) and the predicted family is dropped from each set")
+    rec("stored academic edge topology matches current-data reconstruction", not academic_graph_mismatches,
+        not academic_graph_mismatches, "academic", ", ".join(academic_graph_mismatches) or "all years and edge sets")
+    rec("prediction-time target excluded from academic similarity", self_excl, self_excl,
+        "academic", "the predicted target family is excluded from each edge set")
 
     # ------------------------------------------------------------------ demographic: recompute + leakage
     e = E["demographic"]
@@ -249,16 +263,21 @@ def main() -> int:
         w_ok = bool(np.allclose(np.exp(-(e.distance ** 2) / (2 * sig ** 2)), e.weight, atol=1e-5))
         rec("v2 demographic weight == exp(-d^2 / 2 sigma^2), one sigma = median training-year distance", w_ok, w_ok, "demographic")
     leak_ok = True
+    demographic_graph_mismatches = []
     for y in B.YEARS[1:]:
         scr = master.copy()
         mask = scr.year == y
         for f in B.DEMO_FEATURES:
             scr.loc[mask, f] = rng.permutation(scr.loc[mask, f].to_numpy())
-        rebuilt, _ = B.demographic_edges(scr, nodes[nodes.year == y], y)
+        baseline, _ = B.demographic_edges(master, nodes[nodes.year == y], y)
+        shuffled, _ = B.demographic_edges(scr, nodes[nodes.year == y], y)
         orig = e[e.year == y]
-        leak_ok &= rebuilt[["src_campus_id", "dst_campus_id"]].reset_index(drop=True).equals(
-            orig[["src_campus_id", "dst_campus_id"]].reset_index(drop=True))
+        leak_ok &= same_edge_pairs(baseline, shuffled)
+        if not same_edge_pairs(baseline, orig):
+            demographic_graph_mismatches.append(str(y))
     rec("leakage test: scrambling year-t demographics leaves year-t demographic edges unchanged", leak_ok, leak_ok, "demographic")
+    rec("stored demographic edge topology matches current-data reconstruction", not demographic_graph_mismatches,
+        not demographic_graph_mismatches, "demographic", ", ".join(demographic_graph_mismatches) or "all years")
 
     # ------------------------------------------------------------------ temporal
     e = E["temporal"]
