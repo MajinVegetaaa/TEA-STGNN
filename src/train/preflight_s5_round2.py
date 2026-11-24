@@ -35,14 +35,15 @@ def synthetic_smoke(device: str) -> None:
               ProposedSTGNN(features, hidden, 1, version=1, relations=relations),
               QueryAwareRelationSTGNN(features, hidden, 1, relations=relations),
               PositiveGateSTGNN(features, hidden, 1, relations=relations),
-              ProposedSTGNN(features, hidden, 10, version=1, relations=relations)]
+              ProposedSTGNN(features, hidden, 10, version=1, relations=relations),
+              ProposedSTGNN(features, hidden, 10, version=3, relations=relations)]
     for i, model in enumerate(models):
         model = model.to(device)
         output = model(window)
-        expected = 10 if i == len(models) - 1 else 1
+        expected = 10 if i >= len(models) - 2 else 1
         if tuple(output.shape) != (years, nodes, expected) or not torch.isfinite(output).all():
             raise RuntimeError(f"synthetic smoke shape/numerics failed for {type(model).__name__}")
-        output.square().mean().backward()
+        (output - 1.0).square().mean().backward()  # nonzero target: zero-gated models still get gradients
         if not any(p.grad is not None and p.grad.abs().sum() > 0 for p in model.parameters()):
             raise RuntimeError(f"synthetic smoke gradient failed for {type(model).__name__}")
 
@@ -56,11 +57,19 @@ def main() -> None:
         raise RuntimeError(f"expected PyTorch 2.12.1, found {torch.__version__}")
     if torch_geometric.__version__ != "2.8.1":
         raise RuntimeError(f"expected PyG 2.8.1, found {torch_geometric.__version__}")
-    import torch_scatter
-    import torch_sparse
-    import torch_geometric_temporal
-    from importlib.metadata import version
-    temporal_version = version("torch-geometric-temporal")
+    # torch_scatter, torch_sparse and PyG Temporal are not needed by any model here (DECISIONS 2026-11-22: the
+    # baselines are dependency-free re-implementations). Record their versions when present; never require them.
+    from importlib.metadata import PackageNotFoundError, version
+
+    def optional_version(dist: str) -> str:
+        try:
+            return version(dist)
+        except PackageNotFoundError:
+            return "not installed (optional)"
+
+    scatter_version = optional_version("torch-scatter")
+    sparse_version = optional_version("torch-sparse")
+    temporal_version = optional_version("torch-geometric-temporal")
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA is unavailable; select a Kaggle GPU accelerator and restart the session")
     panel = load_validation_bundle(args.bundle)
@@ -69,8 +78,8 @@ def main() -> None:
     synthetic_smoke(args.device)
     print(f"Python: {sys.version.split()[0]}")
     print(f"PyTorch: {torch.__version__}; CUDA: {torch.cuda.is_available()}; CUDA runtime: {torch.version.cuda}")
-    print(f"PyG: {torch_geometric.__version__}; torch_scatter: {torch_scatter.__version__}; "
-          f"torch_sparse: {torch_sparse.__version__}; PyG Temporal: {temporal_version}")
+    print(f"PyG: {torch_geometric.__version__}; torch_scatter: {scatter_version}; "
+          f"torch_sparse: {sparse_version}; PyG Temporal: {temporal_version}")
     print(f"Device: {torch.cuda.get_device_name(0) if args.device == 'cuda' else 'CPU'}")
     print(f"Validation years: {panel.years}; fingerprint: {panel.fingerprint}")
     print("Synthetic forward/backward smoke: PASS")

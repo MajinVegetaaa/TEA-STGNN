@@ -48,12 +48,15 @@ python src/train/run_s5_round2.py configs/experiments/s5_round2_v2_original.yaml
 python src/train/run_s5_round2.py configs/experiments/s5_round2_v2_positive_gate.yaml --device cuda
 python src/train/run_s5_round2.py configs/experiments/s5_round2_v3_single_shared.yaml --device cuda
 python src/train/run_s5_round2.py configs/experiments/s5_round2_v3_multi_shared.yaml --device cuda
+python src/train/run_s5_round2.py configs/experiments/s5_round2_v3_planned.yaml --device cuda
 python src/eval/report_s5_round2.py
 ```
 
-The first run is the corrected-snapshot MTGNN comparator. Do not use the historical S4 result with the earlier snapshot fingerprint as the Round 2 comparator. The comparison reporter requires all eight completed runs, the same snapshot fingerprint, all 10 targets and seeds 0–4, and validation year 2023 before writing the comparison tables.
+The first run is the corrected-snapshot MTGNN comparator. Do not use the historical S4 result with the earlier snapshot fingerprint as the Round 2 comparator. The comparison reporter requires all nine completed runs, the same snapshot fingerprint, all 10 targets and seeds 0–4, and validation year 2023 before writing the comparison tables.
 
-Each single-target run (MTGNN, V0, both V1s, both V2s and V3 single-task) has 4 grid candidates per target selected at seed 0 plus 5 fixed-epoch seed fits per target: 90 fit calls per run. The V3 multi-target run uses the same 4-point grid and five scoring seeds but shares one fit across all targets: 9 fit calls. Thus the grid is shared as a hyperparameter policy, but total compute is not identical: seven single-target runs account for 630 fit calls and V3 multi-task for 9, 639 nominal fit calls total. These counts are not wall-clock estimates or optimizer-step counts.
+Each single-target run (MTGNN, V0, both V1s, both V2s and V3 single-task) has 4 grid candidates per target selected at seed 0 plus 5 fixed-epoch seed fits per target: 90 fit calls per run. The two multi-target runs (shared-relation multi-task and planned V3) use the same 4-point grid and five scoring seeds but share one fit across all targets: 9 fit calls each. Thus the grid is shared as a hyperparameter policy, but total compute is not identical: seven single-target runs account for 630 fit calls and the two multi-task runs for 18, 648 nominal fit calls total.
+
+**What the v3-named runs are.** `s5_round2_v3_single_shared` and `s5_round2_v3_multi_shared` build the V1 model (no gate) on the four shared relations only; the report labels them `V1_shared4_single` / `V1_shared4_multi` (relation ablations). The roadmap's v3 — V2 with its zero-initialised gate, one multi-task model, the shared four plus every target's academic relation — is `s5_round2_v3_planned` (report label `V3_planned`). Only the planned run needs training if the other eight are complete; the reporter refuses to compare until it exists. These counts are not wall-clock estimates or optimizer-step counts.
 
 ## Resume an interrupted run
 

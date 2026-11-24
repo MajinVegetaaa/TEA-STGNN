@@ -29,7 +29,7 @@ from mtgnn import MTGNN, yearly_supports  # noqa: E402
 
 COMMON_RELATIONS = ["district", "geographic", "demographic", "region"]
 VALID_VARIANTS = {"v0_temporal", "v1_original", "v1_query", "v2_original", "v2_positive",
-                  "v3_single_shared", "v3_multi_shared", "mtgnn"}
+                  "v3_single_shared", "v3_multi_shared", "v3_planned", "mtgnn"}
 
 
 def _now() -> str:
@@ -132,12 +132,16 @@ def validate_config(cfg: dict) -> None:
         raise ValueError("all Round 2 outputs must be below results/s5_round2/")
     if cfg.get("tasks") not in {"single", "multi"}:
         raise ValueError("tasks must be single or multi")
-    if cfg.get("relation_policy") not in {"target_specific", "shared_four", "none"}:
+    if cfg.get("relation_policy") not in {"target_specific", "shared_four", "union_targets", "none"}:
         raise ValueError("invalid relation_policy")
     if cfg.get("variant") == "v3_multi_shared" and (cfg["tasks"] != "multi" or cfg["relation_policy"] != "shared_four"):
         raise ValueError("V3 multi-task treatment must use all targets and the shared four relations")
     if cfg.get("variant") == "v3_single_shared" and (cfg["tasks"] != "single" or cfg["relation_policy"] != "shared_four"):
         raise ValueError("V3 single-task control must use single targets and the shared four relations")
+    if cfg.get("variant") == "v3_planned" and (cfg["tasks"] != "multi" or cfg["relation_policy"] != "union_targets"
+                                               or cfg.get("loss") != "equal_targets"):
+        raise ValueError("planned V3 must be the multi-task V2 with equal target losses over the union of "
+                         "every target's relations")
     if cfg.get("variant") == "v0_temporal" and cfg.get("relation_policy") != "none":
         raise ValueError("V0 must remain temporal-only")
 
@@ -165,6 +169,9 @@ def _build_model(variant: str, features: int, hidden: int, outputs: int, dropout
         return QueryAwareRelationSTGNN(features, hidden, outputs, dropout=dropout, relations=relations)
     if variant == "v2_original":
         return ProposedSTGNN(features, hidden, outputs, dropout=dropout, version=2, relations=relations)
+    if variant == "v3_planned":
+        # Roadmap v3: V2 (zero-initialised per-target gate) shared across all targets.
+        return ProposedSTGNN(features, hidden, outputs, dropout=dropout, version=3, relations=relations)
     if variant == "v2_positive":
         return PositiveGateSTGNN(features, hidden, outputs, dropout=dropout, relations=relations,
                                  initial_scale=float(cfg_model_args.get("initial_gate_scale", 0.1)))
@@ -184,6 +191,10 @@ def _group_relations(panel, group: list[str], policy: str) -> list[str]:
         return []
     if policy == "shared_four":
         return COMMON_RELATIONS.copy()
+    if policy == "union_targets":
+        # Same relation set as the Round 1 v3 (`all_target_relations` in run.py): the shared four plus
+        # every target's own academic relation, de-duplicated in first-seen order.
+        return list(dict.fromkeys(r for target in group for r in panel.relations(target)))
     if len(group) != 1:
         raise ValueError("target-specific relations are only defined for single-target fits")
     return panel.relations(group[0])

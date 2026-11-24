@@ -40,10 +40,11 @@ class Round2ReportTests(unittest.TestCase):
             make_runs(root)
             report = build_report(root)
             summary = report["summary"].set_index("model")
-            self.assertEqual(summary.loc["V3_multi", "fit_count"], 9)
+            self.assertEqual(summary.loc["V1_shared4_multi", "fit_count"], 9)
+            self.assertEqual(summary.loc["V3_planned", "fit_count"], 9)
             self.assertEqual(summary.loc["V0", "fit_count"], 90)
-            self.assertEqual(len(report["paired_vs_mtgnn"]), 70)
-            self.assertEqual(len(report["per_seed"]), 40)
+            self.assertEqual(len(report["paired_vs_mtgnn"]), 80)
+            self.assertEqual(len(report["per_seed"]), 45)
             self.assertTrue(report["summary"].selected_proposed.any())
 
     def test_report_fails_closed_on_missing_seed(self):
@@ -59,6 +60,25 @@ class Round2ReportTests(unittest.TestCase):
             make_runs(root, duplicate=True)
             with self.assertRaisesRegex(ValueError, "missing, duplicate, or unexpected seed"):
                 build_report(root)
+
+    def test_tie_rule_uses_component_based_simplicity_order(self):
+        from report_s5_round2 import COMPLEXITY
+        self.assertEqual(set(COMPLEXITY), set(RUNS) - {"MTGNN"})
+        self.assertLess(COMPLEXITY["V1_shared4_single"], COMPLEXITY["V1_original"])
+        self.assertLess(COMPLEXITY["V1_original"], COMPLEXITY["V2_original"])
+        self.assertLess(COMPLEXITY["V2_original"], COMPLEXITY["V3_planned"])
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_runs(root)
+            # Every model within one seed SD of the best: the simplest (V0) must win.
+            for folder in RUNS.values():
+                path = root / folder / "per_seed_metrics.csv"
+                frame = pd.read_csv(path)
+                frame["normalized_mae"] = 1.0 + frame.seed / 10
+                frame.to_csv(path, index=False)
+            summary = build_report(root)["summary"].set_index("model")
+            self.assertTrue(summary.loc["V0", "selected_proposed"])
+            self.assertEqual(int(summary.selected_proposed.sum()), 1)
 
 
 if __name__ == "__main__":
