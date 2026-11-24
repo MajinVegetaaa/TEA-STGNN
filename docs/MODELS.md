@@ -68,6 +68,32 @@ college-ready, risk index and TSI — on SAT (0.900) it beats the bar (0.911) �
 (attendance 1.42, dropout 1.11, retention 1.08, graduation 1.05, participation 1.02). Next: MTGNN (S4) and the
 proposed model (S5); design options under research (see `DECISIONS.md`, 2026-11-22).
 
+### S5 proposed model (2023, 5 seeds; bar 0.930)
+
+Kaggle Tesla T4, 2018–2023 Graph V2 bundle (fingerprint `09f876…`), shared budget B, change label. Score = 2023 MAE ÷
+persistence MAE, averaged over 10 targets; ± is the SD over the five seed-level scores. All eight proposed runs were
+selection candidates; the simplicity order for the tie rule is in `src/eval/report_s5_round2.py`.
+
+| Model | What it is | Score |
+|---|---|---|
+| V1_shared4_single | V1 on the four shared relations only (no academic relation) | 0.981 ± 0.027 |
+| V1_original | planned v1: GATv2 per relation + relation attention | 0.993 ± 0.024 |
+| V1_query | V1 with query-aware relation pooling | 0.994 ± 0.024 |
+| **V0 — selected** | planned v0: GRU over years, no graph | **0.995 ± 0.012** |
+| V3_planned | planned v3: v2 as one multi-task model, all 11 relations | 1.016 ± 0.014 |
+| V2_original | planned v2: v1 + per-target gate starting at 0 | 1.017 ± 0.006 |
+| MTGNN | S4 baseline rerun on the corrected snapshot | 1.020 ± 0.042 |
+| V1_shared4_multi | V1_shared4 as one multi-task model | 1.023 ± 0.022 |
+| V2_positive | v2 with the gate starting at 0.1 | 1.031 ± 0.007 |
+
+The best mean (0.981) plus its seed SD gives a tie threshold of 1.008; V0, V1_original and V1_query fall inside it, and the simplest, V0, is selected. No version
+beats the bar, and the graph does not measurably help on average. Per target it does matter: on attendance the graph
+versions improve on V0 (1.083 → 0.890 for V1_shared4_single), while every gated model fails there (V2 1.49, V3 1.36,
+MTGNN 1.49); the gate helps slightly on test-score targets (ACT 0.963 → 0.935, risk index 0.946 → 0.918 for V3).
+V1_query, V2_positive and the two shared-relation runs were added after a first, unrecorded run of the planned four, so
+the selected 2023 score is optimistically biased (`DECISIONS.md`, 2026-11-24). Per-target and paired-vs-MTGNN tables:
+`results/s5_round2/comparison_*.csv`.
+
 ## Running
 
 ```bash
