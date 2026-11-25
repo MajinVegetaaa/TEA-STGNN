@@ -27,7 +27,8 @@ import run_s5_round2 as runner  # noqa: E402
 from data_s5_round2 import load_validation_bundle  # noqa: E402
 
 ORIGINS = [2022, 2023]
-MODELS = {"v0": ("v0_temporal", "none"), "v1": ("v1_original", "target_specific")}
+MODELS = {"v0": ("v0_temporal", "none"), "v1": ("v1_original", "target_specific"),
+          "mtgnn": ("mtgnn", "target_specific")}       # MTGNN: S6 only, persistence anchor and change label
 BUNDLE = ROOT / "data/graph_v2/pyg/s5_validation"
 OUT = ROOT / "results/step4"
 OUTS = {"change": OUT, "change_relative": ROOT / "results/step4_relative"}   # the second is the post-hoc plan A
@@ -48,26 +49,44 @@ def anchor_for(panel, y, lag, scaler, through: int):
     return anchor, coef
 
 
-def run(model: str, device: str, origins: list[int], target_mode: str = "change") -> None:
+def run(model: str, device: str, origins: list[int], target_mode: str = "change", *, panel=None, scaler=None,
+        out_root: Path | None = None, tune_only: bool = False, locked: dict | None = None,
+        use_anchor: bool = True, model_args: dict | None = None) -> None:
+    """Nested tune-then-score at each origin.
+
+    tune_only: run only the tuning stage (choose settings on s-1) and stop; used to lock S6 settings for 2024
+    from the 2018-2023 bundle. locked: per-target settings {"hidden", "dropout", "epochs"} that replace tuning
+    (S6 scoring). panel/scaler/out_root default to the 2018-2023 validation bundle and the Step 4 folders.
+    """
     variant, policy = MODELS[model]
-    panel = load_validation_bundle(BUNDLE)
-    scaler = json.loads((BUNDLE / "metadata.json").read_text())["scaler"]
+    if panel is None:
+        panel = load_validation_bundle(BUNDLE)
+        scaler = json.loads((BUNDLE / "metadata.json").read_text())["scaler"]
+    out_root = out_root or OUTS[target_mode]
     budget = yaml.safe_load((ROOT / "configs/budget.yaml").read_text())
-    runner.cfg_model_args = {}
+    if variant == "mtgnn" and (use_anchor or target_mode != "change"):
+        raise ValueError("MTGNN is run as designed in S4: persistence anchor and change label")
+    runner.cfg_model_args = dict(model_args or {})
     runner.campus_ids = panel.campus_ids
     y, lag, mask = runner._target_tensors(panel, device)
     grid = [{"hidden": int(h), "dropout": float(d)} for h in budget["grid"]["hidden"] for d in budget["grid"]["dropout"]]
     common = dict(target_mode=target_mode, variant=variant, y=y, lag=lag, eval_mask=mask, lr=budget["lr"],
                   weight_decay=budget["weight_decay"], device=device, gradient_clip_norm=None, config_hash="step4")
     for s in origins:
-        out = OUTS[target_mode] / model / f"origin_{s}"
+        out = out_root / model / f"origin_{s}"
         (out / "predictions").mkdir(parents=True, exist_ok=True)
-        tune_panel, score_panel = view(panel, s - 1), view(panel, s)
+        tune_panel = view(panel, s - 1)
+        score_panel = None if tune_only else view(panel, s)
         tune_anchor, tune_coef = anchor_for(panel, y, lag, scaler, s - 1)
-        score_anchor, score_coef = anchor_for(panel, y, lag, scaler, s)
+        score_anchor, score_coef = (None, None) if tune_only else anchor_for(panel, y, lag, scaler, s)
+        if not use_anchor:
+            tune_anchor = score_anchor = None
         (out / "anchor_coefficients.json").write_text(json.dumps({"tune": tune_coef, "score": score_coef}, indent=1))
         sel_path = out / "selection.json"
         selection = json.loads(sel_path.read_text()) if sel_path.exists() else {}
+        if locked is not None:
+            selection = {t: {"chosen": dict(locked[t]), "candidates": [], "tuned_on": "locked"} for t in panel.targets}
+            sel_path.write_text(json.dumps(selection, indent=1))
         for target in panel.targets:
             idx = [panel.targets.index(target)]
             relations = runner._group_relations(panel, [target], policy)
@@ -84,6 +103,9 @@ def run(model: str, device: str, origins: list[int], target_mode: str = "change"
                                      "candidates": cands, "tuned_on": s - 1}
                 sel_path.write_text(json.dumps(selection, indent=1))
             chosen = selection[target]["chosen"]
+            if tune_only:
+                print(f"{model} {target} tuned on {s - 1}: {chosen}", flush=True)
+                continue
             runner.stop_year = s
             for seed in panel.split["seeds"]:
                 path = out / "predictions" / f"{target}_seed_{seed}.csv"
@@ -98,7 +120,8 @@ def run(model: str, device: str, origins: list[int], target_mode: str = "change"
                 frame.to_csv(path.with_suffix(".tmp"), index=False)
                 path.with_suffix(".tmp").rename(path)
             print(f"{model} {s} {target} done (tuned on {s - 1}: {chosen})", flush=True)
-        (out / "status.json").write_text(json.dumps({"status": "completed", "fingerprint": panel.fingerprint}))
+        (out / "status.json").write_text(json.dumps({"status": "tuned" if tune_only else "completed",
+                                                     "fingerprint": panel.fingerprint}))
 
 
 def main() -> None:

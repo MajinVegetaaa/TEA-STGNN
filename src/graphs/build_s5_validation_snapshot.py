@@ -105,8 +105,14 @@ def _source_files() -> dict[str, Path]:
     return {"nodes": SOURCE / "nodes.csv", **{layer: SOURCE / f"edges_{layer}.csv" for layer in LAYERS}}
 
 
-def build_bundle(source: Path = SOURCE, output: Path = OUTPUT) -> dict:
-    """Build and atomically publish the 2018–2023 bundle; refuse to overwrite."""
+def build_bundle(source: Path = SOURCE, output: Path = OUTPUT, cutoff: int = CUTOFF) -> dict:
+    """Build and atomically publish the bundle through ``cutoff``; refuse to overwrite.
+
+    The default (2023) is the S5 validation bundle. S6 passes cutoff=2024; preprocessing (medians, scaling,
+    category vocabularies, edge-distance statistics) is still fitted on the training years 2018-2022 only, so the
+    2018-2023 part of the test bundle carries the same values as the validation bundle.
+    """
+    test = cutoff > CUTOFF
     if output.exists():
         raise FileExistsError(f"refusing to overwrite existing validation bundle: {output}")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -121,13 +127,13 @@ def build_bundle(source: Path = SOURCE, output: Path = OUTPUT) -> dict:
 
     temporary = Path(tempfile.mkdtemp(prefix=".s5_validation_", dir=output.parent))
     try:
-        nodes, node_digest = read_sorted_year_csv(input_paths["nodes"])
-        expected_years = list(range(min(SPLIT["train_years"]), CUTOFF + 1))
+        nodes, node_digest = read_sorted_year_csv(input_paths["nodes"], cutoff)
+        expected_years = list(range(min(SPLIT["train_years"]), cutoff + 1))
         years = sorted(nodes.year.unique().tolist())
         if years != expected_years:
             raise ValueError(f"permitted-year node rows do not cover the expected years: {years}")
-        if nodes.empty or nodes.year.max() != CUTOFF:
-            raise ValueError(f"node source did not yield the required cutoff year {CUTOFF}")
+        if nodes.empty or nodes.year.max() != cutoff:
+            raise ValueError(f"node source did not yield the required cutoff year {cutoff}")
 
         catalog = pd.read_csv(source / "node_feature_catalog.csv")
         edge_sets = pd.read_csv(source / "academic_edge_sets.csv")
@@ -142,8 +148,8 @@ def build_bundle(source: Path = SOURCE, output: Path = OUTPUT) -> dict:
             source_hashes[name] = _file_hash(source / name)
         source_hashes["configs/split.yaml"] = _file_hash(SPLIT_PATH)
         for layer in LAYERS:
-            frame, digest = read_sorted_year_csv(input_paths[layer])
-            if not frame.empty and int(frame.year.max()) > CUTOFF:
+            frame, digest = read_sorted_year_csv(input_paths[layer], cutoff)
+            if not frame.empty and int(frame.year.max()) > cutoff:
                 raise AssertionError("future-year edge rows passed the cutoff reader")
             edges[layer] = frame
             source_hashes[f"edges_{layer}.csv:through_cutoff"] = digest
@@ -236,7 +242,7 @@ def build_bundle(source: Path = SOURCE, output: Path = OUTPUT) -> dict:
             "academic_relation": {t: f"academic_{target_to_set[t].removeprefix('excl_')}"
                                   for t in expected_targets if t in target_to_set},
             "split": {"train_years": SPLIT["train_years"], "val_years": SPLIT["val_years"],
-                      "seeds": SPLIT["seeds"]},
+                      "seeds": SPLIT["seeds"], **({"test_years": SPLIT["test_years"]} if test else {})},
             "scaler": scaler,
             "edge_attr": ["weight", "distance_z"],
             "edge_distance_stats": {k: list(v) for k, v in distance_stats_by_relation.items()},
@@ -255,11 +261,11 @@ def build_bundle(source: Path = SOURCE, output: Path = OUTPUT) -> dict:
         manifest = {
             "format_version": 1,
             "graph": "v2",
-            "cutoff_year": CUTOFF,
+            "cutoff_year": cutoff,
             "years": years,
             "train_years": SPLIT["train_years"],
             "validation_years": SPLIT["val_years"],
-            "test_years_included": False,
+            "test_years_included": test,
             "metadata_sha256": metadata_hash,
             "shards": shard_hashes,
             "fingerprint": _canonical_hash(payload),

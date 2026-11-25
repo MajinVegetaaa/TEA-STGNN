@@ -1,0 +1,535 @@
+{
+ "test_year": 2024,
+ "locked_at_commit": "41011bd45bab396910f36811a43ebee0c3c71fcb",
+ "data": {
+  "validation_bundle_fingerprint": "85da391938bf4f91aff0fa090fa57dea06f3a85d81af8496a1a0471ac8125205",
+  "content_hash_2018_2023": "41283f267d90ea6196c767b2dd53d8303c4aabcf2f9c4e290aa52dd8c4aecf85",
+  "preprocessing_fit_years": [
+   2018,
+   2019,
+   2020,
+   2021,
+   2022
+  ],
+  "source_digests_2018_2023": {
+   "nodes.csv:through_2023": "2cb4981c933103d8e1bc5aff9451d3faf087ca85f26be2014848924a0e5f4d8f",
+   "edges_district.csv:through_2023": "04743bd1eeea41c7fff06eba26a9e42e0475eba4ac25e895a489a7665ad9b7dc",
+   "edges_geographic.csv:through_2023": "b6140be4394fd808890fb0b6bc93d81dc17f546ee47f388ecde12e8d99da2ee6",
+   "edges_demographic.csv:through_2023": "9365a2e8c615faedf67744449cd4b8cdb42cff81988176535710dece3fa1331a",
+   "edges_region.csv:through_2023": "dd3bdeb63e969d12be37e49e7c2e8ac0dbfb09eca873fc3acbc8be1c0a5c2107",
+   "edges_academic.csv:through_2023": "5733841fd8331c2c71e7700b221ab95e0c906e615f409e7908d24eb3cee00909",
+   "academic_edge_sets.csv": "bf8061ac773d25f74a389f225d7298961cd453babea7a6ec19a62f98ca1055e3"
+  },
+  "note": "the 2024 bundle must reproduce content_hash_2018_2023 before any model is fitted"
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "budget": {
+  "grid": {
+   "hidden": [
+    32,
+    64
+   ],
+   "dropout": [
+    0.0,
+    0.2
+   ]
+  },
+  "lr": 0.003,
+  "weight_decay": 0.0001,
+  "max_epochs": 100,
+  "patience": 20
+ },
+ "final_model": {
+  "model": "v0",
+  "rule": "final-model rule on the honest (nested) 2022/2023 results: Plan A V0 1.014, Plan A V1 1.016, within one seed SD, so the simpler V0 wins; V1 is reported as the proposed graph model"
+ },
+ "models": {
+  "v0": {
+   "anchor": "shrink_own_3yr",
+   "target_mode": "change_relative",
+   "tasks": "single",
+   "train_label_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+   ],
+   "settings_chosen_on": "2023, after training on label years 2019-2022 (budget-B grid, seed 0, patience 20)",
+   "variant": "v0_temporal",
+   "relation_policy": "none",
+   "settings": {
+    "act_composite": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 6
+    },
+    "sat_total": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 4
+    },
+    "sat_act_above_criterion": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 11
+    },
+    "dropout_9_12": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 7
+    },
+    "attendance_rate": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 3
+    },
+    "retention_rate": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 1
+    },
+    "risk_index": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 8
+    },
+    "tsi_both": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 4
+    },
+    "sat_act_participation": {
+     "hidden": 64,
+     "dropout": 0.2,
+     "epochs": 8
+    },
+    "graduation_4yr": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 7
+    }
+   }
+  },
+  "v1": {
+   "anchor": "shrink_own_3yr",
+   "target_mode": "change_relative",
+   "tasks": "single",
+   "train_label_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+   ],
+   "settings_chosen_on": "2023, after training on label years 2019-2022 (budget-B grid, seed 0, patience 20)",
+   "variant": "v1_original",
+   "relation_policy": "target_specific",
+   "settings": {
+    "act_composite": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 7
+    },
+    "sat_total": {
+     "hidden": 64,
+     "dropout": 0.2,
+     "epochs": 13
+    },
+    "sat_act_above_criterion": {
+     "hidden": 64,
+     "dropout": 0.2,
+     "epochs": 14
+    },
+    "dropout_9_12": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 6
+    },
+    "attendance_rate": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 1
+    },
+    "retention_rate": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 6
+    },
+    "risk_index": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 7
+    },
+    "tsi_both": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 1
+    },
+    "sat_act_participation": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 8
+    },
+    "graduation_4yr": {
+     "hidden": 64,
+     "dropout": 0.2,
+     "epochs": 8
+    }
+   }
+  },
+  "mtgnn": {
+   "variant": "mtgnn",
+   "relation_policy": "target_specific",
+   "anchor": "persistence",
+   "target_mode": "change",
+   "model_args": {
+    "embedding": 40,
+    "alpha": 3.0,
+    "top_k": 20,
+    "beta": 0.05,
+    "depth": 2,
+    "kernels": [
+     1,
+     2,
+     3
+    ],
+    "dilations": [
+     1,
+     2
+    ]
+   },
+   "settings_chosen_on": "2023 in S5 Round 2 (results/s5_round2/mtgnn_comparator)",
+   "settings": {
+    "act_composite": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 19
+    },
+    "attendance_rate": {
+     "hidden": 32,
+     "dropout": 0.2,
+     "epochs": 24
+    },
+    "dropout_9_12": {
+     "hidden": 64,
+     "dropout": 0.2,
+     "epochs": 17
+    },
+    "graduation_4yr": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 30
+    },
+    "retention_rate": {
+     "hidden": 32,
+     "dropout": 0.2,
+     "epochs": 1
+    },
+    "risk_index": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 22
+    },
+    "sat_act_above_criterion": {
+     "hidden": 32,
+     "dropout": 0.0,
+     "epochs": 30
+    },
+    "sat_act_participation": {
+     "hidden": 64,
+     "dropout": 0.2,
+     "epochs": 22
+    },
+    "sat_total": {
+     "hidden": 32,
+     "dropout": 0.2,
+     "epochs": 16
+    },
+    "tsi_both": {
+     "hidden": 64,
+     "dropout": 0.0,
+     "epochs": 4
+    }
+   }
+  },
+  "shrinkage": {
+   "formula": "lag1 + beta * (ma3 - lag1); beta per target x enrollment tercile, least squares clipped to [0, 1]",
+   "fit_label_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+   ],
+   "betas": [
+    {
+     "target": "act_composite",
+     "tercile": 0,
+     "beta": 0.7657130360603333,
+     "n_fit": 749
+    },
+    {
+     "target": "act_composite",
+     "tercile": 1,
+     "beta": 0.7072938680648804,
+     "n_fit": 927
+    },
+    {
+     "target": "act_composite",
+     "tercile": 2,
+     "beta": 0.7456861734390259,
+     "n_fit": 1361
+    },
+    {
+     "target": "sat_total",
+     "tercile": 0,
+     "beta": 0.6863523721694946,
+     "n_fit": 608
+    },
+    {
+     "target": "sat_total",
+     "tercile": 1,
+     "beta": 0.4677963852882385,
+     "n_fit": 1213
+    },
+    {
+     "target": "sat_total",
+     "tercile": 2,
+     "beta": 0.15532152354717255,
+     "n_fit": 1568
+    },
+    {
+     "target": "sat_act_above_criterion",
+     "tercile": 0,
+     "beta": 0.9056003093719482,
+     "n_fit": 1217
+    },
+    {
+     "target": "sat_act_above_criterion",
+     "tercile": 1,
+     "beta": 0.5629709959030151,
+     "n_fit": 1444
+    },
+    {
+     "target": "sat_act_above_criterion",
+     "tercile": 2,
+     "beta": 0.2922745645046234,
+     "n_fit": 1616
+    },
+    {
+     "target": "dropout_9_12",
+     "tercile": 0,
+     "beta": 0.9778910875320435,
+     "n_fit": 1544
+    },
+    {
+     "target": "dropout_9_12",
+     "tercile": 1,
+     "beta": 0.9069678783416748,
+     "n_fit": 1549
+    },
+    {
+     "target": "dropout_9_12",
+     "tercile": 2,
+     "beta": 0.6566246151924133,
+     "n_fit": 1653
+    },
+    {
+     "target": "attendance_rate",
+     "tercile": 0,
+     "beta": 0.7250506281852722,
+     "n_fit": 1566
+    },
+    {
+     "target": "attendance_rate",
+     "tercile": 1,
+     "beta": 0.6323021054267883,
+     "n_fit": 1597
+    },
+    {
+     "target": "attendance_rate",
+     "tercile": 2,
+     "beta": 0.5365203619003296,
+     "n_fit": 1657
+    },
+    {
+     "target": "retention_rate",
+     "tercile": 0,
+     "beta": 0.6121990084648132,
+     "n_fit": 1579
+    },
+    {
+     "target": "retention_rate",
+     "tercile": 1,
+     "beta": 0.93685382604599,
+     "n_fit": 1600
+    },
+    {
+     "target": "retention_rate",
+     "tercile": 2,
+     "beta": 0.9899019598960876,
+     "n_fit": 1657
+    },
+    {
+     "target": "risk_index",
+     "tercile": 0,
+     "beta": 0.9110873937606812,
+     "n_fit": 1214
+    },
+    {
+     "target": "risk_index",
+     "tercile": 1,
+     "beta": 0.7684620022773743,
+     "n_fit": 1444
+    },
+    {
+     "target": "risk_index",
+     "tercile": 2,
+     "beta": 0.7409743070602417,
+     "n_fit": 1615
+    },
+    {
+     "target": "tsi_both",
+     "tercile": 0,
+     "beta": 0.5364556908607483,
+     "n_fit": 1429
+    },
+    {
+     "target": "tsi_both",
+     "tercile": 1,
+     "beta": 0.5059651136398315,
+     "n_fit": 1444
+    },
+    {
+     "target": "tsi_both",
+     "tercile": 2,
+     "beta": 0.3415616750717163,
+     "n_fit": 1616
+    },
+    {
+     "target": "sat_act_participation",
+     "tercile": 0,
+     "beta": 0.6638573408126831,
+     "n_fit": 1429
+    },
+    {
+     "target": "sat_act_participation",
+     "tercile": 1,
+     "beta": 0.744831919670105,
+     "n_fit": 1444
+    },
+    {
+     "target": "sat_act_participation",
+     "tercile": 2,
+     "beta": 0.7380892038345337,
+     "n_fit": 1616
+    },
+    {
+     "target": "graduation_4yr",
+     "tercile": 0,
+     "beta": 0.7359207272529602,
+     "n_fit": 1407
+    },
+    {
+     "target": "graduation_4yr",
+     "tercile": 1,
+     "beta": 0.7125243544578552,
+     "n_fit": 1324
+    },
+    {
+     "target": "graduation_4yr",
+     "tercile": 2,
+     "beta": 0.33079737424850464,
+     "n_fit": 1574
+    }
+   ]
+  },
+  "tree": {
+   "params": {
+    "learning_rate": 0.05,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "max_iter": 200,
+    "random_state": 0
+   },
+   "inputs": "S1c 'all' inputs, zscore mode, no graph features (Phase A)",
+   "train_years": "all years before 2024"
+  },
+  "honest_bar": {
+   "picks": {
+    "act_composite": "shrinkage",
+    "attendance_rate": "tree",
+    "dropout_9_12": "shrinkage",
+    "graduation_4yr": "tree",
+    "retention_rate": "shrinkage",
+    "risk_index": "tree",
+    "sat_act_above_criterion": "tree",
+    "sat_act_participation": "shrinkage",
+    "sat_total": "tree",
+    "tsi_both": "shrinkage"
+   },
+   "chosen_on": "origins 2021-2023, results/phase_a/rolling_scores.csv"
+  },
+  "s1c_bar": {
+   "picks": {
+    "act_composite": "random_forest (+context) | level | all",
+    "sat_total": "gradient_boosting (+context) | level | existing",
+    "sat_act_above_criterion": "random_forest (+context) | level | all",
+    "sat_act_participation": "persistence (last year's value) | n/a | n/a",
+    "dropout_9_12": "linear_regression (own lags) | relative | all",
+    "attendance_rate": "persistence (last year's value) | n/a | n/a",
+    "retention_rate": "linear_regression (own lags) | zscore | all",
+    "graduation_4yr": "gradient_boosting (+context +region only) | zscore | all",
+    "risk_index": "gradient_boosting (+context +district only) | relative | all",
+    "tsi_both": "gradient_boosting (+context +graph) | level | all"
+   },
+   "note": "selected on 2023 among ~90 candidates; refit on 2018-2023 and 2024 predictions written in S1c, before S6; reported, not re-run"
+  }
+ },
+ "scoring": {
+  "rows": "per target, schools with the 2024 target and its 2023 value observed, present in every model's predictions",
+  "score": "MAE / persistence MAE, mean over targets; seeds: mean and SD",
+  "bootstrap": {
+   "method": "paired, seed-averaged predictions, identical schools",
+   "n_boot": 2000,
+   "seed": 0
+  },
+  "comparisons": [
+   [
+    "v0",
+    "mtgnn"
+   ],
+   [
+    "v0",
+    "honest_bar"
+   ],
+   [
+    "v0",
+    "s1c_bar"
+   ],
+   [
+    "v1",
+    "mtgnn"
+   ],
+   [
+    "v1",
+    "honest_bar"
+   ],
+   [
+    "v1",
+    "s1c_bar"
+   ],
+   [
+    "v1",
+    "v0"
+   ]
+  ]
+ }
+}

@@ -1,0 +1,185 @@
+{
+ "tune": [
+  {
+   "target": "act_composite",
+   "tercile": 0,
+   "beta": 0.7502875924110413,
+   "n_fit": 511
+  },
+  {
+   "target": "act_composite",
+   "tercile": 1,
+   "beta": 0.6521739959716797,
+   "n_fit": 638
+  },
+  {
+   "target": "act_composite",
+   "tercile": 2,
+   "beta": 0.8979241251945496,
+   "n_fit": 921
+  },
+  {
+   "target": "sat_total",
+   "tercile": 0,
+   "beta": 0.6899693608283997,
+   "n_fit": 398
+  },
+  {
+   "target": "sat_total",
+   "tercile": 1,
+   "beta": 0.5377265810966492,
+   "n_fit": 795
+  },
+  {
+   "target": "sat_total",
+   "tercile": 2,
+   "beta": 0.15143653750419617,
+   "n_fit": 1042
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 0,
+   "beta": 0.9103693962097168,
+   "n_fit": 807
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 1,
+   "beta": 0.6303765773773193,
+   "n_fit": 947
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 2,
+   "beta": 0.3536175489425659,
+   "n_fit": 1074
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 0,
+   "beta": 1.0,
+   "n_fit": 1019
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 1,
+   "beta": 1.0,
+   "n_fit": 1014
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 2,
+   "beta": 0.7192136645317078,
+   "n_fit": 1104
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 0,
+   "beta": 0.9348210692405701,
+   "n_fit": 1038
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 1,
+   "beta": 0.8812149167060852,
+   "n_fit": 1054
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 2,
+   "beta": 0.8048818111419678,
+   "n_fit": 1107
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 0,
+   "beta": 0.7454740405082703,
+   "n_fit": 1047
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 1,
+   "beta": 1.0,
+   "n_fit": 1056
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 2,
+   "beta": 1.0,
+   "n_fit": 1107
+  },
+  {
+   "target": "risk_index",
+   "tercile": 0,
+   "beta": 0.9272977113723755,
+   "n_fit": 804
+  },
+  {
+   "target": "risk_index",
+   "tercile": 1,
+   "beta": 0.7767384648323059,
+   "n_fit": 947
+  },
+  {
+   "target": "risk_index",
+   "tercile": 2,
+   "beta": 0.7579352259635925,
+   "n_fit": 1073
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 0,
+   "beta": 0.5861237049102783,
+   "n_fit": 945
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 1,
+   "beta": 0.47287529706954956,
+   "n_fit": 946
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 2,
+   "beta": 0.4211115837097168,
+   "n_fit": 1072
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 0,
+   "beta": 0.6701942682266235,
+   "n_fit": 945
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 1,
+   "beta": 0.8560027480125427,
+   "n_fit": 946
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 2,
+   "beta": 0.6862008571624756,
+   "n_fit": 1072
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 0,
+   "beta": 0.7460739612579346,
+   "n_fit": 933
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 1,
+   "beta": 0.7085832357406616,
+   "n_fit": 864
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 2,
+   "beta": 0.14546430110931396,
+   "n_fit": 1047
+  }
+ ],
+ "score": null
+}
