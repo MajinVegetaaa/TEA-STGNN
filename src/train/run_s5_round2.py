@@ -122,6 +122,7 @@ class GraphWindow:
 
 TARGET_MODES = {"change", "change_relative"}
 EXTRA_INPUTS = {"dist_2019"}
+ANCHORS = {"persistence", "shrink_own_3yr"}
 
 
 def statewide_mean_change(change: torch.Tensor) -> torch.Tensor:
@@ -169,6 +170,40 @@ def add_dist_2019(panel) -> None:
     panel.feature_names = list(panel.feature_names) + [f"dist_2019_{t}" for t in panel.targets]
 
 
+def shrinkage_anchor(panel, y: torch.Tensor, lag: torch.Tensor, scaler: dict) -> tuple[torch.Tensor, list[dict]]:
+    """Step 1 anchor: last year's value pulled toward the school's own 3-year average (Phase A shrink_to_own_3yr).
+
+    anchor[t] = lag1[t] + beta * (ma3[t] - lag1[t]), ma3 = mean of the target's values 1-3 years before t (an
+    input feature, unscaled here; where it is flagged missing the anchor is lag1). beta is fitted per target and
+    enrollment tercile by no-intercept least squares of (y - lag1) on (ma3 - lag1), clipped to [0, 1], on the
+    training label years only (2019-2022 targets); tercile cuts also come from those years. Returns the anchor
+    for every year [years, schools, targets] and the fitted coefficients.
+    """
+    names = list(panel.feature_names)
+    fit_idx = [i for i, year in enumerate(panel.years) if year in panel.split["train_years"] and i >= 1]
+    stack = lambda col: torch.stack([s["campus"].x[:, names.index(col)] for s in panel.snapshots]).to(lag)
+    enroll, enroll_missing = stack("enrollment_lag1"), stack("enrollment_lag1_missing") > 0.5
+    fit_enroll = enroll[fit_idx][~enroll_missing[fit_idx]]
+    cuts = torch.quantile(fit_enroll, torch.tensor([1 / 3, 2 / 3], dtype=lag.dtype, device=lag.device))
+    band = torch.bucketize(torch.where(enroll_missing, fit_enroll.median(), enroll), cuts, right=True)
+    in_fit = torch.zeros_like(enroll_missing)
+    in_fit[fit_idx] = True
+    anchor, coefficients = lag.clone(), []
+    for k, target in enumerate(panel.targets):
+        col = f"{target}_ma3"
+        missing = stack(f"{col}_missing") > 0.5
+        ma3 = stack(col) * scaler["sd"][col] + scaler["mean"][col]
+        gap = torch.where(missing, torch.zeros_like(ma3), ma3 - lag[..., k])
+        change = y[..., k] - lag[..., k]
+        for b in range(3):
+            sel = in_fit & (band == b) & ~missing & torch.isfinite(change) & torch.isfinite(gap)
+            gx, gy = gap[sel], change[sel]
+            beta = float((gx @ gy / (gx @ gx)).clamp(0, 1)) if sel.sum() > 10 and float(gx @ gx) > 0 else 0.0
+            coefficients.append({"target": target, "tercile": b, "beta": beta, "n_fit": int(sel.sum())})
+            anchor[..., k] = torch.where(band == b, lag[..., k] + beta * gap, anchor[..., k])
+    return anchor, coefficients
+
+
 def validate_config(cfg: dict) -> None:
     variant = cfg.get("variant")
     if variant not in VALID_VARIANTS:
@@ -196,6 +231,11 @@ def validate_config(cfg: dict) -> None:
     extra = cfg.get("extra_inputs", [])
     if not set(extra) <= EXTRA_INPUTS or (extra and cfg.get("variant") == "mtgnn"):
         raise ValueError(f"extra_inputs must be a subset of {sorted(EXTRA_INPUTS)} and are not used with MTGNN")
+    anchor = cfg.get("anchor", "persistence")
+    if anchor not in ANCHORS or (anchor != "persistence" and (cfg.get("variant") == "mtgnn"
+                                                              or cfg.get("target_mode", "change") != "change")):
+        raise ValueError(f"anchor must be one of {sorted(ANCHORS)}; non-persistence anchors need the change "
+                         "label and are not used with MTGNN")
     if cfg.get("variant") == "v0_temporal" and cfg.get("relation_policy") != "none":
         raise ValueError("V0 must remain temporal-only")
 
@@ -273,17 +313,18 @@ def _masked_standardized_loss(prediction: torch.Tensor, scaled: torch.Tensor,
 
 
 def _prediction_and_metrics(model, x, y, lag, eval_mask, targets, target_indices, center, scale,
-                            stop: int, label: str, *, device: str, target_mode: str = "change"):
+                            stop: int, label: str, *, device: str, target_mode: str = "change", anchor=None):
+    base = lag if anchor is None else anchor          # what the predicted change is added to
     model.eval()
     with torch.no_grad():
         normalized = model(x[:stop + 1])[-1]
         forecast_change = normalized * scale + center
-        forecast = forecast_change + lag[stop, :, target_indices] if label == "change" else forecast_change
+        forecast = forecast_change + base[stop, :, target_indices] if label == "change" else forecast_change
         truth = y[stop, :, target_indices]
         mask = eval_mask[stop, :, target_indices]
         rows = []
         errors, ratios, losses = [], [], []
-        val_label = truth - lag[stop, :, target_indices] if label == "change" else truth
+        val_label = truth - base[stop, :, target_indices] if label == "change" else truth
         if target_mode == "change_relative":      # validation loss only (logged, not used for selection)
             val_label = val_label - statewide_mean_change(val_label.unsqueeze(0))[0]
         val_observed = mask & torch.isfinite(val_label)
@@ -304,7 +345,8 @@ def _prediction_and_metrics(model, x, y, lag, eval_mask, targets, target_indices
             for i in active.nonzero(as_tuple=False).flatten().tolist():
                 rows.append({"target": target, "year": stop_year, "campus_id": campus_ids[i],
                              "y_true": float(truth[i, k].item()), "y_pred": float(forecast[i, k].item()),
-                             "persistence_pred": float(lag[stop, i, target_indices[k]].item())})
+                             "persistence_pred": float(lag[stop, i, target_indices[k]].item()),
+                             **({} if anchor is None else {"anchor_pred": float(base[stop, i, target_indices[k]].item())})})
     return rows, errors, ratios, val_loss
 
 
@@ -320,14 +362,15 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
               panel, relations: list[str], hidden: int, dropout: float, epochs: int, lr: float,
               weight_decay: float, patience: int | None, seed: int, device: str, tune: bool,
               gradient_clip_norm: float | None, config_hash: str, checkpoint_path: Path | None = None,
-              on_epoch=None, target_mode: str = "change"):
+              on_epoch=None, target_mode: str = "change", anchor=None):
     """One fit on training years only; optionally select its epoch on 2023."""
     seed_everything(seed)
     stop = panel.val_index
     local_y = y[..., target_indices]
     local_lag = lag[..., target_indices]
+    local_base = local_lag if anchor is None else anchor[..., target_indices]   # what the model's change is added to
     local_mask = eval_mask[..., target_indices]
-    labels = training_labels(local_y, local_lag, stop, target_mode)
+    labels = training_labels(local_y, local_base, stop, target_mode)
     observed = labels.isfinite()
     centers, scales = [], []
     for k, target in enumerate(target_names):
@@ -384,7 +427,7 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
         optimizer.step()
         rows_out, val_mae, ratios, val_loss = _prediction_and_metrics(
             model, x, y, lag, eval_mask, target_names, target_indices, center, scale,
-            stop, "change", device=device, target_mode=target_mode)
+            stop, "change", device=device, target_mode=target_mode, anchor=anchor)
         score = float(np.mean(ratios))
         gates = model.gate.detach().cpu().tolist() if variant == "v2_positive" else []
         item = {"epoch": epoch, "train_loss": float(loss.detach().item()), "validation_loss": val_loss,
@@ -415,7 +458,7 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
         model.eval()
         with torch.no_grad():
             normalized = model(x[:stop + 1])[-1]
-            forecast = normalized * scale + center + local_lag[stop]
+            forecast = normalized * scale + center + local_base[stop]
             target_mae, target_ratios = [], []
             for k in range(len(target_indices)):
                 mask = rows[:, k]
@@ -427,10 +470,10 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
     model.eval()
     with torch.no_grad():
         normalized = model(x[:stop + 1])[-1]
-        forecasts = normalized * scale + center + local_lag[stop]
+        forecasts = normalized * scale + center + local_base[stop]
         output_rows, maes, ratios, val_loss = _prediction_and_metrics(
             model, x, y, lag, eval_mask, target_names, target_indices, center, scale,
-            stop, "change", device=device, target_mode=target_mode)
+            stop, "change", device=device, target_mode=target_mode, anchor=anchor)
     return {"model": model, "center": center.detach().cpu(), "scale": scale.detach().cpu(),
             "forecast": forecasts.detach().cpu(), "prediction_rows": output_rows,
             "val_mae": maes, "val_ratios": ratios, "val_ratio": float(np.mean(ratios)),
@@ -506,6 +549,11 @@ def run(config_path: Path, *, device: str | None = None, resume: bool = False) -
     campus_ids = panel.campus_ids
     val_idx = panel.val_index
     y, lag, eval_mask = _target_tensors(panel, device)
+    anchor = None
+    if cfg.get("anchor", "persistence") == "shrink_own_3yr":
+        scaler = json.loads((bundle_path / "metadata.json").read_text(encoding="utf-8"))["scaler"]
+        anchor, coefficients = shrinkage_anchor(panel, y, lag, scaler)
+        _atomic_json(out / "anchor_coefficients.json", coefficients)
     policy, variant = cfg["relation_policy"], cfg["variant"]
     targets = cfg.get("targets", panel.targets)
     if cfg["tasks"] == "multi" and targets != panel.targets:
@@ -545,7 +593,7 @@ def run(config_path: Path, *, device: str | None = None, resume: bool = False) -
                                 lr=budget["lr"], weight_decay=budget["weight_decay"],
                                 patience=budget["patience"], seed=0, device=device, tune=True,
                                 gradient_clip_norm=cfg.get("gradient_clip_norm"), config_hash=cfg_hash,
-                                checkpoint_path=checkpoint, target_mode=target_mode,
+                                checkpoint_path=checkpoint, target_mode=target_mode, anchor=anchor,
                                 on_epoch=lambda item, tid=trial_id: _append_csv(
                                     out / "epoch_metrics.csv", [{"trial_id": tid, "phase": "tune", **item}],
                                     ["trial_id", "epoch"]))
@@ -592,7 +640,7 @@ def run(config_path: Path, *, device: str | None = None, resume: bool = False) -
                             hidden=selected["hidden"], dropout=selected["dropout"], epochs=selected["selected_epoch"],
                             lr=budget["lr"], weight_decay=budget["weight_decay"], patience=None, seed=seed,
                             device=device, tune=False, gradient_clip_norm=cfg.get("gradient_clip_norm"),
-                            config_hash=cfg_hash, target_mode=target_mode,
+                            config_hash=cfg_hash, target_mode=target_mode, anchor=anchor,
                             checkpoint_path=out / "checkpoints" / "resume" / f"score_{seed_id}.pt",
                             on_epoch=lambda item, sid=seed_id: _append_csv(
                                 out / "epoch_metrics.csv", [{"trial_id": sid, "phase": "score", **item}],
