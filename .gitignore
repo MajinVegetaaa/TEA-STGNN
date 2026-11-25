@@ -47,3 +47,4 @@ results/step4_relative/*.log
 results/s6_rehearsal/neural/*/origin_*/predictions/
 results/s6_rehearsal/*.log
 results/s6_lock/*.log
+!results/s6/**/predictions.csv

@@ -15,7 +15,7 @@ on 2022 (Step 4 / Plan A), into results/s6_rehearsal/, so the whole path is chec
 
     .venv-expanded/bin/python src/s6/run.py neural --model v0 [--device cuda] [--rehearse]
     .venv-expanded/bin/python src/s6/run.py tree [--rehearse]
-    .venv-expanded/bin/python src/s6/run.py s1c
+    .venv-expanded/bin/python src/s6/run.py s1c [--rehearse]
 """
 from __future__ import annotations
 
@@ -26,7 +26,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -88,14 +87,11 @@ def neural(model: str, device: str, rehearse: bool) -> None:
     panel = _panel(rehearse)
     settings = _rehearsal_settings(model) if rehearse else spec["settings"]
     _provenance(root / model)
+    # the shrinkage forecast is applied exactly as locked (cuts, fill value, betas); it is not re-fitted here
+    shrink = None if rehearse or spec["anchor"] == "persistence" else lock["models"]["shrinkage"]
     rolling.run(model, device, [year], spec["target_mode"], panel=panel, scaler=panel.scaler, out_root=root,
-                locked=settings, use_anchor=spec["anchor"] != "persistence", model_args=spec.get("model_args"))
-    if spec["anchor"] != "persistence" and not rehearse:
-        got = json.loads((root / model / f"origin_{year}" / "anchor_coefficients.json").read_text())["score"]
-        want = lock["models"]["shrinkage"]["betas"]
-        if [(c["target"], c["tercile"]) for c in got] != [(c["target"], c["tercile"]) for c in want] or not np.allclose(
-                [c["beta"] for c in got], [c["beta"] for c in want], atol=1e-6):
-            raise SystemExit("shrinkage coefficients differ from the locked ones; results are not valid")
+                locked=settings, use_anchor=spec["anchor"] != "persistence", model_args=spec.get("model_args"),
+                locked_shrinkage=shrink)
 
 
 def tree(rehearse: bool) -> None:
@@ -133,10 +129,12 @@ def tree(rehearse: bool) -> None:
     (out / "status.json").write_text(json.dumps({"status": "completed", "year": year}))
 
 
-def s1c() -> None:
-    """The S1c bar picks' 2024 predictions, as written in S1c (refit on 2018-2023). Run after the lock is committed."""
+def s1c(rehearse: bool) -> None:
+    """The S1c bar picks' 2024 predictions, as written in S1c (refit on 2018-2023). Run after the lock is committed.
+    Rehearsal: the same picks' 2023 validation rows (split "val")."""
     lock = _lock()
-    out = OUT[False] / "s1c_bar"
+    split, year = ("val", 2023) if rehearse else ("test", lock["test_year"])
+    out = OUT[rehearse] / "s1c_bar"
     _refuse_if_done(out)
     _provenance(out)
     frames = []
@@ -149,10 +147,10 @@ def s1c() -> None:
         keep = []
         for chunk in pd.read_csv(ROOT / f"results/s1c/{input_set}/{mode}/predictions.csv", dtype={"campus_id": str},
                                  chunksize=500_000):
-            keep.append(chunk[(chunk.split == "test") & (chunk.model == model) & (chunk.target == target)])
+            keep.append(chunk[(chunk.split == split) & (chunk.model == model) & (chunk.target == target)])
         rows = pd.concat(keep, ignore_index=True)
-        if rows.empty or set(rows.year) != {lock["test_year"]}:
-            raise SystemExit(f"no 2024 S1c predictions for {pick}")
+        if rows.empty or set(rows.year) != {year}:
+            raise SystemExit(f"no {year} S1c predictions for {pick}")
         frames.append(rows.assign(model=model))
     pd.concat(frames, ignore_index=True).to_csv(out / "predictions.csv", index=False)
     (out / "status.json").write_text(json.dumps({"status": "completed"}))
@@ -167,7 +165,8 @@ def main() -> None:
     n.add_argument("--rehearse", action="store_true")
     t = sub.add_parser("tree")
     t.add_argument("--rehearse", action="store_true")
-    sub.add_parser("s1c")
+    c = sub.add_parser("s1c")
+    c.add_argument("--rehearse", action="store_true")
     args = ap.parse_args()
     if not LOCK.exists():
         raise SystemExit("configs/s6_lock.json missing: run src/s6/lock.py first")
@@ -176,7 +175,7 @@ def main() -> None:
     elif args.part == "tree":
         tree(args.rehearse)
     else:
-        s1c()
+        s1c(args.rehearse)
 
 
 if __name__ == "__main__":

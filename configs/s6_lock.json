@@ -1,6 +1,6 @@
 {
  "test_year": 2024,
- "locked_at_commit": "41011bd45bab396910f36811a43ebee0c3c71fcb",
+ "locked_at_commit": "c2c2550b8e9632e5e5cf8877e1a7aadcbf408ec4",
  "data": {
   "validation_bundle_fingerprint": "85da391938bf4f91aff0fa090fa57dea06f3a85d81af8496a1a0471ac8125205",
   "content_hash_2018_2023": "41283f267d90ea6196c767b2dd53d8303c4aabcf2f9c4e290aa52dd8c4aecf85",
@@ -268,6 +268,11 @@
     2022,
     2023
    ],
+   "cuts": [
+    -0.6386010050773621,
+    0.1969657689332962
+   ],
+   "fill_enrollment": -0.38781699538230896,
    "betas": [
     {
      "target": "act_composite",

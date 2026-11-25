@@ -48,6 +48,15 @@ def locked_betas(panel) -> list[dict]:
     return runner.shrinkage_anchor(full, y, lag, panel.scaler)[1]
 
 
+def locked_shrinkage(panel) -> dict:
+    """Everything the 2024 shrinkage forecast uses, applied as is in S6 (nothing is re-fitted on the test bundle)."""
+    coef = locked_betas(panel)
+    return {"formula": "lag1 + beta * (ma3 - lag1); beta per target x enrollment tercile, least squares clipped "
+                       "to [0, 1]", "fit_label_years": [2019, 2020, 2021, 2022, 2023],
+            "cuts": coef[0]["cuts"], "fill_enrollment": coef[0]["fill_enrollment"],
+            "betas": [{k: c[k] for k in ("target", "tercile", "beta", "n_fit")} for c in coef]}
+
+
 def source_digests() -> dict:
     """Digests of the CSV sources the tree reads, through 2023 (equal to those recorded in the validation bundle)."""
     recorded = json.loads((ROOT / "data/graph_v2/pyg/s5_validation/metadata.json").read_text())["source_hashes_through_cutoff"]
@@ -108,9 +117,7 @@ def build_lock() -> dict:
                       "target_mode": "change", "model_args": mtgnn_cfg["model_args"],
                       "settings_chosen_on": "2023 in S5 Round 2 (results/s5_round2/mtgnn_comparator)",
                       "settings": {t: {k: v[k] for k in ("hidden", "dropout", "epochs")} for t, v in mtgnn_sel.items()}},
-            "shrinkage": {"formula": "lag1 + beta * (ma3 - lag1); beta per target x enrollment tercile, least squares "
-                          "clipped to [0, 1]", "fit_label_years": [2019, 2020, 2021, 2022, 2023],
-                          "betas": locked_betas(panel)},
+            "shrinkage": locked_shrinkage(panel),
             "tree": {"params": TREE, "inputs": "S1c 'all' inputs, zscore mode, no graph features (Phase A)",
                      "train_years": "all years before 2024"},
             "honest_bar": {"picks": honest_bar_picks(), "chosen_on": "origins 2021-2023, results/phase_a/rolling_scores.csv"},

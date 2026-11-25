@@ -11,7 +11,7 @@ import torch
 from torch_geometric.data import HeteroData
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT / "src/s6"), str(ROOT / "src/train"), str(ROOT / "src/models"), str(ROOT / "src/eval")]
+sys.path[:0] = [str(ROOT / "tests"), str(ROOT / "src/s6"), str(ROOT / "src/train"), str(ROOT / "src/models"), str(ROOT / "src/eval")]
 import report  # noqa: E402
 import run as s6run  # noqa: E402
 import run_step4_rolling as rolling  # noqa: E402
@@ -66,6 +66,23 @@ class S6Tests(unittest.TestCase):
         self.assertEqual(content_hash(base, [2022, 2023]), content_hash(moved, [2022, 2023]))
         moved.snapshots[1]["campus"].y[0, 0] += 0.5
         self.assertNotEqual(content_hash(base, [2022, 2023]), content_hash(moved, [2022, 2023]))
+
+    def test_locked_shrinkage_is_unchanged_by_campuses_that_appear_later(self):
+        from test_step1_anchor import panel_with_history
+        import run_s5_round2 as runner
+        panel, y, lag, scaler = panel_with_history(n=300)
+        fitted, coef = runner.shrinkage_anchor(panel, y, lag, scaler)
+        locked = {"cuts": coef[0]["cuts"], "fill_enrollment": coef[0]["fill_enrollment"], "betas": coef}
+        k = 25                                             # campuses absent in every year: all-zero inputs
+        for snap in panel.snapshots:
+            c = snap["campus"]
+            c.x = torch.cat([c.x, torch.zeros(k, c.x.shape[1])])
+        y2 = torch.cat([y, torch.full((y.shape[0], k, 1), float("nan"))], dim=1)
+        lag2 = torch.cat([lag, torch.full((lag.shape[0], k, 1), float("nan"))], dim=1)
+        refit, _ = runner.shrinkage_anchor(panel, y2, lag2, scaler)
+        applied, _ = runner.shrinkage_anchor(panel, y2, lag2, scaler, locked)
+        torch.testing.assert_close(applied[:, :-k], fitted, rtol=0, atol=0)
+        self.assertFalse(torch.equal(refit[:, :-k], fitted))      # re-fitting would have moved the forecast
 
     def test_bootstrap_sign_and_macro_interval(self):
         rng = np.random.default_rng(0)

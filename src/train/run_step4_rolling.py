@@ -44,14 +44,14 @@ def view(panel, through: int):
     return v
 
 
-def anchor_for(panel, y, lag, scaler, through: int):
-    anchor, coef = runner.shrinkage_anchor(view(panel, through), y, lag, scaler)
+def anchor_for(panel, y, lag, scaler, through: int, locked: dict | None = None):
+    anchor, coef = runner.shrinkage_anchor(view(panel, through), y, lag, scaler, locked)
     return anchor, coef
 
 
 def run(model: str, device: str, origins: list[int], target_mode: str = "change", *, panel=None, scaler=None,
         out_root: Path | None = None, tune_only: bool = False, locked: dict | None = None,
-        use_anchor: bool = True, model_args: dict | None = None) -> None:
+        use_anchor: bool = True, model_args: dict | None = None, locked_shrinkage: dict | None = None) -> None:
     """Nested tune-then-score at each origin.
 
     tune_only: run only the tuning stage (choose settings on s-1) and stop; used to lock S6 settings for 2024
@@ -78,7 +78,7 @@ def run(model: str, device: str, origins: list[int], target_mode: str = "change"
         tune_panel = view(panel, s - 1)
         score_panel = None if tune_only else view(panel, s)
         tune_anchor, tune_coef = anchor_for(panel, y, lag, scaler, s - 1)
-        score_anchor, score_coef = (None, None) if tune_only else anchor_for(panel, y, lag, scaler, s)
+        score_anchor, score_coef = (None, None) if tune_only else anchor_for(panel, y, lag, scaler, s, locked_shrinkage)
         if not use_anchor:
             tune_anchor = score_anchor = None
         (out / "anchor_coefficients.json").write_text(json.dumps({"tune": tune_coef, "score": score_coef}, indent=1))

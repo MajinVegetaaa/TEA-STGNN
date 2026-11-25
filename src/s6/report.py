@@ -85,6 +85,9 @@ def per_target_tables(frames: dict, lock: dict, with_s1c: bool):
                 preds[name] = lag
                 row[name] = 1.0
                 continue
+            truth = f.groupby("campus_id").y_true.first().loc[ids].to_numpy()
+            if not np.allclose(truth, y):
+                raise SystemExit(f"{target}/{name}: y_true disagrees with the reference rows")
             wide = f.pivot_table(index="campus_id", columns="seed", values="y_pred").loc[ids]
             per_seed = [np.abs(wide[k].to_numpy() - y).mean() / pers for k in wide.columns]
             row[name] = float(np.mean(per_seed))
@@ -126,7 +129,7 @@ def main() -> None:
                                                  for t, row in m.iterrows()}
     root = ROOT / ("results/s6_rehearsal" if args.rehearse else "results/s6")
     year = 2023 if args.rehearse else lock["test_year"]
-    with_s1c = not args.rehearse
+    with_s1c = not args.rehearse or (root / "s1c_bar" / "status.json").exists()
     frames = load(root, year, with_s1c)
     per_target, seeds, aligned = per_target_tables(frames, lock, with_s1c)
     models = ["persistence", "shrinkage", "tree", "honest_bar"] + (["s1c_bar"] if with_s1c else []) + SEEDED

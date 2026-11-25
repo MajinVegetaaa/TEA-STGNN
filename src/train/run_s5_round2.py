@@ -170,22 +170,34 @@ def add_dist_2019(panel) -> None:
     panel.feature_names = list(panel.feature_names) + [f"dist_2019_{t}" for t in panel.targets]
 
 
-def shrinkage_anchor(panel, y: torch.Tensor, lag: torch.Tensor, scaler: dict) -> tuple[torch.Tensor, list[dict]]:
+def shrinkage_anchor(panel, y: torch.Tensor, lag: torch.Tensor, scaler: dict,
+                     locked: dict | None = None) -> tuple[torch.Tensor, list[dict]]:
     """Step 1 anchor: last year's value pulled toward the school's own 3-year average (Phase A shrink_to_own_3yr).
 
     anchor[t] = lag1[t] + beta * (ma3[t] - lag1[t]), ma3 = mean of the target's values 1-3 years before t (an
     input feature, unscaled here; where it is flagged missing the anchor is lag1). beta is fitted per target and
     enrollment tercile by no-intercept least squares of (y - lag1) on (ma3 - lag1), clipped to [0, 1], on the
     training label years only (2019-2022 targets); tercile cuts also come from those years. Returns the anchor
-    for every year [years, schools, targets] and the fitted coefficients.
+    for every year [years, schools, targets] and the fitted coefficients (with the tercile cuts and the enrollment
+    used for schools whose enrollment is missing).
+
+    locked: {"cuts": [low, high], "fill_enrollment": value, "betas": [{"target", "tercile", "beta"}, ...]} applies
+    those values instead of fitting them (S6). Fitting again on a bundle with more campuses would move the cuts, since
+    campuses absent in a year carry all-zero inputs.
     """
     names = list(panel.feature_names)
     fit_idx = [i for i, year in enumerate(panel.years) if year in panel.split["train_years"] and i >= 1]
     stack = lambda col: torch.stack([s["campus"].x[:, names.index(col)] for s in panel.snapshots]).to(lag)
     enroll, enroll_missing = stack("enrollment_lag1"), stack("enrollment_lag1_missing") > 0.5
-    fit_enroll = enroll[fit_idx][~enroll_missing[fit_idx]]
-    cuts = torch.quantile(fit_enroll, torch.tensor([1 / 3, 2 / 3], dtype=lag.dtype, device=lag.device))
-    band = torch.bucketize(torch.where(enroll_missing, fit_enroll.median(), enroll), cuts, right=True)
+    if locked is None:
+        fit_enroll = enroll[fit_idx][~enroll_missing[fit_idx]]
+        cuts = torch.quantile(fit_enroll, torch.tensor([1 / 3, 2 / 3], dtype=lag.dtype, device=lag.device))
+        fill = fit_enroll.median()
+    else:
+        cuts = torch.tensor(locked["cuts"], dtype=lag.dtype, device=lag.device)
+        fill = torch.tensor(locked["fill_enrollment"], dtype=lag.dtype, device=lag.device)
+        locked_beta = {(c["target"], c["tercile"]): c["beta"] for c in locked["betas"]}
+    band = torch.bucketize(torch.where(enroll_missing, fill, enroll), cuts, right=True)
     in_fit = torch.zeros_like(enroll_missing)
     in_fit[fit_idx] = True
     anchor, coefficients = lag.clone(), []
@@ -198,8 +210,12 @@ def shrinkage_anchor(panel, y: torch.Tensor, lag: torch.Tensor, scaler: dict) ->
         for b in range(3):
             sel = in_fit & (band == b) & ~missing & torch.isfinite(change) & torch.isfinite(gap)
             gx, gy = gap[sel], change[sel]
-            beta = float((gx @ gy / (gx @ gx)).clamp(0, 1)) if sel.sum() > 10 and float(gx @ gx) > 0 else 0.0
-            coefficients.append({"target": target, "tercile": b, "beta": beta, "n_fit": int(sel.sum())})
+            if locked is None:
+                beta = float((gx @ gy / (gx @ gx)).clamp(0, 1)) if sel.sum() > 10 and float(gx @ gx) > 0 else 0.0
+            else:
+                beta = float(locked_beta[(target, b)])
+            coefficients.append({"target": target, "tercile": b, "beta": beta, "n_fit": int(sel.sum()),
+                                 "cuts": [float(c) for c in cuts], "fill_enrollment": float(fill)})
             anchor[..., k] = torch.where(band == b, lag[..., k] + beta * gap, anchor[..., k])
     return anchor, coefficients
 

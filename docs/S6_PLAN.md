@@ -20,7 +20,7 @@ before that number exists. After the run nothing is changed, re-tuned or re-run,
 | Model | Role | Settings, and where they come from |
 |---|---|---|
 | Persistence (last year's value) | reference, score 1.00 | none |
-| Shrinkage | simple own-history forecast | last year's value + β × (own 3-year average − last year's value); β per target × school-size tercile, fitted on label years 2019–2023 (the 30 values are in the lock) |
+| Shrinkage | simple own-history forecast | last year's value + β × (own 3-year average − last year's value); β per target × school-size tercile, fitted on label years 2019–2023. The 30 β values, the tercile cut points and the size used when enrollment is missing are all in the lock and applied as is, never re-fitted (the 2024 bundle has extra all-zero rows for schools that first appear in 2024, which would move a re-fit) |
 | Tree | tabular model | Phase A gradient-boosted tree, fixed parameters, S1c inputs, trained on all years before 2024 |
 | **Honest bar** | the fair simple benchmark | per target, tree or shrinkage, whichever scored better on 2021–2023 (5 targets each) |
 | S1c tabular bar | old bar (0.930 on 2023) | picks made on 2023 among ~90 models; refit on 2018–2023 and its 2024 forecasts written in S1c, before S6. Reported, marked as chosen on 2023 |
@@ -49,7 +49,9 @@ Every command is run from the repository root on `main` at or after the commit t
 
 **0. Rehearsal (done 2026-11-26, no 2024 data).** The same code replayed 2023 with the settings chosen on 2022:
 V0, V1, shrinkage, tree and honest bar reproduce the Step 4 / Plan A numbers exactly (difference 0.0 on every target,
-same schools); MTGNN gives 1.021 (Round 2 on the Kaggle GPU: 1.020). Tables in `results/s6_rehearsal/`.
+same schools); the S1c bar gives 0.930 with every target equal to the recorded value; MTGNN gives 1.021 (Round 2 on
+the Kaggle GPU: 1.020). Tables in `results/s6_rehearsal/`. The only code that runs for the first time in the real
+test is the 2018–2024 bundle loader, and it runs (and would fail) before anything is fitted.
 
 **1. Build the 2018–2024 data (laptop, about 5 minutes).**
 
@@ -72,7 +74,7 @@ Download `results/s6/neural/` (about 20 MB of CSVs) and commit it, or send it ba
 predictions are the test record and are committed in full.
 *Laptop:* the same commands with `--device cpu`.
 
-Each command first checks the 2018–2023 data hash. **If the check fails, stop**: nothing has been fitted and no 2024
+Each command first checks the 2018–2023 data hash (the tree checks the 2018–2023 CSV source digests). **If the check fails, stop**: nothing has been fitted and no 2024
 number has been produced, so the data can be fixed and the command run again. If a command crashes part-way, run it
 again: finished targets and seeds are kept and nothing is re-chosen.
 
