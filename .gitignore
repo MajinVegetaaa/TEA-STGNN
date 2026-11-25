@@ -36,3 +36,5 @@ results/s5_round2/*/predictions/
 # Phase A per-school residuals and run log (prediction-level data stays out of git)
 results/phase_a/rolling_residuals.csv
 results/phase_a/run.log
+results/s5_round2/step2/*/checkpoints/
+results/s5_round2/step2/*/predictions/

@@ -120,6 +120,55 @@ class GraphWindow:
         return GraphWindow(self.x.to(device), [s.to(device) for s in self.supports])
 
 
+TARGET_MODES = {"change", "change_relative"}
+EXTRA_INPUTS = {"dist_2019"}
+
+
+def statewide_mean_change(change: torch.Tensor) -> torch.Tensor:
+    """Per year and target, the mean over schools of the observed change: [years, schools, k] -> [years, 1, k]."""
+    observed = torch.isfinite(change)
+    total = torch.where(observed, change, torch.zeros_like(change)).sum(dim=1, keepdim=True)
+    return total / observed.sum(dim=1, keepdim=True).clamp(min=1)
+
+
+def training_labels(local_y: torch.Tensor, local_lag: torch.Tensor, stop: int, target_mode: str) -> torch.Tensor:
+    """Training labels for target years 1..stop-1.
+
+    change           the school's change from last year (Round 2 default).
+    change_relative  that change minus the year's statewide mean change, so a common shock (the COVID swings)
+                     is not learned; forecasts still add `center` (~0 here), i.e. no statewide change is assumed.
+    """
+    labels = local_y[1:stop] - local_lag[1:stop]
+    if target_mode == "change_relative":
+        labels = labels - statewide_mean_change(labels)
+    elif target_mode != "change":
+        raise ValueError(f"unknown target_mode: {target_mode!r}")
+    return labels
+
+
+def add_dist_2019(panel) -> None:
+    """Append, per target, last year's value minus the school's 2019 value to every snapshot's inputs.
+
+    Known at forecast time for snapshots from 2020 on (both values are from earlier years); zero for the 2018
+    and 2019 snapshots, where the 2019 value is not yet observed. Standardised with training-year statistics;
+    a missing value becomes 0 after standardisation.
+    """
+    years = panel.years
+    y2019 = panel.snapshots[years.index(2019)]["campus"].y
+    raw = [s["campus"].y_lag1 - y2019 if year >= 2020 else torch.full_like(y2019, float("nan"))
+           for s, year in zip(panel.snapshots, years)]
+    train = torch.stack([raw[i] for i, year in enumerate(years) if year in panel.split["train_years"]])
+    finite = torch.isfinite(train)
+    count = finite.sum(dim=(0, 1)).clamp(min=2)
+    mean = torch.where(finite, train, torch.zeros_like(train)).sum(dim=(0, 1)) / count
+    var = torch.where(finite, (train - mean).square(), torch.zeros_like(train)).sum(dim=(0, 1)) / (count - 1)
+    std = var.sqrt().clamp(min=1e-6)
+    for snap, r in zip(panel.snapshots, raw):
+        z = torch.nan_to_num((r - mean) / std, nan=0.0)
+        snap["campus"].x = torch.cat([snap["campus"].x, z.to(snap["campus"].x.dtype)], dim=1)
+    panel.feature_names = list(panel.feature_names) + [f"dist_2019_{t}" for t in panel.targets]
+
+
 def validate_config(cfg: dict) -> None:
     variant = cfg.get("variant")
     if variant not in VALID_VARIANTS:
@@ -142,6 +191,11 @@ def validate_config(cfg: dict) -> None:
                                                or cfg.get("loss") != "equal_targets"):
         raise ValueError("planned V3 must be the multi-task V2 with equal target losses over the union of "
                          "every target's relations")
+    if cfg.get("target_mode", "change") not in TARGET_MODES:
+        raise ValueError(f"target_mode must be one of {sorted(TARGET_MODES)}")
+    extra = cfg.get("extra_inputs", [])
+    if not set(extra) <= EXTRA_INPUTS or (extra and cfg.get("variant") == "mtgnn"):
+        raise ValueError(f"extra_inputs must be a subset of {sorted(EXTRA_INPUTS)} and are not used with MTGNN")
     if cfg.get("variant") == "v0_temporal" and cfg.get("relation_policy") != "none":
         raise ValueError("V0 must remain temporal-only")
 
@@ -219,7 +273,7 @@ def _masked_standardized_loss(prediction: torch.Tensor, scaled: torch.Tensor,
 
 
 def _prediction_and_metrics(model, x, y, lag, eval_mask, targets, target_indices, center, scale,
-                            stop: int, label: str, *, device: str):
+                            stop: int, label: str, *, device: str, target_mode: str = "change"):
     model.eval()
     with torch.no_grad():
         normalized = model(x[:stop + 1])[-1]
@@ -230,6 +284,8 @@ def _prediction_and_metrics(model, x, y, lag, eval_mask, targets, target_indices
         rows = []
         errors, ratios, losses = [], [], []
         val_label = truth - lag[stop, :, target_indices] if label == "change" else truth
+        if target_mode == "change_relative":      # validation loss only (logged, not used for selection)
+            val_label = val_label - statewide_mean_change(val_label.unsqueeze(0))[0]
         val_observed = mask & torch.isfinite(val_label)
         val_scaled = (val_label - center) / scale
         valid_loss = (normalized - val_scaled)[val_observed].square()
@@ -264,15 +320,14 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
               panel, relations: list[str], hidden: int, dropout: float, epochs: int, lr: float,
               weight_decay: float, patience: int | None, seed: int, device: str, tune: bool,
               gradient_clip_norm: float | None, config_hash: str, checkpoint_path: Path | None = None,
-              on_epoch=None):
+              on_epoch=None, target_mode: str = "change"):
     """One fit on training years only; optionally select its epoch on 2023."""
     seed_everything(seed)
     stop = panel.val_index
     local_y = y[..., target_indices]
     local_lag = lag[..., target_indices]
     local_mask = eval_mask[..., target_indices]
-    raw = local_y[1:stop]
-    labels = raw - local_lag[1:stop]
+    labels = training_labels(local_y, local_lag, stop, target_mode)
     observed = labels.isfinite()
     centers, scales = [], []
     for k, target in enumerate(target_names):
@@ -329,7 +384,7 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
         optimizer.step()
         rows_out, val_mae, ratios, val_loss = _prediction_and_metrics(
             model, x, y, lag, eval_mask, target_names, target_indices, center, scale,
-            stop, "change", device=device)
+            stop, "change", device=device, target_mode=target_mode)
         score = float(np.mean(ratios))
         gates = model.gate.detach().cpu().tolist() if variant == "v2_positive" else []
         item = {"epoch": epoch, "train_loss": float(loss.detach().item()), "validation_loss": val_loss,
@@ -375,7 +430,7 @@ def fit_trial(*, variant: str, x, y, lag, eval_mask, target_indices: list[int], 
         forecasts = normalized * scale + center + local_lag[stop]
         output_rows, maes, ratios, val_loss = _prediction_and_metrics(
             model, x, y, lag, eval_mask, target_names, target_indices, center, scale,
-            stop, "change", device=device)
+            stop, "change", device=device, target_mode=target_mode)
     return {"model": model, "center": center.detach().cpu(), "scale": scale.detach().cpu(),
             "forecast": forecasts.detach().cpu(), "prediction_rows": output_rows,
             "val_mae": maes, "val_ratios": ratios, "val_ratio": float(np.mean(ratios)),
@@ -409,6 +464,9 @@ def run(config_path: Path, *, device: str | None = None, resume: bool = False) -
     validate_config(cfg)
     bundle_path = ROOT / cfg.get("snapshot_bundle", "data/graph_v2/pyg/s5_validation")
     panel = load_validation_bundle(bundle_path)
+    if "dist_2019" in cfg.get("extra_inputs", []):
+        add_dist_2019(panel)
+    target_mode = cfg.get("target_mode", "change")
     budget = yaml.safe_load((ROOT / cfg["budget"]).read_text(encoding="utf-8"))
     cfg_model_args = cfg.get("model_args", {})
     device = device or cfg.get("device", "cuda")
@@ -487,7 +545,7 @@ def run(config_path: Path, *, device: str | None = None, resume: bool = False) -
                                 lr=budget["lr"], weight_decay=budget["weight_decay"],
                                 patience=budget["patience"], seed=0, device=device, tune=True,
                                 gradient_clip_norm=cfg.get("gradient_clip_norm"), config_hash=cfg_hash,
-                                checkpoint_path=checkpoint,
+                                checkpoint_path=checkpoint, target_mode=target_mode,
                                 on_epoch=lambda item, tid=trial_id: _append_csv(
                                     out / "epoch_metrics.csv", [{"trial_id": tid, "phase": "tune", **item}],
                                     ["trial_id", "epoch"]))
@@ -534,7 +592,7 @@ def run(config_path: Path, *, device: str | None = None, resume: bool = False) -
                             hidden=selected["hidden"], dropout=selected["dropout"], epochs=selected["selected_epoch"],
                             lr=budget["lr"], weight_decay=budget["weight_decay"], patience=None, seed=seed,
                             device=device, tune=False, gradient_clip_norm=cfg.get("gradient_clip_norm"),
-                            config_hash=cfg_hash,
+                            config_hash=cfg_hash, target_mode=target_mode,
                             checkpoint_path=out / "checkpoints" / "resume" / f"score_{seed_id}.pt",
                             on_epoch=lambda item, sid=seed_id: _append_csv(
                                 out / "epoch_metrics.csv", [{"trial_id": sid, "phase": "score", **item}],
