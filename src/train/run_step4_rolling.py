@@ -30,6 +30,7 @@ ORIGINS = [2022, 2023]
 MODELS = {"v0": ("v0_temporal", "none"), "v1": ("v1_original", "target_specific")}
 BUNDLE = ROOT / "data/graph_v2/pyg/s5_validation"
 OUT = ROOT / "results/step4"
+OUTS = {"change": OUT, "change_relative": ROOT / "results/step4_relative"}   # the second is the post-hoc plan A
 
 
 def view(panel, through: int):
@@ -47,7 +48,7 @@ def anchor_for(panel, y, lag, scaler, through: int):
     return anchor, coef
 
 
-def run(model: str, device: str, origins: list[int]) -> None:
+def run(model: str, device: str, origins: list[int], target_mode: str = "change") -> None:
     variant, policy = MODELS[model]
     panel = load_validation_bundle(BUNDLE)
     scaler = json.loads((BUNDLE / "metadata.json").read_text())["scaler"]
@@ -56,10 +57,10 @@ def run(model: str, device: str, origins: list[int]) -> None:
     runner.campus_ids = panel.campus_ids
     y, lag, mask = runner._target_tensors(panel, device)
     grid = [{"hidden": int(h), "dropout": float(d)} for h in budget["grid"]["hidden"] for d in budget["grid"]["dropout"]]
-    common = dict(variant=variant, y=y, lag=lag, eval_mask=mask, lr=budget["lr"],
+    common = dict(target_mode=target_mode, variant=variant, y=y, lag=lag, eval_mask=mask, lr=budget["lr"],
                   weight_decay=budget["weight_decay"], device=device, gradient_clip_norm=None, config_hash="step4")
     for s in origins:
-        out = OUT / model / f"origin_{s}"
+        out = OUTS[target_mode] / model / f"origin_{s}"
         (out / "predictions").mkdir(parents=True, exist_ok=True)
         tune_panel, score_panel = view(panel, s - 1), view(panel, s)
         tune_anchor, tune_coef = anchor_for(panel, y, lag, scaler, s - 1)
@@ -105,10 +106,11 @@ def main() -> None:
     ap.add_argument("--model", choices=sorted(MODELS), required=True)
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--origins", type=int, nargs="+", default=ORIGINS)
+    ap.add_argument("--target-mode", choices=sorted(OUTS), default="change")
     args = ap.parse_args()
     if not set(args.origins) <= set(ORIGINS):
         raise SystemExit(f"origins must be within {ORIGINS}")
-    run(args.model, args.device, args.origins)
+    run(args.model, args.device, args.origins, args.target_mode)
 
 
 if __name__ == "__main__":

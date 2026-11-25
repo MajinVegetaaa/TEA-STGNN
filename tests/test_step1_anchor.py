@@ -79,11 +79,20 @@ class Step1AnchorTests(unittest.TestCase):
         varied = runner.fit_trial(**common, anchor=lag + torch.randn(t, n, 1, generator=g))
         self.assertFalse(torch.allclose(varied["forecast"], default["forecast"]))
 
+    def test_anchor_with_relative_target_centres_each_year_at_zero(self):
+        t, n = 5, 20
+        g = torch.Generator().manual_seed(5)
+        anchor = torch.randn(t, n, 1, generator=g) + 50
+        y = anchor + torch.tensor([0.0, 3.0, -4.0, -2.0, 1.0]).view(t, 1, 1) + torch.randn(t, n, 1, generator=g)
+        labels = runner.training_labels(y, anchor, 4, "change_relative")
+        torch.testing.assert_close(labels.mean(dim=1), torch.zeros(3, 1), rtol=0, atol=1e-5)
+
     def test_config_guards(self):
         base = {"variant": "v1_original", "through_year": 2023, "validation_only": True, "graph": "v2",
                 "label": "change", "out": "s5_round2/step1/x", "tasks": "single", "relation_policy": "target_specific"}
         runner.validate_config(dict(base, anchor="shrink_own_3yr"))
-        for bad in (dict(base, anchor="district"), dict(base, anchor="shrink_own_3yr", target_mode="change_relative"),
+        runner.validate_config(dict(base, anchor="shrink_own_3yr", target_mode="change_relative"))
+        for bad in (dict(base, anchor="district"),
                     dict(base, anchor="shrink_own_3yr", variant="mtgnn", relation_policy="shared_four")):
             with self.assertRaises(ValueError):
                 runner.validate_config(bad)

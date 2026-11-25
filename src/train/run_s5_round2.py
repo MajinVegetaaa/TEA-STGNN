@@ -232,10 +232,8 @@ def validate_config(cfg: dict) -> None:
     if not set(extra) <= EXTRA_INPUTS or (extra and cfg.get("variant") == "mtgnn"):
         raise ValueError(f"extra_inputs must be a subset of {sorted(EXTRA_INPUTS)} and are not used with MTGNN")
     anchor = cfg.get("anchor", "persistence")
-    if anchor not in ANCHORS or (anchor != "persistence" and (cfg.get("variant") == "mtgnn"
-                                                              or cfg.get("target_mode", "change") != "change")):
-        raise ValueError(f"anchor must be one of {sorted(ANCHORS)}; non-persistence anchors need the change "
-                         "label and are not used with MTGNN")
+    if anchor not in ANCHORS or (anchor != "persistence" and cfg.get("variant") == "mtgnn"):
+        raise ValueError(f"anchor must be one of {sorted(ANCHORS)}; non-persistence anchors are not used with MTGNN")
     if cfg.get("variant") == "v0_temporal" and cfg.get("relation_policy") != "none":
         raise ValueError("V0 must remain temporal-only")
 

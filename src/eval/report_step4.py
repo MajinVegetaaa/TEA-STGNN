@@ -10,13 +10,14 @@ over 5 seeds). The S1c bar (picked on 2023) is shown for 2023 only. Writes resul
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "results/step4"
+OUT = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "results/step4")   # results/step4_relative for plan A
 ORIGINS, SEEDS = [2022, 2023], range(5)
 EARLIER = {2022: [2021], 2023: [2021, 2022]}
 
