@@ -40,3 +40,5 @@ results/s5_round2/step2/*/checkpoints/
 results/s5_round2/step2/*/predictions/
 results/s5_round2/step1/*/checkpoints/
 results/s5_round2/step1/*/predictions/
+results/step4/*/origin_*/predictions/
+results/step4/*.log
