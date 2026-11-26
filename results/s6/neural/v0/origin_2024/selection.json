@@ -1,0 +1,92 @@
+{
+ "act_composite": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.0,
+   "epochs": 6
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "sat_total": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 4
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "sat_act_above_criterion": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.0,
+   "epochs": 11
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "dropout_9_12": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 7
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "attendance_rate": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 3
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "retention_rate": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.0,
+   "epochs": 1
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "risk_index": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.0,
+   "epochs": 8
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "tsi_both": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.0,
+   "epochs": 4
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "sat_act_participation": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.2,
+   "epochs": 8
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ },
+ "graduation_4yr": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 7
+  },
+  "candidates": [],
+  "tuned_on": "locked"
+ }
+}
