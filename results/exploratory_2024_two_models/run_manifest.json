@@ -1,0 +1,57 @@
+{
+  "created_utc": "2026-11-26T13:33:44.475697+00:00",
+  "device": "cuda",
+  "fits": 100,
+  "models": [
+    "v3_shared4_single",
+    "v2_original"
+  ],
+  "preprocessing_fit_years": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "selection_files": {
+    "v2_original": {
+      "path": "results/s5_round2/v2_original_gate/selected_configs.json",
+      "s5_validation_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "sha256": "a9ec7aae1268d60717125082f09a676819705c4963b8a6c586487dce76009228"
+    },
+    "v3_shared4_single": {
+      "path": "results/s5_round2/v3_single_shared_relations/selected_configs.json",
+      "s5_validation_fingerprint": "09f87650e47552392326034004e15ff985c1bf16fa981dd8eb5dcb8440fcd4d9",
+      "sha256": "80b24c199536f597fc18fbea4b5e429fd956d0c5cae1504de94c52d5a588ec01"
+    }
+  },
+  "selection_source": "completed S5 Round 2 selected_configs.json",
+  "selection_year": 2023,
+  "status": "completed",
+  "test_bundle_fingerprint": "d78bd2c99bd652307b9305c00c7d8893083a64f5b89086faacc6de6e591aeb6c",
+  "test_year": 2024,
+  "torch": "2.12.1+cu130",
+  "training_label_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "training_years": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "verified_content_hash_2018_2023": "41283f267d90ea6196c767b2dd53d8303c4aabcf2f9c4e290aa52dd8c4aecf85"
+}
