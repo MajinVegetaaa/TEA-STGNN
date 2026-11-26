@@ -1,0 +1,37 @@
+{
+  "campus_population": 1670,
+  "common_eligible_campuses_per_target": {
+    "act_composite": 1079,
+    "attendance_rate": 1657,
+    "dropout_9_12": 1654,
+    "graduation_4yr": 1550,
+    "retention_rate": 1660,
+    "risk_index": 1546,
+    "sat_act_above_criterion": 1547,
+    "sat_act_participation": 1604,
+    "sat_total": 1260,
+    "tsi_both": 1604
+  },
+  "graph_v2_test_fingerprint": "d78bd2c99bd652307b9305c00c7d8893083a64f5b89086faacc6de6e591aeb6c",
+  "metadata_sha256": "952a14cfea953e3505261ae984cc36b323b8a59c770bb910a87c35c9087cb0c8",
+  "preprocessing_fit_years": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "semantic_content_hash_2018_2023": "41283f267d90ea6196c767b2dd53d8303c4aabcf2f9c4e290aa52dd8c4aecf85",
+  "source_digests_2018_2023": {
+    "academic_edge_sets.csv": "bf8061ac773d25f74a389f225d7298961cd453babea7a6ec19a62f98ca1055e3",
+    "edges_academic.csv:through_2023": "5733841fd8331c2c71e7700b221ab95e0c906e615f409e7908d24eb3cee00909",
+    "edges_demographic.csv:through_2023": "9365a2e8c615faedf67744449cd4b8cdb42cff81988176535710dece3fa1331a",
+    "edges_district.csv:through_2023": "04743bd1eeea41c7fff06eba26a9e42e0475eba4ac25e895a489a7665ad9b7dc",
+    "edges_geographic.csv:through_2023": "b6140be4394fd808890fb0b6bc93d81dc17f546ee47f388ecde12e8d99da2ee6",
+    "edges_region.csv:through_2023": "dd3bdeb63e969d12be37e49e7c2e8ac0dbfb09eca873fc3acbc8be1c0a5c2107",
+    "nodes.csv:through_2023": "2cb4981c933103d8e1bc5aff9451d3faf087ca85f26be2014848924a0e5f4d8f"
+  },
+  "status": "passed",
+  "target_count": 10,
+  "test_labels_loaded_for_scoring": true
+}

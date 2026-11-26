@@ -1,0 +1,36 @@
+{
+  "cuda_available": true,
+  "device_requested": "cuda:0",
+  "gpus": [
+    {
+      "index": 0,
+      "memory_bytes": 15636037632,
+      "name": "Tesla T4"
+    },
+    {
+      "index": 1,
+      "memory_bytes": 15636037632,
+      "name": "Tesla T4"
+    }
+  ],
+  "local_git_commit_if_available": "unknown",
+  "lock_sha256": "784615ba8ebddea328bbc021c10916174b41c52fdfcaec4b653bc9e487901e11",
+  "packages": {
+    "PyYAML": "6.0.3",
+    "lxml": "5.3.0",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.16.3",
+    "torch": "2.12.1+cu130",
+    "torch-geometric": "2.8.1",
+    "torch-geometric-temporal": "0.56.2",
+    "torch-scatter": "2.1.2+pt212cu130",
+    "torch-sparse": "0.6.18+pt212cu130",
+    "xgboost": "3.4.1"
+  },
+  "python": "3.13.16",
+  "recorded_utc": "2026-11-26T16:02:49.518149+00:00",
+  "torch_cuda_build": "13.0",
+  "upstream_main_commit": "48385c779feafb11154e71bd3d27232cb8d1d2b2"
+}
