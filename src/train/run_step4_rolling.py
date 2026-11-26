@@ -28,7 +28,11 @@ from data_s5_round2 import load_validation_bundle  # noqa: E402
 
 ORIGINS = [2022, 2023]
 MODELS = {"v0": ("v0_temporal", "none"), "v1": ("v1_original", "target_specific"),
-          "mtgnn": ("mtgnn", "target_specific")}       # MTGNN: S6 only, persistence anchor and change label
+          "v1s4": ("v3_single_shared", "shared_four"),    # V1 on the four shared relations ("V1_shared4_single")
+          "v2": ("v2_original", "target_specific"),       # V1 + zero-initialised per-target gate
+          "v3": ("v3_planned", "union_targets"),          # V2 as one model for all 10 targets (roadmap v3)
+          "mtgnn": ("mtgnn", "target_specific")}          # MTGNN: persistence anchor and change label only
+MULTI_TASK = {"v3"}                                       # one fit (and one setting choice) for all targets
 BUNDLE = ROOT / "data/graph_v2/pyg/s5_validation"
 OUT = ROOT / "results/step4"
 OUTS = {"change": OUT, "change_relative": ROOT / "results/step4_relative"}   # the second is the post-hoc plan A
@@ -85,17 +89,19 @@ def run(model: str, device: str, origins: list[int], target_mode: str = "change"
         sel_path = out / "selection.json"
         selection = json.loads(sel_path.read_text()) if sel_path.exists() else {}
         if locked is not None:
-            selection = {t: {"chosen": dict(locked[t]), "candidates": [], "tuned_on": "locked"} for t in panel.targets}
+            selection = {g: {"chosen": dict(v), "candidates": [], "tuned_on": "locked"} for g, v in locked.items()}
             sel_path.write_text(json.dumps(selection, indent=1))
-        for target in panel.targets:
-            idx = [panel.targets.index(target)]
-            relations = runner._group_relations(panel, [target], policy)
+        groups = [list(panel.targets)] if model in MULTI_TASK else [[t] for t in panel.targets]
+        for group in groups:
+            target = "all_targets" if len(group) > 1 else group[0]          # selection key
+            idx = [panel.targets.index(t) for t in group]
+            relations = runner._group_relations(panel, group, policy)
             x = runner._prepare_inputs(panel, relations, variant, device)
             if target not in selection:
                 runner.stop_year = s - 1
                 cands = []
                 for point in grid:
-                    fit = runner.fit_trial(**common, x=x, target_indices=idx, target_names=[target], panel=tune_panel,
+                    fit = runner.fit_trial(**common, x=x, target_indices=idx, target_names=group, panel=tune_panel,
                                            relations=relations, epochs=budget["max_epochs"],
                                            patience=budget["patience"], seed=0, tune=True, anchor=tune_anchor, **point)
                     cands.append({**point, "epochs": fit["best_epoch"], "val_ratio": fit["val_ratio"]})
@@ -108,17 +114,18 @@ def run(model: str, device: str, origins: list[int], target_mode: str = "change"
                 continue
             runner.stop_year = s
             for seed in panel.split["seeds"]:
-                path = out / "predictions" / f"{target}_seed_{seed}.csv"
-                if path.exists():
+                paths = {t: out / "predictions" / f"{t}_seed_{seed}.csv" for t in group}
+                if all(p.exists() for p in paths.values()):
                     continue
-                fit = runner.fit_trial(**common, x=x, target_indices=idx, target_names=[target], panel=score_panel,
+                fit = runner.fit_trial(**common, x=x, target_indices=idx, target_names=group, panel=score_panel,
                                        relations=relations, hidden=chosen["hidden"], dropout=chosen["dropout"],
                                        epochs=chosen["epochs"], patience=None, seed=seed, tune=False, anchor=score_anchor)
                 frame = pd.DataFrame(fit["prediction_rows"])
-                if set(frame.year) != {s}:
-                    raise ValueError(f"{target}: predictions are not for origin {s}")
-                frame.to_csv(path.with_suffix(".tmp"), index=False)
-                path.with_suffix(".tmp").rename(path)
+                if set(frame.year) != {s} or set(frame.target) != set(group):
+                    raise ValueError(f"{target}: predictions are not for origin {s} and targets {group}")
+                for t, path in paths.items():                  # one file per target, also for multi-task fits
+                    frame[frame.target == t].to_csv(path.with_suffix(".tmp"), index=False)
+                    path.with_suffix(".tmp").rename(path)
             print(f"{model} {s} {target} done (tuned on {s - 1}: {chosen})", flush=True)
         (out / "status.json").write_text(json.dumps({"status": "tuned" if tune_only else "completed",
                                                      "fingerprint": panel.fingerprint}))
