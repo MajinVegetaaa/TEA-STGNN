@@ -1,0 +1,352 @@
+{
+ "act_composite": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.2,
+   "epochs": 28,
+   "val_ratio": 0.958499170209185
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 15,
+    "val_ratio": 0.9716171236580508
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 22,
+    "val_ratio": 0.9760195679116701
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 15,
+    "val_ratio": 0.9642715063604856
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 28,
+    "val_ratio": 0.958499170209185
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "sat_total": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 1,
+   "val_ratio": 0.9382406575146252
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 4,
+    "val_ratio": 0.9711795527540815
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 4,
+    "val_ratio": 0.9664929217775068
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 1,
+    "val_ratio": 0.9382406575146252
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 1,
+    "val_ratio": 0.9514660438912568
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "sat_act_above_criterion": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 30,
+   "val_ratio": 0.9116926508303878
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 4,
+    "val_ratio": 0.9627479697545138
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 4,
+    "val_ratio": 0.9593013870576722
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 30,
+    "val_ratio": 0.9116926508303878
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 1,
+    "val_ratio": 0.9430383345089718
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "dropout_9_12": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.2,
+   "epochs": 1,
+   "val_ratio": 1.0124205942383822
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 1,
+    "val_ratio": 1.0127845009633332
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 1,
+    "val_ratio": 1.0124205942383822
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 8,
+    "val_ratio": 1.028594729996165
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 8,
+    "val_ratio": 1.0360314788833946
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "attendance_rate": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 1,
+   "val_ratio": 0.9669302357658873
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 3,
+    "val_ratio": 0.9760444492497099
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 4,
+    "val_ratio": 0.9761684731810484
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 1,
+    "val_ratio": 0.9669302357658873
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 1,
+    "val_ratio": 0.98033267648731
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "retention_rate": {
+  "chosen": {
+   "hidden": 32,
+   "dropout": 0.2,
+   "epochs": 1,
+   "val_ratio": 0.9541128353888249
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 1,
+    "val_ratio": 0.9548971424089674
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 1,
+    "val_ratio": 0.9541128353888249
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 1,
+    "val_ratio": 1.010008928461907
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 1,
+    "val_ratio": 1.0043647986654143
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "risk_index": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.2,
+   "epochs": 30,
+   "val_ratio": 0.8997802760641301
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 20,
+    "val_ratio": 0.9084333684548294
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 41,
+    "val_ratio": 0.908836495502579
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 28,
+    "val_ratio": 0.937572863582442
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 30,
+    "val_ratio": 0.8997802760641301
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "tsi_both": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 6,
+   "val_ratio": 0.9423952061772075
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 4,
+    "val_ratio": 0.9633465139198117
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 4,
+    "val_ratio": 0.9619116161902762
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 6,
+    "val_ratio": 0.9423952061772075
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 5,
+    "val_ratio": 0.9453572035233314
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "sat_act_participation": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.2,
+   "epochs": 9,
+   "val_ratio": 0.9801606683590486
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 4,
+    "val_ratio": 0.9951096998078923
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 4,
+    "val_ratio": 0.9935387381798308
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 4,
+    "val_ratio": 0.9825543290372466
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 9,
+    "val_ratio": 0.9801606683590486
+   }
+  ],
+  "tuned_on": 2021
+ },
+ "graduation_4yr": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 4,
+   "val_ratio": 1.0126572631733535
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 3,
+    "val_ratio": 1.0227442117594887
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 9,
+    "val_ratio": 1.0232242824510485
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 4,
+    "val_ratio": 1.0126572631733535
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 8,
+    "val_ratio": 1.0183498586101705
+   }
+  ],
+  "tuned_on": 2021
+ }
+}

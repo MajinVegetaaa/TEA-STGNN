@@ -1,0 +1,16 @@
+setup,model,origin,state,path,detail
+planA,v0,2022,complete,results/plan_a_three_year/planA/v0/origin_2022,10 targets x 5 seeds
+planA,v0,2023,complete,results/plan_a_three_year/planA/v0/origin_2023,10 targets x 5 seeds
+planA,v0,2024,reused,results/s6/neural/v0/origin_2024,10 targets x 5 seeds
+planA,v1,2022,complete,results/plan_a_three_year/planA/v1/origin_2022,10 targets x 5 seeds
+planA,v1,2023,complete,results/plan_a_three_year/planA/v1/origin_2023,10 targets x 5 seeds
+planA,v1,2024,reused,results/s6/neural/v1/origin_2024,10 targets x 5 seeds
+planA,v1s4,2022,complete,results/plan_a_three_year/planA/v1s4/origin_2022,10 targets x 5 seeds
+planA,v1s4,2023,complete,results/plan_a_three_year/planA/v1s4/origin_2023,10 targets x 5 seeds
+planA,v1s4,2024,complete,results/plan_a_three_year/planA/v1s4/origin_2024,10 targets x 5 seeds
+planA,v2,2022,complete,results/plan_a_three_year/planA/v2/origin_2022,10 targets x 5 seeds
+planA,v2,2023,complete,results/plan_a_three_year/planA/v2/origin_2023,10 targets x 5 seeds
+planA,v2,2024,complete,results/plan_a_three_year/planA/v2/origin_2024,10 targets x 5 seeds
+planA,v3,2022,complete,results/plan_a_three_year/planA/v3/origin_2022,10 targets x 5 seeds
+planA,v3,2023,complete,results/plan_a_three_year/planA/v3/origin_2023,10 targets x 5 seeds
+planA,v3,2024,complete,results/plan_a_three_year/planA/v3/origin_2024,10 targets x 5 seeds

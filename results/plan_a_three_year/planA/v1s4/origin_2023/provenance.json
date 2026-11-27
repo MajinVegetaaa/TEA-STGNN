@@ -1,0 +1,12 @@
+{
+  "setup": "planA",
+  "target_mode": "change_relative",
+  "use_anchor": true,
+  "model": "v1s4",
+  "origin": 2023,
+  "device": "cuda",
+  "python": "3.13.16",
+  "code_commit": "unknown (no git)",
+  "s6_lock_sha256": "784615ba8ebddea328bbc021c10916174b41c52fdfcaec4b653bc9e487901e11",
+  "seconds": 257
+}
