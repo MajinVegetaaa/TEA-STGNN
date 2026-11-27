@@ -1,0 +1,666 @@
+{
+ "tune": [
+  {
+   "target": "act_composite",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "act_composite",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "act_composite",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_total",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_total",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_total",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "risk_index",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "risk_index",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "risk_index",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 0,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 1,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 0,
+   "cuts": [
+    -0.6454405784606934,
+    0.16808770596981049
+   ],
+   "fill_enrollment": -0.40377599000930786
+  }
+ ],
+ "score": [
+  {
+   "target": "act_composite",
+   "tercile": 0,
+   "beta": 0.8582526445388794,
+   "n_fit": 264,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "act_composite",
+   "tercile": 1,
+   "beta": 0.483635276556015,
+   "n_fit": 325,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "act_composite",
+   "tercile": 2,
+   "beta": 0.528971791267395,
+   "n_fit": 467,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_total",
+   "tercile": 0,
+   "beta": 0.5962215662002563,
+   "n_fit": 196,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_total",
+   "tercile": 1,
+   "beta": 0.5578238368034363,
+   "n_fit": 385,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_total",
+   "tercile": 2,
+   "beta": 0.0,
+   "n_fit": 520,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 0,
+   "beta": 0.9074988961219788,
+   "n_fit": 402,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 1,
+   "beta": 0.7258008718490601,
+   "n_fit": 461,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_act_above_criterion",
+   "tercile": 2,
+   "beta": 0.16372542083263397,
+   "n_fit": 536,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 0,
+   "beta": 0.8108396530151367,
+   "n_fit": 508,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 1,
+   "beta": 1.0,
+   "n_fit": 494,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "dropout_9_12",
+   "tercile": 2,
+   "beta": 0.9850045442581177,
+   "n_fit": 550,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 0,
+   "beta": 1.0,
+   "n_fit": 519,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 1,
+   "beta": 1.0,
+   "n_fit": 516,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "attendance_rate",
+   "tercile": 2,
+   "beta": 1.0,
+   "n_fit": 552,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 0,
+   "beta": 0.7297300100326538,
+   "n_fit": 524,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 1,
+   "beta": 1.0,
+   "n_fit": 517,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "retention_rate",
+   "tercile": 2,
+   "beta": 1.0,
+   "n_fit": 552,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "risk_index",
+   "tercile": 0,
+   "beta": 1.0,
+   "n_fit": 401,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "risk_index",
+   "tercile": 1,
+   "beta": 0.8101502060890198,
+   "n_fit": 461,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "risk_index",
+   "tercile": 2,
+   "beta": 0.6447650194168091,
+   "n_fit": 535,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 0,
+   "beta": 0.5301201939582825,
+   "n_fit": 468,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 1,
+   "beta": 0.4986893832683563,
+   "n_fit": 462,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "tsi_both",
+   "tercile": 2,
+   "beta": 0.32371148467063904,
+   "n_fit": 534,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 0,
+   "beta": 0.5217785835266113,
+   "n_fit": 468,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 1,
+   "beta": 0.6767123937606812,
+   "n_fit": 462,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "sat_act_participation",
+   "tercile": 2,
+   "beta": 0.4572572708129883,
+   "n_fit": 534,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 0,
+   "beta": 0.6985925436019897,
+   "n_fit": 466,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 1,
+   "beta": 0.699958086013794,
+   "n_fit": 424,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  },
+  {
+   "target": "graduation_4yr",
+   "tercile": 2,
+   "beta": 0.10065120458602905,
+   "n_fit": 523,
+   "cuts": [
+    -0.6431607604026794,
+    0.1764470785856247
+   ],
+   "fill_enrollment": -0.4026360511779785
+  }
+ ]
+}

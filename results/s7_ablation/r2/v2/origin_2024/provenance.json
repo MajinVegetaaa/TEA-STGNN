@@ -1,0 +1,10 @@
+{
+ "setup": "r2",
+ "model": "v2",
+ "origin": 2024,
+ "device": "cpu",
+ "torch": "2.12.1",
+ "python": "3.13.9",
+ "code_commit": "48385c779feafb11154e71bd3d27232cb8d1d2b2",
+ "seconds": 2936
+}

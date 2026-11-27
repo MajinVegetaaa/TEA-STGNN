@@ -30,12 +30,17 @@ OUT = ROOT / "results/s7_ablation"
 SEEDS = range(5)
 
 
-def seeded_runs(partial: bool) -> list[tuple[str, str]]:
-    runs = [(s, m) for s in SETUPS for m in STGNN] + [("r2", "mtgnn")]
-    missing = [(s, m, o) for s, m in runs for o in ORIGINS if not done(s, m, o)]
+# Scope narrowed 2026-11-27 (user): the r2 setup is run for 2024 only, MTGNN for 2024 only (S6).
+EXPECTED = {(s, m, o) for m in STGNN for o in ORIGINS for s in ("planA",)} | {("r2", m, 2024) for m in STGNN + ["mtgnn"]}
+
+
+def seeded_runs(partial: bool) -> dict[int, list[tuple[str, str]]]:
+    """Per origin, the setup/model runs that are complete (every expected run must be, unless --partial)."""
+    missing = sorted(r for r in EXPECTED if not done(*r))
     if missing and not partial:
-        raise SystemExit(f"{len(missing)} runs are not complete, e.g. {missing[:3]}; use --partial to inspect")
-    return [(s, m) for s, m in runs if all(done(s, m, o) for o in ORIGINS)]
+        raise SystemExit(f"{len(missing)} expected runs are not complete, e.g. {missing[:3]}; use --partial to inspect")
+    runs = [(s, m) for s in SETUPS for m in STGNN] + [("r2", "mtgnn")]
+    return {o: [(s, m) for s, m in runs if done(s, m, o)] for o in ORIGINS}
 
 
 def load_preds(setup: str, model: str, origin: int) -> pd.DataFrame:
@@ -125,7 +130,7 @@ def main() -> None:
     runs = seeded_runs(args.partial)
     long, aligned = [], {}
     for origin in ORIGINS:
-        frame, aligned[origin] = origin_tables(origin, runs)
+        frame, aligned[origin] = origin_tables(origin, runs[origin])
         long.append(frame)
     long = pd.concat(long, ignore_index=True)
     seeded = long[long.seed.notna()]
@@ -135,16 +140,16 @@ def main() -> None:
     sd = macro_seed.groupby(["origin", "model"]).std().unstack(0)
     for c in sd.columns:
         summary[f"sd{c}"] = sd[c]
-    summary["mean_2022_2023"] = summary[["y2022", "y2023"]].mean(axis=1)
-    summary["mean_2022_2024"] = summary[["y2022", "y2023", "y2024"]].mean(axis=1)
-    summary = summary.sort_values("mean_2022_2024").reset_index().rename(columns={"index": "model"})
+    summary["mean_2022_2023"] = summary[["y2022", "y2023"]].mean(axis=1, skipna=False)   # blank if a year is missing
+    summary["mean_2022_2024"] = summary[["y2022", "y2023", "y2024"]].mean(axis=1, skipna=False)
+    summary = summary.sort_values(["mean_2022_2024", "y2024"]).reset_index().rename(columns={"index": "model"})
 
-    names = {f"{s}:{m}" for s, m in runs}
+    names = {f"{s}:{m}" for o in ORIGINS for s, m in runs[o]}
     pairs = [(f"planA:{m}", f"r2:{m}", "A: Plan A vs r2") for m in STGNN]
     for s in SETUPS:
         pairs += [(f"{s}:v1", f"{s}:v0", "B: graph"), (f"{s}:v1s4", f"{s}:v1", "B: shared relations"),
                   (f"{s}:v2", f"{s}:v1", "B: gate"), (f"{s}:v3", f"{s}:v2", "B: multi-task")]
-    stgnn = summary[summary.model.isin([n for n in names if not n.endswith("mtgnn")])]
+    stgnn = summary[summary.model.isin([n for n in names if not n.endswith("mtgnn")]) & summary.mean_2022_2023.notna()]
     best = stgnn.sort_values("mean_2022_2023").model.iloc[0] if not stgnn.empty else None
     if best:
         pairs += [(best, b, "C: best STGNN (chosen on 2022-2023)") for b in ("r2:mtgnn", "tree", "honest_bar", "s1c_bar")]

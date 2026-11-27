@@ -1,0 +1,37 @@
+{
+ "all_targets": {
+  "chosen": {
+   "hidden": 64,
+   "dropout": 0.0,
+   "epochs": 15,
+   "val_ratio": 0.9320969471992333
+  },
+  "candidates": [
+   {
+    "hidden": 32,
+    "dropout": 0.0,
+    "epochs": 17,
+    "val_ratio": 0.9333594795393895
+   },
+   {
+    "hidden": 32,
+    "dropout": 0.2,
+    "epochs": 16,
+    "val_ratio": 0.9330816708213272
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.0,
+    "epochs": 15,
+    "val_ratio": 0.9320969471992333
+   },
+   {
+    "hidden": 64,
+    "dropout": 0.2,
+    "epochs": 13,
+    "val_ratio": 0.9324828256185469
+   }
+  ],
+  "tuned_on": 2022
+ }
+}
