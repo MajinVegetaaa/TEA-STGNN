@@ -1,0 +1,17 @@
+{
+  "score_2023": 0.8932479846164801,
+  "sd_over_seeds": 0.0013952561154228183,
+  "meaning": "mean over the 10 targets of (MAE of the 2023 pick, persistence included as a candidate) / persistence MAE, on 2023; S4/S5 models are compared with this",
+  "picks": {
+    "act_composite": "random_forest (+context) | level | all",
+    "sat_total": "random_forest (+context +graph) | level | all",
+    "sat_act_above_criterion": "random_forest (+context) | level | existing",
+    "sat_act_participation": "linear_regression (own lags) | relative | all",
+    "dropout_9_12": "linear_regression (own lags) | zscore | all",
+    "attendance_rate": "linear_regression (own lags) | level | all",
+    "retention_rate": "random_forest (+context +graph) | level | all",
+    "graduation_4yr": "random_forest (+context +graph) | zscore | existing",
+    "risk_index": "gradient_boosting (+context +demographic only) | level | all",
+    "tsi_both": "random_forest (+context) | relative | existing"
+  }
+}

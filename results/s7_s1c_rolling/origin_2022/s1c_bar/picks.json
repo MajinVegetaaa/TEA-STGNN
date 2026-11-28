@@ -1,0 +1,16 @@
+{
+ "origin": 2022,
+ "chosen_on": 2021,
+ "picks": {
+  "act_composite": "random_forest (+context +graph) | level | existing",
+  "sat_total": "linear_regression (own lags) | level | all",
+  "sat_act_above_criterion": "random_forest (+context) | zscore | all",
+  "sat_act_participation": "persistence (last year's value) | n/a | n/a",
+  "dropout_9_12": "gradient_boosting (+context +region only) | zscore | all",
+  "attendance_rate": "linear_regression (own lags) | relative | all",
+  "retention_rate": "gradient_boosting (+context +demographic only) | zscore | all",
+  "graduation_4yr": "random_forest (+context) | zscore | existing",
+  "risk_index": "random_forest (+context +graph) | zscore | existing",
+  "tsi_both": "linear_regression (own lags) | level | all"
+ }
+}

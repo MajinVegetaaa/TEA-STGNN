@@ -1,0 +1,15 @@
+                 target input_set     mode                                          model  val_ratio  test_mae_persistence  test_mae_model  pct_change_vs_persistence  beats_persistence  best_tabular_val_ratio
+          act_composite  existing    level                random_forest (+context +graph)      0.959                 1.372           1.230                    -10.511               True                   0.959
+              sat_total       all    level                   linear_regression (own lags)      0.882                36.225          32.680                     -9.788               True                   0.882
+sat_act_above_criterion       all   zscore                       random_forest (+context)      0.848                 8.107           6.777                    -16.572               True                   0.848
+  sat_act_participation       n/a      n/a                persistence (last year's value)      1.000                14.674          14.674                      0.000              False                   1.011
+           dropout_9_12       all   zscore      gradient_boosting (+context +region only)      0.946                 0.593           0.636                      7.340              False                   0.946
+        attendance_rate       all relative                   linear_regression (own lags)      0.995                 3.106           2.813                     -9.411               True                   0.995
+         retention_rate       all   zscore gradient_boosting (+context +demographic only)      0.938                 1.621           1.785                     10.134              False                   0.938
+         graduation_4yr  existing   zscore                       random_forest (+context)      0.916                 2.436           2.129                    -12.849               True                   0.916
+             risk_index  existing   zscore                random_forest (+context +graph)      0.840                 7.790           6.769                    -13.254               True                   0.840
+               tsi_both       all    level                   linear_regression (own lags)      0.954                10.583          11.430                      8.004              False                   0.954
+
+Bar on 2023 (10 targets): 0.9278 +/- 0.0004  (1.0 = persistence)
+
+origin 2022: picks chosen on 2021 -> /Users/poorabmishra/Desktop/MajorProject/results/s7_s1c_rolling/origin_2022/s1c_bar/predictions.csv

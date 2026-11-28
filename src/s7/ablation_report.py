@@ -68,10 +68,16 @@ def bar_picks(origin: int) -> dict:
     return {t: "tree" if row.tree < row.shrink_to_own_3yr else "shrinkage" for t, row in m.iterrows()}
 
 
-def s1c_preds(origin: int) -> pd.DataFrame | None:
-    path = {2023: ROOT / "results/s6_rehearsal/s1c_bar/predictions.csv",
-            2024: ROOT / "results/s6/s1c_bar/predictions.csv"}.get(origin)
-    return pd.read_csv(path, dtype={"campus_id": str}) if path and path.exists() else None
+def s1c_preds(origin: int) -> dict[str, pd.DataFrame]:
+    """S1c bar forecasts. s1c_bar: picks made on the year before the origin (2024: S6; 2022/2023: s1c_rolling.py,
+    added post-test at the user's request). s1c_bar_chosen_on_2023: the original S1c record for 2023, picked on 2023
+    itself (footnote only)."""
+    paths = {("s1c_bar", 2022): "results/s7_s1c_rolling/origin_2022/s1c_bar/predictions.csv",
+             ("s1c_bar", 2023): "results/s7_s1c_rolling/origin_2023/s1c_bar/predictions.csv",
+             ("s1c_bar", 2024): "results/s6/s1c_bar/predictions.csv",
+             ("s1c_bar_chosen_on_2023", 2023): "results/s6_rehearsal/s1c_bar/predictions.csv"}
+    return {name: pd.read_csv(ROOT / path, dtype={"campus_id": str})
+            for (name, o), path in paths.items() if o == origin and (ROOT / path).exists()}
 
 
 def origin_tables(origin: int, runs: list[tuple[str, str]]):
@@ -92,22 +98,23 @@ def origin_tables(origin: int, runs: list[tuple[str, str]]):
         pers = np.abs(lag - y).mean()
         fixed = {"persistence": lag, "shrinkage": ref.anchor_pred.to_numpy(), "tree": t.y_pred.to_numpy()}
         fixed["honest_bar"] = fixed["tree" if picks[target] == "tree" else "shrinkage"]
-        if s1c is not None:
-            sc = s1c[s1c.target == target]
+        per_seed_ratio = {}
+        for name, frame in s1c.items():
+            sc = frame[frame.target == target]
             if (sc.model == "persistence").all():
-                fixed["s1c_bar"] = lag
-            else:
-                sc = sc.groupby("campus_id").y_pred.mean()
-                common = ids.intersection(sc.index)
-                if len(common) != len(ids):
-                    raise SystemExit(f"{origin}/{target}: S1c rows do not cover the common rows")
-                fixed["s1c_bar"] = sc.loc[ids].to_numpy()
+                fixed[name] = lag
+                continue
+            if not ids.isin(sc.campus_id).all():
+                raise SystemExit(f"{origin}/{target}: {name} rows do not cover the common rows")
+            truth = sc.groupby("campus_id").y_true.first().loc[ids]
+            if not np.allclose(truth, y):
+                raise SystemExit(f"{origin}/{target}: {name} truths disagree")
+            fixed[name] = sc.groupby("campus_id").y_pred.mean().loc[ids].to_numpy()
+            # as in the S6 report: mean of the per-seed scores (the seed-averaged forecast is used for bootstraps)
+            sw = sc.pivot_table(index="campus_id", columns="seed", values="y_pred").loc[ids]
+            per_seed_ratio[name] = float(np.mean([np.abs(sw[k].to_numpy() - y).mean() / pers for k in sw.columns]))
         for name, p in fixed.items():
-            ratio = np.abs(p - y).mean() / pers
-            if name == "s1c_bar" and not (s1c[s1c.target == target].model == "persistence").all():
-                # as in the S6 report: mean of the per-seed scores (the seed-averaged forecast is used for bootstraps)
-                sw = s1c[s1c.target == target].pivot_table(index="campus_id", columns="seed", values="y_pred").loc[ids]
-                ratio = float(np.mean([np.abs(sw[k].to_numpy() - y).mean() / pers for k in sw.columns]))
+            ratio = per_seed_ratio.get(name, np.abs(p - y).mean() / pers)
             rows.append({"origin": origin, "target": target, "model": name, "n": len(ids), "ratio": ratio})
         seeded = {}
         for name, f in preds.items():

@@ -3,6 +3,7 @@ origin,target,model,n,ratio,seed
 2022,act_composite,shrinkage,1065,0.9140475254089737,
 2022,act_composite,tree,1065,0.9088163720811323,
 2022,act_composite,honest_bar,1065,0.9140475254089737,
+2022,act_composite,s1c_bar,1065,0.896287679726863,
 2022,act_composite,planA:v0,1065,1.0100102209907147,0.0
 2022,act_composite,planA:v0,1065,0.9150201864010218,1.0
 2022,act_composite,planA:v0,1065,0.9225943889081265,2.0
@@ -32,6 +33,7 @@ origin,target,model,n,ratio,seed
 2022,attendance_rate,shrinkage,1637,1.2966703585143668,
 2022,attendance_rate,tree,1637,0.946617565451316,
 2022,attendance_rate,honest_bar,1637,1.2966703585143668,
+2022,attendance_rate,s1c_bar,1637,0.9058852983075869,
 2022,attendance_rate,planA:v0,1637,1.5871076110864295,0.0
 2022,attendance_rate,planA:v0,1637,1.2526857994308571,1.0
 2022,attendance_rate,planA:v0,1637,1.5496980025501779,2.0
@@ -61,6 +63,7 @@ origin,target,model,n,ratio,seed
 2022,dropout_9_12,shrinkage,1632,0.8482108274339722,
 2022,dropout_9_12,tree,1632,1.0771585688363932,
 2022,dropout_9_12,honest_bar,1632,0.8482108274339722,
+2022,dropout_9_12,s1c_bar,1632,1.0734002981021518,
 2022,dropout_9_12,planA:v0,1632,0.8576606039923441,0.0
 2022,dropout_9_12,planA:v0,1632,0.8961442251382511,1.0
 2022,dropout_9_12,planA:v0,1632,0.8635926388513863,2.0
@@ -90,6 +93,7 @@ origin,target,model,n,ratio,seed
 2022,graduation_4yr,shrinkage,1503,0.9169875758294541,
 2022,graduation_4yr,tree,1503,0.9386030148839133,
 2022,graduation_4yr,honest_bar,1503,0.9386030148839133,
+2022,graduation_4yr,s1c_bar,1503,0.8741541413354582,
 2022,graduation_4yr,planA:v0,1503,0.932336163068833,0.0
 2022,graduation_4yr,planA:v0,1503,0.9488686431992363,1.0
 2022,graduation_4yr,planA:v0,1503,0.9525381228516673,2.0
@@ -119,6 +123,7 @@ origin,target,model,n,ratio,seed
 2022,retention_rate,shrinkage,1641,0.7848942637464216,
 2022,retention_rate,tree,1641,1.0904492773855783,
 2022,retention_rate,honest_bar,1641,0.7848942637464216,
+2022,retention_rate,s1c_bar,1641,1.1013365440231886,
 2022,retention_rate,planA:v0,1641,0.8944905425515115,0.0
 2022,retention_rate,planA:v0,1641,0.894518294921127,1.0
 2022,retention_rate,planA:v0,1641,0.8690209174896653,2.0
@@ -148,6 +153,7 @@ origin,target,model,n,ratio,seed
 2022,risk_index,shrinkage,1489,0.8754031360830741,
 2022,risk_index,tree,1489,0.8296329830982789,
 2022,risk_index,honest_bar,1489,0.8754031360830741,
+2022,risk_index,s1c_bar,1489,0.8689131078591487,
 2022,risk_index,planA:v0,1489,0.8914378407554987,0.0
 2022,risk_index,planA:v0,1489,0.9250874107656296,1.0
 2022,risk_index,planA:v0,1489,0.9115192302056521,2.0
@@ -177,6 +183,7 @@ origin,target,model,n,ratio,seed
 2022,sat_act_above_criterion,shrinkage,1490,0.9045971508169143,
 2022,sat_act_above_criterion,tree,1490,0.8493200806581772,
 2022,sat_act_above_criterion,honest_bar,1490,0.8493200806581772,
+2022,sat_act_above_criterion,s1c_bar,1490,0.835973840060657,
 2022,sat_act_above_criterion,planA:v0,1490,1.4503883992509432,0.0
 2022,sat_act_above_criterion,planA:v0,1490,1.0775844692565697,1.0
 2022,sat_act_above_criterion,planA:v0,1490,1.188547303625905,2.0
@@ -206,6 +213,7 @@ origin,target,model,n,ratio,seed
 2022,sat_act_participation,shrinkage,1555,0.884140164265829,
 2022,sat_act_participation,tree,1555,0.9792514743534475,
 2022,sat_act_participation,honest_bar,1555,0.884140164265829,
+2022,sat_act_participation,s1c_bar,1555,1.0,
 2022,sat_act_participation,planA:v0,1555,0.9981096984103206,0.0
 2022,sat_act_participation,planA:v0,1555,1.0033218138208422,1.0
 2022,sat_act_participation,planA:v0,1555,1.0041038396035697,2.0
@@ -235,6 +243,7 @@ origin,target,model,n,ratio,seed
 2022,sat_total,shrinkage,1208,0.959968658949383,
 2022,sat_total,tree,1208,0.9235242158578835,
 2022,sat_total,honest_bar,1208,0.9235242158578835,
+2022,sat_total,s1c_bar,1208,0.9021247598967861,
 2022,sat_total,planA:v0,1208,1.2577355560916432,0.0
 2022,sat_total,planA:v0,1208,1.1050123922567698,1.0
 2022,sat_total,planA:v0,1208,1.1060664635471713,2.0
@@ -264,6 +273,7 @@ origin,target,model,n,ratio,seed
 2022,tsi_both,shrinkage,1555,0.9490106299415261,
 2022,tsi_both,tree,1555,1.0110815372065072,
 2022,tsi_both,honest_bar,1555,0.9490106299415261,
+2022,tsi_both,s1c_bar,1555,1.080036805683542,
 2022,tsi_both,planA:v0,1555,1.0061010269332424,0.0
 2022,tsi_both,planA:v0,1555,1.010190808672709,1.0
 2022,tsi_both,planA:v0,1555,1.0073989319025767,2.0
@@ -294,6 +304,7 @@ origin,target,model,n,ratio,seed
 2023,act_composite,tree,1074,0.952645095337828,
 2023,act_composite,honest_bar,1074,0.9424245711656315,
 2023,act_composite,s1c_bar,1074,0.90752125876623,
+2023,act_composite,s1c_bar_chosen_on_2023,1074,0.90752125876623,
 2023,act_composite,planA:v0,1074,0.9625880085386369,0.0
 2023,act_composite,planA:v0,1074,0.9294570839591951,1.0
 2023,act_composite,planA:v0,1074,0.9523188107840345,2.0
@@ -323,7 +334,8 @@ origin,target,model,n,ratio,seed
 2023,attendance_rate,shrinkage,1647,1.1292979152891771,
 2023,attendance_rate,tree,1647,1.1632783056060851,
 2023,attendance_rate,honest_bar,1647,1.1632783056060851,
-2023,attendance_rate,s1c_bar,1647,1.0,
+2023,attendance_rate,s1c_bar,1647,6.384541733611987,
+2023,attendance_rate,s1c_bar_chosen_on_2023,1647,1.0,
 2023,attendance_rate,planA:v0,1647,1.013918963264918,0.0
 2023,attendance_rate,planA:v0,1647,0.9770975031714744,1.0
 2023,attendance_rate,planA:v0,1647,1.1281639092036542,2.0
@@ -353,7 +365,8 @@ origin,target,model,n,ratio,seed
 2023,dropout_9_12,shrinkage,1642,0.9494230783562145,
 2023,dropout_9_12,tree,1642,1.0305262173694796,
 2023,dropout_9_12,honest_bar,1642,0.9494230783562145,
-2023,dropout_9_12,s1c_bar,1642,0.9681432900480423,
+2023,dropout_9_12,s1c_bar,1642,0.9827506775671676,
+2023,dropout_9_12,s1c_bar_chosen_on_2023,1642,0.9681432900480423,
 2023,dropout_9_12,planA:v0,1642,1.0116651877825338,0.0
 2023,dropout_9_12,planA:v0,1642,1.0701787045162112,1.0
 2023,dropout_9_12,planA:v0,1642,1.0393075400668672,2.0
@@ -383,7 +396,8 @@ origin,target,model,n,ratio,seed
 2023,graduation_4yr,shrinkage,1534,0.9521340814381095,
 2023,graduation_4yr,tree,1534,0.8994790447105362,
 2023,graduation_4yr,honest_bar,1534,0.8994790447105362,
-2023,graduation_4yr,s1c_bar,1534,0.8970016348040936,
+2023,graduation_4yr,s1c_bar,1534,0.9250997089035919,
+2023,graduation_4yr,s1c_bar_chosen_on_2023,1534,0.8970016348040936,
 2023,graduation_4yr,planA:v0,1534,0.9821791480279451,0.0
 2023,graduation_4yr,planA:v0,1534,1.0524073365668658,1.0
 2023,graduation_4yr,planA:v0,1534,1.0027420493134664,2.0
@@ -413,7 +427,8 @@ origin,target,model,n,ratio,seed
 2023,retention_rate,shrinkage,1650,0.9646557293512028,
 2023,retention_rate,tree,1650,1.0938298760077234,
 2023,retention_rate,honest_bar,1650,0.9646557293512028,
-2023,retention_rate,s1c_bar,1650,0.9639199752548981,
+2023,retention_rate,s1c_bar,1650,1.2900564111112036,
+2023,retention_rate,s1c_bar_chosen_on_2023,1650,0.9639199752548981,
 2023,retention_rate,planA:v0,1650,1.0192638259337619,0.0
 2023,retention_rate,planA:v0,1650,1.063386577703659,1.0
 2023,retention_rate,planA:v0,1650,1.0367159506405286,2.0
@@ -443,7 +458,8 @@ origin,target,model,n,ratio,seed
 2023,risk_index,shrinkage,1519,0.8851999701196339,
 2023,risk_index,tree,1519,0.847516209801475,
 2023,risk_index,honest_bar,1519,0.8851999701196339,
-2023,risk_index,s1c_bar,1519,0.8298939951292696,
+2023,risk_index,s1c_bar,1519,0.8480819691368169,
+2023,risk_index,s1c_bar_chosen_on_2023,1519,0.8298939951292696,
 2023,risk_index,planA:v0,1519,0.8858048605738105,0.0
 2023,risk_index,planA:v0,1519,0.8842879866129917,1.0
 2023,risk_index,planA:v0,1519,0.8826291267511038,2.0
@@ -473,7 +489,8 @@ origin,target,model,n,ratio,seed
 2023,sat_act_above_criterion,shrinkage,1520,0.9558667848553907,
 2023,sat_act_above_criterion,tree,1520,0.8753206491591855,
 2023,sat_act_above_criterion,honest_bar,1520,0.8753206491591855,
-2023,sat_act_above_criterion,s1c_bar,1520,0.8327173486711745,
+2023,sat_act_above_criterion,s1c_bar,1520,0.8435309982035927,
+2023,sat_act_above_criterion,s1c_bar_chosen_on_2023,1520,0.8327173486711745,
 2023,sat_act_above_criterion,planA:v0,1520,0.9032611988328096,0.0
 2023,sat_act_above_criterion,planA:v0,1520,0.9518222222416226,1.0
 2023,sat_act_above_criterion,planA:v0,1520,0.917737033360293,2.0
@@ -503,7 +520,8 @@ origin,target,model,n,ratio,seed
 2023,sat_act_participation,shrinkage,1584,0.9795521794300853,
 2023,sat_act_participation,tree,1584,1.0937865516286096,
 2023,sat_act_participation,honest_bar,1584,0.9795521794300853,
-2023,sat_act_participation,s1c_bar,1584,1.0,
+2023,sat_act_participation,s1c_bar,1584,1.072769912487608,
+2023,sat_act_participation,s1c_bar_chosen_on_2023,1584,1.0,
 2023,sat_act_participation,planA:v0,1584,1.050569457144444,0.0
 2023,sat_act_participation,planA:v0,1584,0.9985991363767134,1.0
 2023,sat_act_participation,planA:v0,1584,0.9829397903830395,2.0
@@ -533,7 +551,8 @@ origin,target,model,n,ratio,seed
 2023,sat_total,shrinkage,1242,0.9921340262118828,
 2023,sat_total,tree,1242,0.973652795331318,
 2023,sat_total,honest_bar,1242,0.973652795331318,
-2023,sat_total,s1c_bar,1242,0.9110771652817231,
+2023,sat_total,s1c_bar,1242,0.923458277474524,
+2023,sat_total,s1c_bar_chosen_on_2023,1242,0.9110771652817231,
 2023,sat_total,planA:v0,1242,0.8987736267127276,0.0
 2023,sat_total,planA:v0,1242,0.9252582184181982,1.0
 2023,sat_total,planA:v0,1242,0.9331109281384158,2.0
@@ -563,7 +582,8 @@ origin,target,model,n,ratio,seed
 2023,tsi_both,shrinkage,1584,0.9886528291860677,
 2023,tsi_both,tree,1584,1.020031614429805,
 2023,tsi_both,honest_bar,1584,0.9886528291860677,
-2023,tsi_both,s1c_bar,1584,0.9917404084552521,
+2023,tsi_both,s1c_bar,1584,1.0082796770725262,
+2023,tsi_both,s1c_bar_chosen_on_2023,1584,0.9917404084552521,
 2023,tsi_both,planA:v0,1584,1.0017189304120833,0.0
 2023,tsi_both,planA:v0,1584,0.9886565591703341,1.0
 2023,tsi_both,planA:v0,1584,1.0025774359388666,2.0

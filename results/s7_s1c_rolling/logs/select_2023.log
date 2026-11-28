@@ -1,0 +1,15 @@
+                 target input_set     mode                                          model  val_ratio  test_mae_persistence  test_mae_model  pct_change_vs_persistence  beats_persistence  best_tabular_val_ratio
+          act_composite       all    level                       random_forest (+context)      0.875                 1.294           1.174                     -9.438               True                   0.875
+              sat_total       all    level                random_forest (+context +graph)      0.855                34.134          31.521                     -7.883               True                   0.855
+sat_act_above_criterion  existing    level                       random_forest (+context)      0.812                 7.167           6.046                    -15.793               True                   0.812
+  sat_act_participation       all relative                   linear_regression (own lags)      0.946                12.051          12.927                      7.277              False                   0.946
+           dropout_9_12       all   zscore                   linear_regression (own lags)      0.976                 0.500           0.491                     -1.725              False                   0.976
+        attendance_rate       all    level                   linear_regression (own lags)      0.800                 1.351           8.622                    538.454              False                   0.800
+         retention_rate       all    level                random_forest (+context +graph)      0.999                 1.232           1.590                     28.757              False                   0.999
+         graduation_4yr  existing   zscore                random_forest (+context +graph)      0.874                 2.199           2.034                     -7.747               True                   0.874
+             risk_index       all    level gradient_boosting (+context +demographic only)      0.827                 7.594           6.440                    -15.192               True                   0.827
+               tsi_both  existing relative                       random_forest (+context)      0.969                12.708          12.813                      0.773              False                   0.969
+
+Bar on 2023 (10 targets): 0.8932 +/- 0.0014  (1.0 = persistence)
+
+origin 2023: picks chosen on 2022 -> /Users/poorabmishra/Desktop/MajorProject/results/s7_s1c_rolling/origin_2023/s1c_bar/predictions.csv
