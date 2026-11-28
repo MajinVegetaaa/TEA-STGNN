@@ -51,3 +51,4 @@ results/s6_lock/*.log
 results/s7_ablation/**/predictions/
 results/s7_ablation/_tune2024/
 results/s7_s1c_rolling/origin_*/*/*/predictions.csv
+!results/s7_s1c_rolling/origin_*/s1c_bar/predictions.csv
